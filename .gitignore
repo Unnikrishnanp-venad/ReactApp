@@ -1,6 +1,9 @@
 # Gradle files
 .gradle/
 build/
+node_modules/
+ios/Pods/
+vendor/bundle/ruby
 
 # Local configuration file (sdk path, etc)
 local.properties
