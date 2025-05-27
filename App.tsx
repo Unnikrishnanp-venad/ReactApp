@@ -1,10 +1,12 @@
 // App.tsx
 import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import HomeScreen from './src/screens/HomeScreen';
+import AuthScreen from './src/screens/AuthScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,15 +24,18 @@ const App = () => {
   if (showOnboarding === null) return null;
 
   return (
+    <>
+     <StatusBar hidden={true} />
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{ headerShown: false }}
-        initialRouteName={showOnboarding ? 'Onboarding' : 'Home'}
+        initialRouteName={showOnboarding ? 'Onboarding' : 'Auth'}
       >
         <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Auth" component={AuthScreen} />
       </Stack.Navigator>
     </NavigationContainer>
+    </>
   );
 };
 

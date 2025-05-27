@@ -46,7 +46,7 @@ const OnboardingScreen = ({ navigation }: any) => {
       flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
     } else {
       await AsyncStorage.setItem('hasLaunched', 'true');
-      navigation.replace('Home');
+      navigation.replace('Auth');
     }
   };
 
