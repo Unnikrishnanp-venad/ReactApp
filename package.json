@@ -17,6 +17,7 @@
     "react": "19.0.0",
     "react-native": "0.79.2",
     "react-native-biometrics": "^3.0.1",
+    "react-native-contacts": "^8.0.5",
     "react-native-gesture-handler": "^2.25.0",
     "react-native-safe-area-context": "^5.4.1",
     "react-native-screens": "^4.10.0",

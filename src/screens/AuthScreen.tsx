@@ -42,7 +42,8 @@ const AuthScreen = ({ navigation }: any) => {
       <View style={styles.footer}>
         <TouchableOpacity style={styles.button} onPress={handleBiometricAuth}>
           <Text style={styles.buttonText}>Authentication</Text>
-        </TouchableOpacity>
+         </TouchableOpacity>
+
         <TouchableOpacity
           style={[styles.button, { marginTop: 12 }]}
           onPress={() => navigation.navigate('Registration')}

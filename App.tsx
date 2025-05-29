@@ -29,12 +29,22 @@ const App = () => {
      <StatusBar hidden={true} />
     <NavigationContainer>
       <Stack.Navigator
-        screenOptions={{ headerShown: false }}
+        screenOptions={{
+          headerShown: false, // or true if you want the header
+          headerStyle: { backgroundColor: '#000' }, // Black header
+          headerTintColor: '#fff', // White text/icons
+        }}
         initialRouteName={showOnboarding ? 'Onboarding' : 'Auth'}
       >
         <Stack.Screen name="Onboarding" component={OnboardingScreen} />
         <Stack.Screen name="Auth" component={AuthScreen} />
-        <Stack.Screen name="Home" component={HomeTabs} />
+        <Stack.Screen
+          name="Home"
+          component={HomeTabs}
+          options={{
+            headerShown: false, // <-- Hide header for Home only
+          }}
+        />
         <Stack.Screen
           name="Registration"
           component={RegistrationScreen}
