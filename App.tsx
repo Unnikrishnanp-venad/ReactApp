@@ -5,8 +5,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import OnboardingScreen from './src/screens/OnboardingScreen';
-import HomeScreen from './src/screens/HomeScreen';
 import AuthScreen from './src/screens/AuthScreen';
+import RegistrationScreen from './src/screens/RegistrationScreen';
+import HomeTabs from './src/screens/HomeTabs';
 
 const Stack = createNativeStackNavigator();
 
@@ -33,6 +34,12 @@ const App = () => {
       >
         <Stack.Screen name="Onboarding" component={OnboardingScreen} />
         <Stack.Screen name="Auth" component={AuthScreen} />
+        <Stack.Screen name="Home" component={HomeTabs} />
+        <Stack.Screen
+          name="Registration"
+          component={RegistrationScreen}
+          options={{ headerShown: true, title: 'Registration' }} // Show header and set title
+        />
       </Stack.Navigator>
     </NavigationContainer>
     </>
