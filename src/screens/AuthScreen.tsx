@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, Alert } from 'react-native';
 import ReactNativeBiometrics from 'react-native-biometrics';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
 
@@ -19,6 +20,7 @@ const AuthScreen = ({ navigation }: any) => {
         const { success } = resultObject;
 
         if (success) {
+          AsyncStorage.setItem('isAuthed', 'true');
           Alert.alert('Authenticated!', 'You have successfully authenticated.');
           navigation.replace('Home'); // Navigate to Home screen
         } else {
