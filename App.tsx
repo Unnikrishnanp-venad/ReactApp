@@ -8,6 +8,7 @@ import AuthScreen from './src/screens/AuthScreen';
 import HomeTabs from './src/screens/HomeTabs';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import RegistrationScreen from './src/screens/RegistrationScreen';
+import SplashScreen from 'react-native-splash-screen';
 
 const Stack = createNativeStackNavigator();
 
@@ -20,6 +21,10 @@ const App = () => {
       setInitialRoute(isAuthed === 'true' ? 'Home' : 'Auth');
     };
     checkAuth();
+  }, []);
+
+  useEffect(() => {
+    SplashScreen.hide();
   }, []);
 
   if (!initialRoute) return null; // or a splash/loading screen
