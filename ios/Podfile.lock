@@ -47,7 +47,6 @@ PODS:
     - React-RCTText (= 0.79.2)
     - React-RCTVibration (= 0.79.2)
   - React-callinvoker (0.79.2)
-  - React-Codegen (0.1.0)
   - React-Core (0.79.2):
     - glog
     - hermes-engine
@@ -1335,31 +1334,6 @@ PODS:
     - ReactCommon/turbomodule/core
   - react-native-biometrics (3.0.1):
     - React-Core
-  - react-native-contacts (8.0.5):
-    - DoubleConversion
-    - glog
-    - hermes-engine
-    - RCT-Folly (= 2024.11.18.00)
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Codegen
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-hermes
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - Yoga
   - react-native-safe-area-context (5.4.1):
     - DoubleConversion
     - glog
@@ -1949,7 +1923,6 @@ DEPENDENCIES:
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
   - react-native-biometrics (from `../node_modules/react-native-biometrics`)
-  - react-native-contacts (from `../node_modules/react-native-contacts`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-webview (from `../node_modules/react-native-webview`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
@@ -1991,7 +1964,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - React-Codegen
     - SocketRocket
 
 EXTERNAL SOURCES:
@@ -2074,8 +2046,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
   react-native-biometrics:
     :path: "../node_modules/react-native-biometrics"
-  react-native-contacts:
-    :path: "../node_modules/react-native-contacts"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-webview:
@@ -2167,7 +2137,6 @@ SPEC CHECKSUMS:
   RCTTypeSafety: 659ae318c09de0477fd27bbc9e140071c7ea5c93
   React: c2d3aa44c49bb34e4dfd49d3ee92da5ebacc1c1c
   React-callinvoker: 1bdfb7549b5af266d85757193b5069f60659ef9d
-  React-Codegen: 4b8b4817cea7a54b83851d4c1f91f79aa73de30a
   React-Core: 10597593fdbae06f0089881e025a172e51d4a769
   React-CoreModules: 6907b255529dd46895cf687daa67b24484a612c2
   React-cxxreact: a9f5b8180d6955bc3f6a3fcd657c4d9b4d95c1f6
@@ -2194,7 +2163,6 @@ SPEC CHECKSUMS:
   React-Mapbuffer: c3f4b608e4a59dd2f6a416ef4d47a14400194468
   React-microtasksnativemodule: 054f34e9b82f02bd40f09cebd4083828b5b2beb6
   react-native-biometrics: 43ed5b828646a7862dbc7945556446be00798e7d
-  react-native-contacts: 30229f4b7d13283c56cfaf30f389f3a844709550
   react-native-safe-area-context: 5594ec631ede9c311c5c0efa244228eff845ce88
   react-native-webview: 520bcb79c3f2af91e157cdd695732a34ab5f25c8
   React-NativeModulesApple: 2c4377e139522c3d73f5df582e4f051a838ff25e
