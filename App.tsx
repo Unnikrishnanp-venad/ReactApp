@@ -8,7 +8,7 @@ import AuthScreen from './src/screens/AuthScreen';
 import HomeTabs from './src/screens/HomeTabs';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import RegistrationScreen from './src/screens/RegistrationScreen';
-import SplashScreen from 'react-native-splash-screen';
+import BootSplash from "react-native-bootsplash";
 
 const Stack = createNativeStackNavigator();
 
@@ -21,11 +21,17 @@ const App = () => {
       setInitialRoute(isAuthed === 'true' ? 'Home' : 'Auth');
     };
     checkAuth();
+    const init = async () => {
+      // …do multiple sync or async tasks
+    };
+
+    init().finally(async () => {
+      await BootSplash.hide({ fade: true });
+      console.log("BootSplash has been hidden successfully");
+    });
   }, []);
 
-  useEffect(() => {
-    SplashScreen.hide();
-  }, []);
+
 
   if (!initialRoute) return null; // or a splash/loading screen
 
