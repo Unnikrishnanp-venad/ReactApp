@@ -1,16 +1,24 @@
 // App.tsx
 import React, { useEffect, useState } from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AuthScreen from './src/screens/AuthScreen';
 import HomeTabs from './src/screens/HomeTabs';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import RegistrationScreen from './src/screens/RegistrationScreen';
-import BootSplash from "react-native-bootsplash";
+import RNBootSplash from 'react-native-bootsplash';
 
 const Stack = createNativeStackNavigator();
+
+const MyTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: '#1e90ff', // match your splash color
+  },
+};
 
 const App = () => {
   const [initialRoute, setInitialRoute] = useState<string | null>(null);
@@ -26,19 +34,17 @@ const App = () => {
     };
 
     init().finally(async () => {
-      await BootSplash.hide({ fade: true });
+      RNBootSplash.hide({ fade: true });
       console.log("BootSplash has been hidden successfully");
     });
   }, []);
 
-
-
   if (!initialRoute) return null; // or a splash/loading screen
 
   return (
-    <>
+    <View style={{ flex: 1, backgroundColor: '#1e90ff' }}>
       <StatusBar hidden={true} />
-      <NavigationContainer>
+      <NavigationContainer theme={MyTheme}>
         <Stack.Navigator
           screenOptions={{
             headerShown: false, // or true if you want the header
@@ -63,7 +69,7 @@ const App = () => {
           />
         </Stack.Navigator>
       </NavigationContainer>
-    </>
+    </View>
   );
 };
 
