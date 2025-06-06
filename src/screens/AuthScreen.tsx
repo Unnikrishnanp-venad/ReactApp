@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, Alert } from 'react-native';
 import ReactNativeBiometrics from 'react-native-biometrics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -6,6 +6,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const { width } = Dimensions.get('window');
 
 const AuthScreen = ({ navigation }: any) => {
+  const [biometricAvailable, setBiometricAvailable] = useState(false);
+
+  useEffect(() => {
+    const checkBiometric = async () => {
+      const rnBiometrics = new ReactNativeBiometrics();
+      const { available } = await rnBiometrics.isSensorAvailable();
+      setBiometricAvailable(!!available);
+    };
+    checkBiometric();
+  }, []);
+
   const handleBiometricAuth = async () => {
     const rnBiometrics = new ReactNativeBiometrics();
     const { available } = await rnBiometrics.isSensorAvailable();
@@ -42,12 +53,25 @@ const AuthScreen = ({ navigation }: any) => {
         <Text style={styles.text}>Welcome! Please sign in or sign up to continue.</Text>
       </View>
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.button} onPress={handleBiometricAuth}>
-          <Text style={styles.buttonText}>Authentication</Text>
-         </TouchableOpacity>
-
+        {biometricAvailable && (
+          <TouchableOpacity
+            style={styles.biometricButton}
+            onPress={handleBiometricAuth}
+            activeOpacity={0.7}
+          >
+            <Image
+              source={require('../../assets/fingerprint.png')}
+              style={styles.biometricImage}
+            />
+          </TouchableOpacity>
+        )}
         <TouchableOpacity
-          style={[styles.button, { marginTop: 12 }]}
+          style={[styles.button, { marginTop: 24 }]}
+        >
+          <Text style={styles.buttonText}>Authentication</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, { marginTop: 24 }]}
           onPress={() => navigation.navigate('Registration')}
         >
           <Text style={styles.buttonText}>Registration</Text>
@@ -99,5 +123,21 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: '600',
+  },
+  biometricButton: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: '#222',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+    borderWidth: 2,
+    borderColor: '#5f6dff',
+  },
+  biometricImage: {
+    width: 40,
+    height: 40,
+    tintColor: '#5f6dff',
   },
 });
