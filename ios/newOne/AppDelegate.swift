@@ -2,7 +2,7 @@ import UIKit
 import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
-import RNBootSplash
+
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -39,11 +39,7 @@ class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
   override func sourceURL(for bridge: RCTBridge) -> URL? {
     self.bundleURL()
   }
-  // ⬇️ override this method
-  override func customize(_ rootView: RCTRootView) {
-    super.customize(rootView)
-    RNBootSplash.initWithStoryboard("LaunchScreen", rootView: rootView) // ⬅️ initialize the splash screen
-  }
+
 
   override func bundleURL() -> URL? {
 #if DEBUG

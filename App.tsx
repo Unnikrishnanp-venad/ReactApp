@@ -8,7 +8,7 @@ import AuthScreen from './src/screens/AuthScreen';
 import HomeTabs from './src/screens/HomeTabs';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import RegistrationScreen from './src/screens/RegistrationScreen';
-import RNBootSplash from 'react-native-bootsplash';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -32,11 +32,6 @@ const App = () => {
     const init = async () => {
       // …do multiple sync or async tasks
     };
-
-    init().finally(async () => {
-      RNBootSplash.hide({ fade: true });
-      console.log("BootSplash has been hidden successfully");
-    });
   }, []);
 
   if (!initialRoute) return null; // or a splash/loading screen
