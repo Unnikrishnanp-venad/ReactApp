@@ -1,11 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, Alert } from 'react-native';
 import ReactNativeBiometrics from 'react-native-biometrics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+import { IOS_CLIENT_ID, WEB_CLIENT_ID } from '../constants/key';
+import { googleSignIn, signIn } from '../constants/googleSigIn';
 
+
+
+
+GoogleSignin.configure({
+  webClientId: WEB_CLIENT_ID, // client ID of type WEB for your server. Required to get the `idToken` on the user object, and for offline access.
+  scopes: ['https://www.googleapis.com/auth/drive.readonly'], // what API you want to access on behalf of the user, default is email and profile
+  forceCodeForRefreshToken: false, // [Android] related to `serverAuthCode`, read the docs link below *.
+  iosClientId: IOS_CLIENT_ID, // [iOS] if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
+});
 const { width } = Dimensions.get('window');
 
 const AuthScreen = ({ navigation }: any) => {
+  const [biometricAvailable, setBiometricAvailable] = useState(false);
+
+  useEffect(() => {
+    const checkBiometric = async () => {
+      const rnBiometrics = new ReactNativeBiometrics();
+      const { available } = await rnBiometrics.isSensorAvailable();
+      setBiometricAvailable(!!available);
+    };
+    checkBiometric();
+  }, []);
+
   const handleBiometricAuth = async () => {
     const rnBiometrics = new ReactNativeBiometrics();
     const { available } = await rnBiometrics.isSensorAvailable();
@@ -42,12 +69,57 @@ const AuthScreen = ({ navigation }: any) => {
         <Text style={styles.text}>Welcome! Please sign in or sign up to continue.</Text>
       </View>
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.button} onPress={handleBiometricAuth}>
-          <Text style={styles.buttonText}>Authentication</Text>
-         </TouchableOpacity>
-
+        {biometricAvailable && (
+          <TouchableOpacity
+            style={styles.biometricButton}
+            onPress={handleBiometricAuth}
+            activeOpacity={0.7}
+          >
+            <Image
+              source={require('../../assets/fingerprint.png')}
+              style={styles.biometricImage}
+            />
+          </TouchableOpacity>
+        )}
+        <GoogleSigninButton
+          style={{ width: '100%', height: 48, marginBottom: 24 }}
+          size={GoogleSigninButton.Size.Wide}
+          color={GoogleSigninButton.Color.Dark}
+          onPress={() => {
+            googleSignIn(
+              () => {
+                AsyncStorage.setItem('isAuthed', 'true');
+                navigation.replace('Home');
+              },
+              (error) => {
+                if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+                  console.log("error occured SIGN_IN_CANCELLED");
+                  // user cancelled the login flow
+                } else if (error.code === statusCodes.IN_PROGRESS) {
+                  console.log("error occured IN_PROGRESS");
+                  // operation (f.e. sign in) is in progress already
+                } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                  console.log("error occured PLAY_SERVICES_NOT_AVAILABLE");
+                } else if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+                  console.log("error occured SIGN_IN_REQUIRED");
+                } else {
+                  console.log(error);
+                  console.log("error occured unknow error");
+                }
+                // Alert.alert('Google Sign-In Failed', error?.message || 'Unknown error');
+              }
+            );
+          }}
+          disabled={false}
+        />
         <TouchableOpacity
-          style={[styles.button, { marginTop: 12 }]}
+          style={[styles.button, { marginTop: 0 }]}
+          // No onPress handler, button is now visually present only
+        >
+          <Text style={styles.buttonText}>Authentication</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, { marginTop: 24 }]}
           onPress={() => navigation.navigate('Registration')}
         >
           <Text style={styles.buttonText}>Registration</Text>
@@ -99,5 +171,21 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: '600',
+  },
+  biometricButton: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: '#222',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+    borderWidth: 2,
+    borderColor: '#5f6dff',
+  },
+  biometricImage: {
+    width: 40,
+    height: 40,
+    tintColor: '#5f6dff',
   },
 });

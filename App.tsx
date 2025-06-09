@@ -24,14 +24,16 @@ const App = () => {
   const [initialRoute, setInitialRoute] = useState<string | null>(null);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const isAuthed = await AsyncStorage.getItem('isAuthed');
-      setInitialRoute(isAuthed === 'true' ? 'Home' : 'Auth');
+    const checkInitialRoute = async () => {
+      const hasLaunched = await AsyncStorage.getItem('hasLaunched');
+      if (!hasLaunched) {
+        setInitialRoute('Onboarding');
+      } else {
+        const isAuthed = await AsyncStorage.getItem('isAuthed');
+        setInitialRoute(isAuthed === 'true' ? 'Home' : 'Auth');
+      }
     };
-    checkAuth();
-    const init = async () => {
-      // …do multiple sync or async tasks
-    };
+    checkInitialRoute();
   }, []);
 
   if (!initialRoute) return null; // or a splash/loading screen
