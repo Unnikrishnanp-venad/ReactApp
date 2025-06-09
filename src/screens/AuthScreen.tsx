@@ -2,7 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, Alert } from 'react-native';
 import ReactNativeBiometrics from 'react-native-biometrics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+import { IOS_CLIENT_ID, WEB_CLIENT_ID } from '../constants/key';
+import { googleSignIn, signIn } from '../constants/googleSigIn';
 
+
+
+
+GoogleSignin.configure({
+  webClientId: WEB_CLIENT_ID, // client ID of type WEB for your server. Required to get the `idToken` on the user object, and for offline access.
+  scopes: ['https://www.googleapis.com/auth/drive.readonly'], // what API you want to access on behalf of the user, default is email and profile
+  forceCodeForRefreshToken: false, // [Android] related to `serverAuthCode`, read the docs link below *.
+  iosClientId: IOS_CLIENT_ID, // [iOS] if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
+});
 const { width } = Dimensions.get('window');
 
 const AuthScreen = ({ navigation }: any) => {
@@ -65,8 +81,40 @@ const AuthScreen = ({ navigation }: any) => {
             />
           </TouchableOpacity>
         )}
+        <GoogleSigninButton
+          style={{ width: '100%', height: 48, marginBottom: 24 }}
+          size={GoogleSigninButton.Size.Wide}
+          color={GoogleSigninButton.Color.Dark}
+          onPress={() => {
+            googleSignIn(
+              () => {
+                AsyncStorage.setItem('isAuthed', 'true');
+                navigation.replace('Home');
+              },
+              (error) => {
+                if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+                  console.log("error occured SIGN_IN_CANCELLED");
+                  // user cancelled the login flow
+                } else if (error.code === statusCodes.IN_PROGRESS) {
+                  console.log("error occured IN_PROGRESS");
+                  // operation (f.e. sign in) is in progress already
+                } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                  console.log("error occured PLAY_SERVICES_NOT_AVAILABLE");
+                } else if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+                  console.log("error occured SIGN_IN_REQUIRED");
+                } else {
+                  console.log(error);
+                  console.log("error occured unknow error");
+                }
+                // Alert.alert('Google Sign-In Failed', error?.message || 'Unknown error');
+              }
+            );
+          }}
+          disabled={false}
+        />
         <TouchableOpacity
-          style={[styles.button, { marginTop: 24 }]}
+          style={[styles.button, { marginTop: 0 }]}
+          // No onPress handler, button is now visually present only
         >
           <Text style={styles.buttonText}>Authentication</Text>
         </TouchableOpacity>

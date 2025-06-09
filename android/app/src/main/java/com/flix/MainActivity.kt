@@ -1,4 +1,4 @@
-package com.newone
+package com.venad.flix
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

@@ -1,4 +1,4 @@
-package com.newone
+package com.venad.flix
 
 import android.app.Application
 import com.facebook.react.PackageList

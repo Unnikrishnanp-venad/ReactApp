@@ -1,8 +1,25 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { signOut } from '../constants/googleSigIn';
 
 const SettingsScreen = ({ navigation }: any) => {
+  const [user, setUser] = useState<{ name?: string; email?: string; photo?: string }>({});
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const name = await AsyncStorage.getItem('googleUserName');
+      const email = await AsyncStorage.getItem('googleUserEmail');
+      const photo = await AsyncStorage.getItem('googleUserPhoto');
+      setUser({
+        name: name || undefined,
+        email: email || undefined,
+        photo: photo || undefined,
+      });
+    };
+    fetchUser();
+  }, []);
+
   const handleLogout = async () => {
     Alert.alert(
       'Logout',
@@ -14,10 +31,8 @@ const SettingsScreen = ({ navigation }: any) => {
           style: 'destructive',
           onPress: async () => {
             await AsyncStorage.removeItem('isAuthed');
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'Auth' }],
-            });
+            navigation.replace('Auth');
+            signOut
           },
         },
       ]
@@ -26,6 +41,16 @@ const SettingsScreen = ({ navigation }: any) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.profileContainer}>
+        {user.photo ? (
+          <Image source={{ uri: user.photo }} style={styles.avatar} />
+        ) : (
+          <View style={[styles.avatar, { backgroundColor: '#333' }]} />
+        )}
+        <Text style={styles.name}>{user.name || 'User'}</Text>
+        <Text style={styles.email}>{user.email || ''}</Text>
+      </View>
+      <View style={{ flex: 1 }} />
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutText}>Logout</Text>
       </TouchableOpacity>
@@ -34,15 +59,49 @@ const SettingsScreen = ({ navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000', justifyContent: 'center', alignItems: 'center' },
-  text: { color: '#fff', fontSize: 24, marginBottom: 40 },
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingTop: 60,
+    paddingBottom: 32,
+  },
+  profileContainer: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 16,
+    backgroundColor: '#222',
+  },
+  name: {
+    color: '#fff',
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  email: {
+    color: '#aaa',
+    fontSize: 16,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
   logoutButton: {
+    width: '100%',
     backgroundColor: '#5f6dff',
     paddingVertical: 14,
-    paddingHorizontal: 40,
     borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'absolute',
+    bottom: 32,
+    left: 24,
+    right: 24,
   },
   logoutText: { color: '#fff', fontSize: 18, fontWeight: '600' },
 });
