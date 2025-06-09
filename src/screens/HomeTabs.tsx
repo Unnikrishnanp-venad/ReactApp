@@ -23,23 +23,29 @@ const HomeTabs = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarIcon: ({ color }) => {
+        tabBarIcon: ({ color, focused }) => {
           let source;
+          let iconColor = color;
           if (route.name === 'HomeTab') {
             source = require('../../assets/home.png');
+            // iconColor = '#FFD600'; // Yellow for Home tab
           } else if (route.name === 'SearchTab') {
             source = require('../../assets/search.png');
+            // iconColor = '#FFD600'; 
           } else if (route.name === 'SettingsTab') {
-            source = require('../../assets/settings.png'); // <-- Add a settings icon in your assets
+            source = require('../../assets/settings.png');
+            // iconColor = '#FFD600'; 
           }
           return (
             <Image
               source={source}
-              style={{ width: 20, height: 20, tintColor: color }}
+              style={{ width: 24, height: 24, tintColor: iconColor }}
               resizeMode="contain"
             />
           );
         },
+        tabBarActiveTintColor: '#FFD600', // Set active icon color to yellow
+        tabBarInactiveTintColor: '#fff',  // Set inactive icon color to white
         tabBarShowLabel: false,
         tabBarStyle: { height: 70, backgroundColor: '#000' },
         headerShown: true,
