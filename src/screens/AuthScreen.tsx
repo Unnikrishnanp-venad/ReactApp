@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, Alert } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, Alert, TextInput } from 'react-native';
 import ReactNativeBiometrics from 'react-native-biometrics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -8,8 +8,10 @@ import {
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 import { IOS_CLIENT_ID, WEB_CLIENT_ID } from '../constants/key';
-import { googleSignIn, signIn } from '../constants/googleSigIn';
+import { googleSignIn } from '../constants/googleSigIn';
 
+
+// import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
 
 
@@ -22,7 +24,12 @@ GoogleSignin.configure({
 const { width } = Dimensions.get('window');
 
 const AuthScreen = ({ navigation }: any) => {
+  // const auth = firebaseAuth
   const [biometricAvailable, setBiometricAvailable] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  // const auth = getAuth();
 
   useEffect(() => {
     const checkBiometric = async () => {
@@ -59,72 +66,91 @@ const AuthScreen = ({ navigation }: any) => {
       });
   };
 
+  const handleCreateAccount = async () => {
+    // if (!name || !email || !password) {
+    //   Alert.alert('Error', 'Please fill in all fields');
+    //   return;
+    // }
+    // try {
+    //   // console.log('auth, email, password', auth, email, password);
+    //   const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    //   // Assuming createUserWithEmailAndPassword is a function that creates a user account
+    //   console.log('User account created & signed in!', userCredential.user);
+    //   // Optionally save user info, navigate, etc.
+    //   AsyncStorage.setItem('isAuthed', 'true');
+    //   navigation.replace('Home');
+    // } catch (error: any) {
+    //   if (error.code === 'auth/email-already-in-use') {
+    //     Alert.alert('That email address is already in use!');
+    //   } else if (error.code === 'auth/invalid-email') {
+    //     Alert.alert('That email address is invalid!');
+    //   } else {
+    //     Alert.alert('Error', error.message);
+    //   }
+    // }
+  }
+
+
   return (
     <View style={styles.container}>
-      <View style={styles.topContent}>
-        <Image
-          source={require('../../assets/A4.png')}
-          style={styles.image}
-        />
-        <Text style={styles.text}>Welcome! Please sign in or sign up to continue.</Text>
+      <View style={styles.header}>
+        <Image source={require('../../assets/A4.png')} style={styles.logo} />
+        <Text style={styles.brand}>FLIX</Text>
       </View>
-      <View style={styles.footer}>
-        {biometricAvailable && (
-          <TouchableOpacity
-            style={styles.biometricButton}
-            onPress={handleBiometricAuth}
-            activeOpacity={0.7}
-          >
-            <Image
-              source={require('../../assets/fingerprint.png')}
-              style={styles.biometricImage}
-            />
-          </TouchableOpacity>
-        )}
-        <GoogleSigninButton
-          style={{ width: '100%', height: 48, marginBottom: 24 }}
-          size={GoogleSigninButton.Size.Wide}
-          color={GoogleSigninButton.Color.Dark}
-          onPress={() => {
-            googleSignIn(
-              () => {
-                AsyncStorage.setItem('isAuthed', 'true');
-                navigation.replace('Home');
-              },
-              (error) => {
-                if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-                  console.log("error occured SIGN_IN_CANCELLED");
-                  // user cancelled the login flow
-                } else if (error.code === statusCodes.IN_PROGRESS) {
-                  console.log("error occured IN_PROGRESS");
-                  // operation (f.e. sign in) is in progress already
-                } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-                  console.log("error occured PLAY_SERVICES_NOT_AVAILABLE");
-                } else if (error.code === statusCodes.SIGN_IN_REQUIRED) {
-                  console.log("error occured SIGN_IN_REQUIRED");
-                } else {
-                  console.log(error);
-                  console.log("error occured unknow error");
-                }
-                // Alert.alert('Google Sign-In Failed', error?.message || 'Unknown error');
+      <Text style={styles.title}>Keep your online{`\n`}business organized</Text>
+      <Text style={styles.subtitle}>Sign up to start your 30 days free trial</Text>
+      <GoogleSigninButton
+        style={styles.googleButton}
+        size={GoogleSigninButton.Size.Wide}
+        color={GoogleSigninButton.Color.Light}
+        onPress={() => {
+          googleSignIn(
+            () => {
+              AsyncStorage.setItem('isAuthed', 'true');
+              navigation.replace('Home');
+            },
+            (error) => {
+              if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+                console.log("error occured SIGN_IN_CANCELLED");
+                // user cancelled the login flow
+              } else if (error.code === statusCodes.IN_PROGRESS) {
+                console.log("error occured IN_PROGRESS");
+                // operation (f.e. sign in) is in progress already
+              } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                console.log("error occured PLAY_SERVICES_NOT_AVAILABLE");
+              } else if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+                console.log("error occured SIGN_IN_REQUIRED");
+              } else {
+                console.log(error);
+                console.log("error occured unknow error");
               }
-            );
-          }}
-          disabled={false}
-        />
+            }
+          );
+        }}
+
+      />
+      <View style={styles.orRow}>
+        <View style={styles.line} />
+        <Text style={styles.orText}>or</Text>
+        <View style={styles.line} />
+      </View>
+      <View style={styles.form}>
+        <Text style={styles.label}>Name<Text style={{ color: '#FFD600' }}>*</Text></Text>
+        <TextInput style={styles.input} placeholder="Enter your name" placeholderTextColor="#aaa" value={name} onChangeText={setName} />
+        <Text style={styles.label}>Email<Text style={{ color: '#FFD600' }}>*</Text></Text>
+        <TextInput style={styles.input} placeholder="Enter your email" placeholderTextColor="#aaa" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
+        <Text style={styles.label}>Password<Text style={{ color: '#FFD600' }}>*</Text></Text>
+        <TextInput style={styles.input} placeholder="Enter your password" placeholderTextColor="#aaa" secureTextEntry value={password} onChangeText={setPassword} />
         <TouchableOpacity
-          style={[styles.button, { marginTop: 0 }]}
-          // No onPress handler, button is now visually present only
+          style={styles.createButton}
+          onPress={handleCreateAccount}
         >
-          <Text style={styles.buttonText}>Authentication</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, { marginTop: 24 }]}
-          onPress={() => navigation.navigate('Registration')}
-        >
-          <Text style={styles.buttonText}>Registration</Text>
+          <Text style={styles.createButtonText}>Create Account</Text>
         </TouchableOpacity>
       </View>
+      <Text style={styles.loginText}>
+        Already have an account? <Text style={styles.loginLink} onPress={() => navigation.navigate('Auth')}>Login Here</Text>
+      </Text>
     </View>
   );
 };
@@ -134,58 +160,112 @@ export default AuthScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f0f0f',
-    justifyContent: 'space-between',
+    backgroundColor: '#000', // Set background to black
+    alignItems: 'center',
     paddingHorizontal: 24,
-    paddingVertical: 32,
+    paddingTop: 48,
   },
-  topContent: {
+  header: {
+    flexDirection: 'row',
     alignItems: 'center',
+    alignSelf: 'flex-start',
+    marginBottom: 24,
   },
-  image: {
-    width: width * 0.8,
-    height: width * 0.8,
+  logo: {
+    width: 40,
+    height: 40,
     resizeMode: 'contain',
-    borderRadius: 24,
+    marginRight: 8,
   },
-  text: {
-    fontSize: 18,
-    color: '#ffff',
-    textAlign: 'center',
-    fontWeight: '500',
-    marginTop: 24,
+  brand: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFD600',
   },
-  footer: {
+  title: {
+    fontSize: 38,
+    fontWeight: 'bold',
+    color: '#888',
+    textAlign: 'left',
+    alignSelf: 'flex-start',
+    marginBottom: 8,
+    marginTop: 8,
+    lineHeight: 44,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#888',
+    marginBottom: 32,
+    alignSelf: 'flex-start',
+  },
+  googleButton: {
     width: '100%',
-    alignItems: 'center',
+    height: 52,
+    borderRadius: 12,
+    marginBottom: 24,
+    alignSelf: 'center',
   },
-  button: {
+  orRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: 24,
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#eee',
+  },
+  orText: {
+    marginHorizontal: 12,
+    color: '#888',
+    fontSize: 16,
+  },
+  form: {
+    width: '100%',
+    marginBottom: 24,
+  },
+  label: {
+    color: '#888',
+    fontWeight: '600',
+    fontSize: 16,
+    marginBottom: 4,
+    marginTop: 12,
+  },
+  input: {
     width: '100%',
     height: 48,
-    backgroundColor: '#5f6dff',
-    borderRadius: 24,
+    backgroundColor: '#fafafa',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    color: '#222',
+    fontSize: 16,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#eee',
+  },
+  createButton: {
+    width: '100%',
+    height: 48,
+    backgroundColor: '#FFD600', // Yellow button
+    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 18,
   },
-  buttonText: {
-    color: '#fff',
+  createButtonText: {
+    color: '#111', // Dark text for contrast on yellow
     fontSize: 18,
     fontWeight: '600',
   },
-  biometricButton: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: '#222',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-    borderWidth: 2,
-    borderColor: '#5f6dff',
+  loginText: {
+    color: '#888',
+    fontSize: 15,
+    marginTop: 12,
+    marginBottom: 24,
   },
-  biometricImage: {
-    width: 40,
-    height: 40,
-    tintColor: '#5f6dff',
+  loginLink: {
+    color: '#FFD600',
+    fontWeight: 'bold',
   },
 });

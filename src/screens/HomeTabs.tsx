@@ -28,18 +28,15 @@ const HomeTabs = () => {
           let iconColor = color;
           if (route.name === 'HomeTab') {
             source = require('../../assets/home.png');
-            // iconColor = '#FFD600'; // Yellow for Home tab
           } else if (route.name === 'SearchTab') {
             source = require('../../assets/search.png');
-            // iconColor = '#FFD600'; 
           } else if (route.name === 'SettingsTab') {
             source = require('../../assets/settings.png');
-            // iconColor = '#FFD600'; 
           }
           return (
             <Image
               source={source}
-              style={{ width: 24, height: 24, tintColor: iconColor }}
+              style={{ width: 28, height: 28, tintColor: iconColor }} // Slightly larger icons for better visibility
               resizeMode="contain"
             />
           );
