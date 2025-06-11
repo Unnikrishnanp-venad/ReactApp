@@ -152,11 +152,11 @@ const AuthScreen = ({ navigation }: any) => {
         <View style={styles.line} />
       </View>
       <View style={styles.form}>
-        <Text style={styles.label}>Name<Text style={{ color: '#FFD600' }}>*</Text></Text>
+        <Text style={styles.label}>Name</Text>
         <TextInput style={styles.input} placeholder="Enter your name" placeholderTextColor="#aaa" value={name} onChangeText={setName} />
-        <Text style={styles.label}>Email<Text style={{ color: '#FFD600' }}>*</Text></Text>
+        <Text style={styles.label}>Email</Text>
         <TextInput style={styles.input} placeholder="Enter your email" placeholderTextColor="#aaa" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
-        <Text style={styles.label}>Password<Text style={{ color: '#FFD600' }}>*</Text></Text>
+        <Text style={styles.label}>Password</Text>
         <TextInput style={styles.input} placeholder="Enter your password" placeholderTextColor="#aaa" secureTextEntry value={password} onChangeText={setPassword} />
         <TouchableOpacity
           style={styles.createButton}

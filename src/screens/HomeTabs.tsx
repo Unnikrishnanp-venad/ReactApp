@@ -4,6 +4,7 @@ import { Image } from 'react-native';
 import HomeScreen from '../screens/HomeScreen';
 import SearchScreen from './SearchScreen';
 import SettingsScreen from './SettingsScreen'; // Add this import
+import HistoryScreen from './HistoryScreen';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
@@ -30,6 +31,8 @@ const HomeTabs = () => {
             source = require('../../assets/home.png');
           } else if (route.name === 'SearchTab') {
             source = require('../../assets/search.png');
+          } else if (route.name === 'HistoryTab') {
+            source = require('../../assets/history.png');
           } else if (route.name === 'SettingsTab') {
             source = require('../../assets/settings.png');
           }
@@ -59,6 +62,11 @@ const HomeTabs = () => {
         name="SearchTab"
         component={SearchScreen}
         options={{ title: 'Search' }} // <-- Set header title here
+      />
+      <Tab.Screen
+        name="HistoryTab"
+        component={HistoryScreen}
+        options={{ title: 'History' }} // <-- Add this tab
       />
       <Tab.Screen
         name="SettingsTab"
