@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform, Image, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform, Image, SafeAreaView, KeyboardAvoidingView } from 'react-native';
 import { getAuth, signInWithEmailAndPassword } from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const SignInScreen = ({ navigation }: any) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const insets = useSafeAreaInsets();
 
     const handleSignIn = async () => {
         if (!email || !password) {
@@ -37,58 +39,60 @@ const SignInScreen = ({ navigation }: any) => {
     };
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#000' }}>
-            <View style={styles.container}>
-                {/* Back button if navigated from AuthScreen */}
-                {navigation.canGoBack() && (
-                    <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                        <Text style={styles.backButtonText}>{'Back'}</Text>
-                    </TouchableOpacity>
-                )}
-                {/* Branding/logo row */}
-                <View style={styles.header}>
-                    <Image source={require('../../assets/A4.png')} style={styles.logo} />
-                    <Text style={styles.brand}>FLIX</Text>
+        <View style={{ flex: 1, backgroundColor: '#000', paddingTop: insets?.top, paddingBottom: insets?.bottom }}>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={32}
+            >
+                <View style={styles.outerContainer}>
+                    <View style={styles.container}>
+                        {/* Branding/logo row */}
+                        <View style={styles.header}>
+                            <Image source={require('../../assets/A4.png')} style={styles.logo} />
+                            <Text style={styles.brand}>FLIX</Text>
+                        </View>
+                        {/* Large subtitle */}
+                        <Text style={styles.bigSubtitle}>Keep your online{Platform.OS === 'web' ? '\n' : ' '}business organized</Text>
+                        <Text style={styles.trialSubtitle}>Sign up to start your 30 days free trial</Text>
+                        <Text style={styles.title}>Welcome Back</Text>
+                        <Text style={styles.subtitle}>Enter your details below</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Email Address"
+                            placeholderTextColor="#888"
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                        />
+                        <View style={styles.passwordRow}>
+                            <TextInput
+                                style={[styles.input, { flex: 1, marginBottom: 0 }]}
+                                placeholder="Password"
+                                placeholderTextColor="#888"
+                                value={password}
+                                onChangeText={setPassword}
+                                secureTextEntry={!showPassword}
+                            />
+                            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
+                                <Text style={{ color: '#888', fontSize: 18 }}>{showPassword ? '🙈' : '👁️'}</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
+                            <Text style={styles.signInButtonText}>Sign in</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.replace('Auth')}>
+                            <Text style={styles.forgotText}>Create account?</Text>
+                        </TouchableOpacity>
+                        {/* Removed Google sign-in button from SignInScreen */}
+                        {/* <View style={styles.socialRow}>
+                        <GoogleSigninButton ... />
+                    </View> */}
+                    </View>
                 </View>
-                {/* Large subtitle */}
-                <Text style={styles.bigSubtitle}>Keep your online{Platform.OS === 'web' ? '\n' : ' '}business organized</Text>
-                <Text style={styles.trialSubtitle}>Sign up to start your 30 days free trial</Text>
-                <Text style={styles.title}>Welcome Back</Text>
-                <Text style={styles.subtitle}>Enter your details below</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Email Address"
-                    placeholderTextColor="#888"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                />
-                <View style={styles.passwordRow}>
-                    <TextInput
-                        style={[styles.input, { flex: 1, marginBottom: 0 }]}
-                        placeholder="Password"
-                        placeholderTextColor="#888"
-                        value={password}
-                        onChangeText={setPassword}
-                        secureTextEntry={!showPassword}
-                    />
-                    <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
-                        <Text style={{ color: '#888', fontSize: 18 }}>{showPassword ? '🙈' : '👁️'}</Text>
-                    </TouchableOpacity>
-                </View>
-                <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
-                    <Text style={styles.signInButtonText}>Sign in</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => Alert.alert('Forgot password pressed')}>
-                    <Text style={styles.forgotText}>Forgot your password?</Text>
-                </TouchableOpacity>
-                {/* Removed Google sign-in button from SignInScreen */}
-                {/* <View style={styles.socialRow}>
-                <GoogleSigninButton ... />
-            </View> */}
-            </View>
-        </SafeAreaView>
+            </KeyboardAvoidingView>
+        </View>
     );
 };
 
@@ -102,12 +106,18 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: 'transparent',
     },
+    outerContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        paddingTop: 48,
+        paddingBottom: 48,
+    },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
-        alignSelf: 'flex-start',
+        alignSelf: 'center', // Center the header horizontally
         marginBottom: 12,
-        marginTop: 8,
+        marginTop: 48, // Add more top margin to push header below back button
     },
     logo: {
         width: 36,
@@ -230,18 +240,6 @@ const styles = StyleSheet.create({
     fbText: {
         color: '#888', // text color as #888
         fontSize: 28,
-        fontWeight: 'bold',
-    },
-    backButton: {
-        position: 'absolute',
-        top: 48,
-        left: 24,
-        zIndex: 10,
-        padding: 8,
-    },
-    backButtonText: {
-        color: '#FFD600',
-        fontSize: 18,
         fontWeight: 'bold',
     },
 });

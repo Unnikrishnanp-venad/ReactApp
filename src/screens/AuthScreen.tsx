@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, Alert, TextInput, ActivityIndicator, SafeAreaView } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, Alert, TextInput, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
 import ReactNativeBiometrics from 'react-native-biometrics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -11,6 +11,7 @@ import { IOS_CLIENT_ID, WEB_CLIENT_ID } from '../constants/key';
 import { googleSignIn } from '../constants/googleSigIn';
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword } from '@react-native-firebase/auth';
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
@@ -25,6 +26,7 @@ GoogleSignin.configure({
 const { width } = Dimensions.get('window');
 
 const AuthScreen = ({ navigation }: any) => {
+  const insets = useSafeAreaInsets();
   // const auth = firebaseAuth
   const [biometricAvailable, setBiometricAvailable] = useState(false);
   const [name, setName] = useState('');
@@ -101,88 +103,100 @@ const AuthScreen = ({ navigation }: any) => {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#000', justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, backgroundColor: '#000', justifyContent: 'center', alignItems: 'center', paddingTop: insets?.top, paddingBottom: insets?.bottom }}>
         <ActivityIndicator size="large" color="#FFD600" />
       </View>
     );
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#000' }}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Image source={require('../../assets/A4.png')} style={styles.logo} />
-          <Text style={styles.brand}>FLIX</Text>
-        </View>
-        <Text style={styles.title}>Keep your online{`\n`}business organized</Text>
-        <Text style={styles.subtitle}>Sign up to start your 30 days free trial</Text>
-        <GoogleSigninButton
-          style={styles.googleButton}
-          size={GoogleSigninButton.Size.Wide}
-          color={GoogleSigninButton.Color.Light}
-          onPress={() => {
-            googleSignIn(
-              () => {
-                AsyncStorage.setItem('isAuthed', 'true');
-                AsyncStorage.setItem('signInType', 'google'); // Store sign-in type
-                navigation.replace('Home');
-              },
-              (error) => {
-                if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-                  console.log("error occured SIGN_IN_CANCELLED");
-                  // user cancelled the login flow
-                } else if (error.code === statusCodes.IN_PROGRESS) {
-                  console.log("error occured IN_PROGRESS");
-                  // operation (f.e. sign in) is in progress already
-                } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-                  console.log("error occured PLAY_SERVICES_NOT_AVAILABLE");
-                } else if (error.code === statusCodes.SIGN_IN_REQUIRED) {
-                  console.log("error occured SIGN_IN_REQUIRED");
-                } else {
-                  console.log(error);
-                  console.log("error occured unknow error");
-                }
-              }
-            );
-          }}
+    <View style={{ flex: 1, backgroundColor: '#000', paddingTop: insets?.top, paddingBottom: insets?.bottom }}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={32}
+      >
+        <View style={styles.outerContainer}>
+          <View style={styles.container}>
+            <View style={styles.header}>
+              <Image source={require('../../assets/A4.png')} style={styles.logo} />
+              <Text style={styles.brand}>FLIX</Text>
+            </View>
+            <Text style={styles.title}>Keep your online{`\n`}business organized</Text>
+            <Text style={styles.subtitle}>Sign up to start your 30 days free trial</Text>
+            <GoogleSigninButton
+              style={styles.googleButton}
+              size={GoogleSigninButton.Size.Wide}
+              color={GoogleSigninButton.Color.Light}
+              onPress={() => {
+                googleSignIn(
+                  () => {
+                    AsyncStorage.setItem('isAuthed', 'true');
+                    AsyncStorage.setItem('signInType', 'google'); // Store sign-in type
+                    navigation.replace('Home');
+                  },
+                  (error) => {
+                    if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+                      console.log("error occured SIGN_IN_CANCELLED");
+                      // user cancelled the login flow
+                    } else if (error.code === statusCodes.IN_PROGRESS) {
+                      console.log("error occured IN_PROGRESS");
+                      // operation (f.e. sign in) is in progress already
+                    } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                      console.log("error occured PLAY_SERVICES_NOT_AVAILABLE");
+                    } else if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+                      console.log("error occured SIGN_IN_REQUIRED");
+                    } else {
+                      console.log(error);
+                      console.log("error occured unknow error");
+                    }
+                  }
+                );
+              }}
 
-        />
-        <View style={styles.orRow}>
-          <View style={styles.line} />
-          <Text style={styles.orText}>or</Text>
-          <View style={styles.line} />
+            />
+            <View style={styles.orRow}>
+              <View style={styles.line} />
+              <Text style={styles.orText}>or</Text>
+              <View style={styles.line} />
+            </View>
+            <View style={styles.form}>
+              <Text style={styles.label}>Email</Text>
+              <TextInput style={styles.input} placeholder="Enter your email" placeholderTextColor="#aaa" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
+              <Text style={styles.label}>Password</Text>
+              <TextInput style={styles.input} placeholder="Enter your password" placeholderTextColor="#aaa" secureTextEntry value={password} onChangeText={setPassword} />
+              <TouchableOpacity
+                style={styles.createButton}
+                onPress={handleCreateAccount}
+              >
+                <Text style={styles.createButtonText}>Create Account</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.loginText}>
+              Already have an account? <Text style={styles.loginLink} onPress={() => navigation.navigate('SignIn')}>Login Here</Text>
+            </Text>
+          </View>
         </View>
-        <View style={styles.form}>
-          <Text style={styles.label}>Name</Text>
-          <TextInput style={styles.input} placeholder="Enter your name" placeholderTextColor="#aaa" value={name} onChangeText={setName} />
-          <Text style={styles.label}>Email</Text>
-          <TextInput style={styles.input} placeholder="Enter your email" placeholderTextColor="#aaa" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
-          <Text style={styles.label}>Password</Text>
-          <TextInput style={styles.input} placeholder="Enter your password" placeholderTextColor="#aaa" secureTextEntry value={password} onChangeText={setPassword} />
-          <TouchableOpacity
-            style={styles.createButton}
-            onPress={handleCreateAccount}
-          >
-            <Text style={styles.createButtonText}>Create Account</Text>
-          </TouchableOpacity>
-        </View>
-        <Text style={styles.loginText}>
-          Already have an account? <Text style={styles.loginLink} onPress={() => navigation.navigate('SignIn')}>Login Here</Text>
-        </Text>
-      </View>
-    </SafeAreaView>
+      </KeyboardAvoidingView>
+    </View>
   );
 };
 
 export default AuthScreen;
 
 const styles = StyleSheet.create({
+  outerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingTop: 48,
+    paddingBottom: 48,
+  },
   container: {
     flex: 1,
     alignItems: 'center',
     paddingHorizontal: 24,
-    paddingTop: 32,
-    paddingBottom: 32,
+    paddingTop: 100,
+    paddingBottom: 100,
     justifyContent: 'center',
     backgroundColor: 'transparent',
   },
@@ -256,14 +270,14 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: 48,
-    backgroundColor: '#fafafa',
+    backgroundColor: '#232323', // darker input background
     borderRadius: 8,
     paddingHorizontal: 16,
-    color: '#222',
+    color: '#888', // text color as #888
     fontSize: 16,
-    marginBottom: 8,
+    marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#eee',
+    borderColor: '#333',
   },
   createButton: {
     width: '100%',
@@ -282,8 +296,8 @@ const styles = StyleSheet.create({
   loginText: {
     color: '#888',
     fontSize: 15,
-    marginTop: 12,
-    marginBottom: 24,
+    marginTop: 0,
+    marginBottom: 40,
   },
   loginLink: {
     color: '#FFD600',

@@ -101,14 +101,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    paddingHorizontal: 24,
+    // paddingHorizontal: 24,
     paddingTop: 32,
     paddingBottom: 32,
     justifyContent: 'center',
     backgroundColor: 'transparent',
   },
   slide: {
-    width,
+    width: width , // Subtract horizontal padding (24*2) to match container
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
@@ -127,12 +128,12 @@ const styles = StyleSheet.create({
   },
   activeDot: { backgroundColor: '#333' },
   button: {
-    backgroundColor: '#007BFF',
+    backgroundColor: '#FFD600',
     paddingVertical: 12,
     borderRadius: 25,
-    width: '90%',
+    width: width * 0.9, // Make button width responsive to screen size
     alignItems: 'center',
     marginHorizontal: 20, // Optional: adds space on both sides
   },
-  buttonText: { color: '#fff', fontSize: 16 },
+  buttonText: { color: '#000', fontSize: 16 },
 });
