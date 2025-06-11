@@ -19,3 +19,14 @@
 
 // // Initialize Firebase Authentication and get a reference to the service
 // const auth = getAuth(app);
+import { getAuth, signOut } from "@react-native-firebase/auth";
+
+export const firebaseSignOut = async () => {
+  try {
+    console.log("Attempting to sign out firebaseSignOut user...");
+    await signOut(getAuth()).then(() => console.log("User signed out!"));
+    console.log("Sign out process firebaseSignOut completed.");
+  } catch (error) {
+    console.error("Sign out firebaseSignOut error:", error);
+  }
+};

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, Alert, TextInput } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, Alert, TextInput, ActivityIndicator } from 'react-native';
 import ReactNativeBiometrics from 'react-native-biometrics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -9,7 +9,8 @@ import {
 } from '@react-native-google-signin/google-signin';
 import { IOS_CLIENT_ID, WEB_CLIENT_ID } from '../constants/key';
 import { googleSignIn } from '../constants/googleSigIn';
-
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword } from '@react-native-firebase/auth';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 // import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
@@ -29,9 +30,20 @@ const AuthScreen = ({ navigation }: any) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  // const auth = getAuth();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Check AsyncStorage for isAuthed on mount
+    const checkAuth = async () => {
+      const isAuthed = await AsyncStorage.getItem('isAuthed');
+      if (isAuthed === 'true') {
+        navigation.replace('HomeTabs');
+      } else {
+        setLoading(false);
+      }
+    };
+    checkAuth();
+
     const checkBiometric = async () => {
       const rnBiometrics = new ReactNativeBiometrics();
       const { available } = await rnBiometrics.isSensorAvailable();
@@ -67,29 +79,33 @@ const AuthScreen = ({ navigation }: any) => {
   };
 
   const handleCreateAccount = async () => {
-    // if (!name || !email || !password) {
-    //   Alert.alert('Error', 'Please fill in all fields');
-    //   return;
-    // }
-    // try {
-    //   // console.log('auth, email, password', auth, email, password);
-    //   const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    //   // Assuming createUserWithEmailAndPassword is a function that creates a user account
-    //   console.log('User account created & signed in!', userCredential.user);
-    //   // Optionally save user info, navigate, etc.
-    //   AsyncStorage.setItem('isAuthed', 'true');
-    //   navigation.replace('Home');
-    // } catch (error: any) {
-    //   if (error.code === 'auth/email-already-in-use') {
-    //     Alert.alert('That email address is already in use!');
-    //   } else if (error.code === 'auth/invalid-email') {
-    //     Alert.alert('That email address is invalid!');
-    //   } else {
-    //     Alert.alert('Error', error.message);
-    //   }
-    // }
+    createUserWithEmailAndPassword(getAuth(), email, password)
+      .then(() => {
+        AsyncStorage.setItem('isAuthed', 'true');
+        AsyncStorage.setItem('signInType', 'firebase'); // Store sign-in type
+        let user = getAuth().currentUser;
+        navigation.replace('Home');
+        console.log('User account created & signed in!', user);
+      })
+      .catch(error => {
+        AsyncStorage.setItem('isAuthed', 'false');
+        if (error.code === 'auth/email-already-in-use') {
+          console.log('That email address is already in use!');
+        }
+        if (error.code === 'auth/invalid-email') {
+          console.log('That email address is invalid!');
+        }
+        console.error(error);
+      });
   }
 
+  if (loading) {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#000', justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#FFD600" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -107,6 +123,7 @@ const AuthScreen = ({ navigation }: any) => {
           googleSignIn(
             () => {
               AsyncStorage.setItem('isAuthed', 'true');
+              AsyncStorage.setItem('signInType', 'google'); // Store sign-in type
               navigation.replace('Home');
             },
             (error) => {
@@ -149,7 +166,7 @@ const AuthScreen = ({ navigation }: any) => {
         </TouchableOpacity>
       </View>
       <Text style={styles.loginText}>
-        Already have an account? <Text style={styles.loginLink} onPress={() => navigation.navigate('Auth')}>Login Here</Text>
+        Already have an account? <Text style={styles.loginLink} onPress={() => navigation.navigate('SignIn')}>Login Here</Text>
       </Text>
     </View>
   );
