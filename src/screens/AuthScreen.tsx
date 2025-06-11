@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, Alert, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, Alert, TextInput, ActivityIndicator, SafeAreaView } from 'react-native';
 import ReactNativeBiometrics from 'react-native-biometrics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -108,67 +108,69 @@ const AuthScreen = ({ navigation }: any) => {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Image source={require('../../assets/A4.png')} style={styles.logo} />
-        <Text style={styles.brand}>FLIX</Text>
-      </View>
-      <Text style={styles.title}>Keep your online{`\n`}business organized</Text>
-      <Text style={styles.subtitle}>Sign up to start your 30 days free trial</Text>
-      <GoogleSigninButton
-        style={styles.googleButton}
-        size={GoogleSigninButton.Size.Wide}
-        color={GoogleSigninButton.Color.Light}
-        onPress={() => {
-          googleSignIn(
-            () => {
-              AsyncStorage.setItem('isAuthed', 'true');
-              AsyncStorage.setItem('signInType', 'google'); // Store sign-in type
-              navigation.replace('Home');
-            },
-            (error) => {
-              if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-                console.log("error occured SIGN_IN_CANCELLED");
-                // user cancelled the login flow
-              } else if (error.code === statusCodes.IN_PROGRESS) {
-                console.log("error occured IN_PROGRESS");
-                // operation (f.e. sign in) is in progress already
-              } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-                console.log("error occured PLAY_SERVICES_NOT_AVAILABLE");
-              } else if (error.code === statusCodes.SIGN_IN_REQUIRED) {
-                console.log("error occured SIGN_IN_REQUIRED");
-              } else {
-                console.log(error);
-                console.log("error occured unknow error");
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#000' }}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Image source={require('../../assets/A4.png')} style={styles.logo} />
+          <Text style={styles.brand}>FLIX</Text>
+        </View>
+        <Text style={styles.title}>Keep your online{`\n`}business organized</Text>
+        <Text style={styles.subtitle}>Sign up to start your 30 days free trial</Text>
+        <GoogleSigninButton
+          style={styles.googleButton}
+          size={GoogleSigninButton.Size.Wide}
+          color={GoogleSigninButton.Color.Light}
+          onPress={() => {
+            googleSignIn(
+              () => {
+                AsyncStorage.setItem('isAuthed', 'true');
+                AsyncStorage.setItem('signInType', 'google'); // Store sign-in type
+                navigation.replace('Home');
+              },
+              (error) => {
+                if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+                  console.log("error occured SIGN_IN_CANCELLED");
+                  // user cancelled the login flow
+                } else if (error.code === statusCodes.IN_PROGRESS) {
+                  console.log("error occured IN_PROGRESS");
+                  // operation (f.e. sign in) is in progress already
+                } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                  console.log("error occured PLAY_SERVICES_NOT_AVAILABLE");
+                } else if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+                  console.log("error occured SIGN_IN_REQUIRED");
+                } else {
+                  console.log(error);
+                  console.log("error occured unknow error");
+                }
               }
-            }
-          );
-        }}
+            );
+          }}
 
-      />
-      <View style={styles.orRow}>
-        <View style={styles.line} />
-        <Text style={styles.orText}>or</Text>
-        <View style={styles.line} />
+        />
+        <View style={styles.orRow}>
+          <View style={styles.line} />
+          <Text style={styles.orText}>or</Text>
+          <View style={styles.line} />
+        </View>
+        <View style={styles.form}>
+          <Text style={styles.label}>Name</Text>
+          <TextInput style={styles.input} placeholder="Enter your name" placeholderTextColor="#aaa" value={name} onChangeText={setName} />
+          <Text style={styles.label}>Email</Text>
+          <TextInput style={styles.input} placeholder="Enter your email" placeholderTextColor="#aaa" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
+          <Text style={styles.label}>Password</Text>
+          <TextInput style={styles.input} placeholder="Enter your password" placeholderTextColor="#aaa" secureTextEntry value={password} onChangeText={setPassword} />
+          <TouchableOpacity
+            style={styles.createButton}
+            onPress={handleCreateAccount}
+          >
+            <Text style={styles.createButtonText}>Create Account</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.loginText}>
+          Already have an account? <Text style={styles.loginLink} onPress={() => navigation.navigate('SignIn')}>Login Here</Text>
+        </Text>
       </View>
-      <View style={styles.form}>
-        <Text style={styles.label}>Name</Text>
-        <TextInput style={styles.input} placeholder="Enter your name" placeholderTextColor="#aaa" value={name} onChangeText={setName} />
-        <Text style={styles.label}>Email</Text>
-        <TextInput style={styles.input} placeholder="Enter your email" placeholderTextColor="#aaa" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
-        <Text style={styles.label}>Password</Text>
-        <TextInput style={styles.input} placeholder="Enter your password" placeholderTextColor="#aaa" secureTextEntry value={password} onChangeText={setPassword} />
-        <TouchableOpacity
-          style={styles.createButton}
-          onPress={handleCreateAccount}
-        >
-          <Text style={styles.createButtonText}>Create Account</Text>
-        </TouchableOpacity>
-      </View>
-      <Text style={styles.loginText}>
-        Already have an account? <Text style={styles.loginLink} onPress={() => navigation.navigate('SignIn')}>Login Here</Text>
-      </Text>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -177,10 +179,12 @@ export default AuthScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000', // Set background to black
     alignItems: 'center',
     paddingHorizontal: 24,
-    paddingTop: 48,
+    paddingTop: 32,
+    paddingBottom: 32,
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
   },
   header: {
     flexDirection: 'row',

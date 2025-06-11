@@ -39,7 +39,7 @@ const HomeTabs = () => {
           return (
             <Image
               source={source}
-              style={{ width: 28, height: 28, tintColor: iconColor }} // Slightly larger icons for better visibility
+              style={{ width: 20, height: 20, tintColor: iconColor }} // smaller icon size
               resizeMode="contain"
             />
           );
@@ -48,9 +48,7 @@ const HomeTabs = () => {
         tabBarInactiveTintColor: '#fff',  // Set inactive icon color to white
         tabBarShowLabel: false,
         tabBarStyle: { height: 70, backgroundColor: '#000' },
-        headerShown: true,
-        headerStyle: { backgroundColor: '#0c0d0c' },
-        headerTintColor: '#1e90ff',
+        headerShown: false, // Hide the navigation title bar
       })}
     >
       <Tab.Screen

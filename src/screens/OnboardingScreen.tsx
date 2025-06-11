@@ -1,4 +1,4 @@
-import React, { useRef, useState,useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,9 +8,8 @@ import {
   Dimensions,
   TouchableOpacity,
   StyleSheet,
+  SafeAreaView,
 } from 'react-native';
-
-
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -55,51 +54,59 @@ const OnboardingScreen = ({ navigation }: any) => {
     setCurrentIndex(index);
   };
 
-
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#000' }}>
+      <View style={styles.container}>
+        <FlatList
+          ref={flatListRef}
+          data={slides}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          onScroll={handleScroll}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.slide}>
+              <Image source={item.image} style={styles.image} />
+              <Text style={styles.title}>{item.title}</Text>
+              <Text style={styles.desc}>{item.description}</Text>
+            </View>
+          )}
+        />
 
-    <View style={styles.container}>
-      <FlatList
-        ref={flatListRef}
-        data={slides}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onScroll={handleScroll}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.slide}>
-            <Image source={item.image} style={styles.image} />
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.desc}>{item.description}</Text>
+        <View style={styles.footer}>
+          <View style={styles.dots}>
+            {slides.map((_, index) => (
+              <View
+                key={index}
+                style={[styles.dot, currentIndex === index && styles.activeDot]}
+              />
+            ))}
           </View>
-        )}
-      />
 
-      <View style={styles.footer}>
-        <View style={styles.dots}>
-          {slides.map((_, index) => (
-            <View
-              key={index}
-              style={[styles.dot, currentIndex === index && styles.activeDot]}
-            />
-          ))}
+          <TouchableOpacity style={styles.button} onPress={handleNext}>
+            <Text style={styles.buttonText}>
+              {currentIndex === slides.length - 1 ? 'Get Started' : 'Next'}
+            </Text>
+          </TouchableOpacity>
         </View>
-
-        <TouchableOpacity style={styles.button} onPress={handleNext}>
-          <Text style={styles.buttonText}>
-            {currentIndex === slides.length - 1 ? 'Get Started' : 'Next'}
-          </Text>
-        </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 export default OnboardingScreen;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#121212', paddingTop: 50 },
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingTop: 32,
+    paddingBottom: 32,
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+  },
   slide: {
     width,
     alignItems: 'center',
@@ -107,7 +114,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   image: { width: '100%', height: 300, resizeMode: 'contain' },
-  title: { fontSize: 24,color: '#fff', fontWeight: 'bold', marginTop: 20 },
+  title: { fontSize: 24, color: '#fff', fontWeight: 'bold', marginTop: 20 },
   desc: { fontSize: 16, color: '#fff', textAlign: 'center', marginTop: 10 },
   footer: { alignItems: 'center', paddingBottom: 40 },
   dots: { flexDirection: 'row', marginBottom: 20 },
@@ -120,7 +127,7 @@ const styles = StyleSheet.create({
   },
   activeDot: { backgroundColor: '#333' },
   button: {
-  backgroundColor: '#007BFF',
+    backgroundColor: '#007BFF',
     paddingVertical: 12,
     borderRadius: 25,
     width: '90%',

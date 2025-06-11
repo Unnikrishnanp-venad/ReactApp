@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Image } from 'react-native';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
+import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Image, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface HistoryItem {
@@ -62,12 +62,16 @@ const FILTERS = [
 	// Add more types if needed
 ];
 
-const HistoryScreen = () => {
+const HistoryScreen = ({ navigation }: any) => {
 	const [history, setHistory] = useState<HistoryItem[]>([]);
 	const [search, setSearch] = useState('');
 	const [filtered, setFiltered] = useState<HistoryItem[]>([]);
 	const [filterType, setFilterType] = useState('all');
 	const [showFilters, setShowFilters] = useState(false);
+
+    useLayoutEffect(() => {
+        navigation?.setOptions?.({ headerShown: false });
+    }, [navigation]);
 
 	useEffect(() => {
 		// Load from storage or use mock
@@ -136,7 +140,7 @@ const HistoryScreen = () => {
 	}
 
 	return (
-		<View style={styles.container}>
+        <SafeAreaView style={styles.container}>
 			<View style={styles.headerRow}>
 				<Text style={styles.headerTitle}>History</Text>
 				<TouchableOpacity style={styles.statementBtn}>
@@ -175,7 +179,7 @@ const HistoryScreen = () => {
 				contentContainerStyle={{ paddingBottom: 32 }}
 				style={{ marginTop: 12 }}
 			/>
-		</View>
+        </SafeAreaView>
 	);
 };
 
@@ -184,13 +188,13 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: '#111',
 		paddingHorizontal: 0,
-		paddingTop: 0,
+        paddingTop: 80, // Increased top padding for more space
 	},
 	headerRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
-		marginTop: 32,
+        marginTop: 0, // Remove extra margin, handled by container
 		marginBottom: 16,
 		paddingHorizontal: 20,
 	},

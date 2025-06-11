@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Platform, PermissionsAndroid, TextInput } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Platform, PermissionsAndroid, TextInput, SafeAreaView } from 'react-native';
 import Contacts from 'react-native-contacts';
 
 const SearchScreen = () => {
@@ -54,7 +54,7 @@ const SearchScreen = () => {
   });
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TextInput
         style={styles.searchBar}
         placeholder="Search contacts"
@@ -86,14 +86,14 @@ const SearchScreen = () => {
         )}
         ListEmptyComponent={<Text style={styles.empty}>No contacts found.</Text>}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
 export default SearchScreen;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000' }, // solid black
+  container: { flex: 1, backgroundColor: '#000', marginTop: 80 }, // solid black
   searchBar: {
     height: 40,
     borderColor: '#222',      // valid dark border

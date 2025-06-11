@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Image, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { signOut } from '../constants/googleSigIn';
 import { firebaseSignOut } from '../constants/firebase';
@@ -55,32 +55,35 @@ const SettingsScreen = ({ navigation }: any) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.profileContainer}>
-        {user.photo ? (
-          <Image source={{ uri: user.photo }} style={styles.avatar} />
-        ) : (
-          <View style={[styles.avatar, { backgroundColor: '#333' }]} />
-        )}
-        <Text style={styles.name}>{user.name || 'User'}</Text>
-        <Text style={styles.email}>{user.email || ''}</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#000' }}>
+      <View style={styles.container}>
+        <View style={styles.profileContainer}>
+          {user.photo ? (
+            <Image source={{ uri: user.photo }} style={styles.avatar} />
+          ) : (
+            <View style={[styles.avatar, { backgroundColor: '#333' }]} />
+          )}
+          <Text style={styles.name}>{user.name || 'User'}</Text>
+          <Text style={styles.email}>{user.email || ''}</Text>
+        </View>
+        <View style={{ flex: 1 }} />
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.logoutText}>Logout</Text>
+        </TouchableOpacity>
       </View>
-      <View style={{ flex: 1 }} />
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Logout</Text>
-      </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
     alignItems: 'center',
     paddingHorizontal: 24,
-    paddingTop: 60,
+    paddingTop: 32,
     paddingBottom: 32,
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
   },
   profileContainer: {
     alignItems: 'center',

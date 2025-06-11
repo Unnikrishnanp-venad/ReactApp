@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform, Image, SafeAreaView } from 'react-native';
 import { getAuth, signInWithEmailAndPassword } from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -37,66 +37,70 @@ const SignInScreen = ({ navigation }: any) => {
     };
 
     return (
-        <View style={styles.container}>
-            {/* Back button if navigated from AuthScreen */}
-            {navigation.canGoBack() && (
-                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                    <Text style={styles.backButtonText}>{'Back'}</Text>
-                </TouchableOpacity>
-            )}
-            {/* Branding/logo row */}
-            <View style={styles.header}>
-                <Image source={require('../../assets/A4.png')} style={styles.logo} />
-                <Text style={styles.brand}>FLIX</Text>
-            </View>
-            {/* Large subtitle */}
-            <Text style={styles.bigSubtitle}>Keep your online{Platform.OS === 'web' ? '\n' : ' '}business organized</Text>
-            <Text style={styles.trialSubtitle}>Sign up to start your 30 days free trial</Text>
-            <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>Enter your details below</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Email Address"
-                placeholderTextColor="#888"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-            />
-            <View style={styles.passwordRow}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#000' }}>
+            <View style={styles.container}>
+                {/* Back button if navigated from AuthScreen */}
+                {navigation.canGoBack() && (
+                    <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                        <Text style={styles.backButtonText}>{'Back'}</Text>
+                    </TouchableOpacity>
+                )}
+                {/* Branding/logo row */}
+                <View style={styles.header}>
+                    <Image source={require('../../assets/A4.png')} style={styles.logo} />
+                    <Text style={styles.brand}>FLIX</Text>
+                </View>
+                {/* Large subtitle */}
+                <Text style={styles.bigSubtitle}>Keep your online{Platform.OS === 'web' ? '\n' : ' '}business organized</Text>
+                <Text style={styles.trialSubtitle}>Sign up to start your 30 days free trial</Text>
+                <Text style={styles.title}>Welcome Back</Text>
+                <Text style={styles.subtitle}>Enter your details below</Text>
                 <TextInput
-                    style={[styles.input, { flex: 1, marginBottom: 0 }]}
-                    placeholder="Password"
+                    style={styles.input}
+                    placeholder="Email Address"
                     placeholderTextColor="#888"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry={!showPassword}
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
                 />
-                <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
-                    <Text style={{ color: '#888', fontSize: 18 }}>{showPassword ? '🙈' : '👁️'}</Text>
+                <View style={styles.passwordRow}>
+                    <TextInput
+                        style={[styles.input, { flex: 1, marginBottom: 0 }]}
+                        placeholder="Password"
+                        placeholderTextColor="#888"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry={!showPassword}
+                    />
+                    <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
+                        <Text style={{ color: '#888', fontSize: 18 }}>{showPassword ? '🙈' : '👁️'}</Text>
+                    </TouchableOpacity>
+                </View>
+                <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
+                    <Text style={styles.signInButtonText}>Sign in</Text>
                 </TouchableOpacity>
-            </View>
-            <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
-                <Text style={styles.signInButtonText}>Sign in</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => Alert.alert('Forgot password pressed')}>
-                <Text style={styles.forgotText}>Forgot your password?</Text>
-            </TouchableOpacity>
-            {/* Removed Google sign-in button from SignInScreen */}
-            {/* <View style={styles.socialRow}>
+                <TouchableOpacity onPress={() => Alert.alert('Forgot password pressed')}>
+                    <Text style={styles.forgotText}>Forgot your password?</Text>
+                </TouchableOpacity>
+                {/* Removed Google sign-in button from SignInScreen */}
+                {/* <View style={styles.socialRow}>
                 <GoogleSigninButton ... />
             </View> */}
-        </View>
+            </View>
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#000', // dark background
         alignItems: 'center',
-        justifyContent: 'center',
         paddingHorizontal: 24,
+        paddingTop: 32,
+        paddingBottom: 32,
+        justifyContent: 'center',
+        backgroundColor: 'transparent',
     },
     header: {
         flexDirection: 'row',
