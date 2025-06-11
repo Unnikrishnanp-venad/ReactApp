@@ -47,6 +47,12 @@ const SearchScreen = () => {
     }
   }, [searchText, contacts]);
 
+  const sortedContacts = filteredContacts.slice().sort((a, b) => {
+    if (!a.givenName) return 1;
+    if (!b.givenName) return -1;
+    return a.givenName.localeCompare(b.givenName);
+  });
+
   return (
     <View style={styles.container}>
       <TextInput
@@ -59,7 +65,7 @@ const SearchScreen = () => {
       />
       <FlatList
         style={{ backgroundColor: '#000' }}
-        data={filteredContacts}
+        data={sortedContacts}
         keyExtractor={item => item.recordID}
         renderItem={({ item }) => (
           <View style={styles.item}>

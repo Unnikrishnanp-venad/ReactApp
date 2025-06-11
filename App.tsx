@@ -8,7 +8,7 @@ import AuthScreen from './src/screens/AuthScreen';
 import HomeTabs from './src/screens/HomeTabs';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import RegistrationScreen from './src/screens/RegistrationScreen';
-
+import SignInScreen from './src/screens/SignInScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -64,6 +64,7 @@ const App = () => {
             component={RegistrationScreen}
             options={{ headerShown: true, title: 'Registration' }} // Show header and set title
           />
+          <Stack.Screen name="SignIn" component={SignInScreen} options={{ title: 'Sign In' }} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>

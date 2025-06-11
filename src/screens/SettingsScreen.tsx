@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { signOut } from '../constants/googleSigIn';
+import { firebaseSignOut } from '../constants/firebase';
 
 const SettingsScreen = ({ navigation }: any) => {
   const [user, setUser] = useState<{ name?: string; email?: string; photo?: string }>({});
@@ -30,9 +31,23 @@ const SettingsScreen = ({ navigation }: any) => {
           text: 'Logout',
           style: 'destructive',
           onPress: async () => {
-            await AsyncStorage.removeItem('isAuthed');
+            const signInType = await AsyncStorage.getItem('signInType');
+            if (signInType === 'google') {
+              // Google sign out
+              await signOut(); // from googleSigIn
+              console.log('Signed out from Google');
+            } else if (signInType === 'firebase') {
+              // Firebase sign out
+              await firebaseSignOut();
+              console.log('Signed out from Firebase');
+            } else {
+              // Fallback: try both
+              await firebaseSignOut();
+              await signOut();
+              console.log('Signed out from both (fallback)');
+            }
+            await AsyncStorage.clear(); // Clear all saved data
             navigation.replace('Auth');
-            signOut
           },
         },
       ]

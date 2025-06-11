@@ -65,12 +65,23 @@ export const signIn = async (
 ) => {
   try {
     await GoogleSignin.hasPlayServices();
-
-    let user: any = null;
-
     const response = await GoogleSignin.signIn();
-    user = (response as any)?.user || response;
-    console.log("signIn response", user);
+    console.log("signIn response", response);
+    // Parse user from Google signIn response shape
+    let user = (response as any)?.user || response;
+    // let user1 = JSON.stringify(user);
+    // let user2 = JSON.stringify(user.data);
+    // console.log("Parsed user1:", user1);
+    // console.log("Parsed user2:", user2);
+
+    // let user3 = JSON.stringify(user.data.user);
+    // console.log("Parsed user3:", user3);
+
+
+    if (user && user.type === "success" && user.data && user.data.user) {
+      user = user.data.user;
+      console.log("[signIn] Extracted user from .data.user:", user);
+    }
     if (user && user.email) {
       console.log("Saving googleUserEmail:", user.email);
       await AsyncStorage.setItem("googleUserEmail", String(user.email || ""));
@@ -92,8 +103,12 @@ export const signIn = async (
       await AsyncStorage.setItem("googleUserPhoto", String(user.photo || ""));
       if (onSuccess) onSuccess();
     } else if (user) {
+      console.log("[signIn] User object exists but email is missing:", user);
       if (onError)
         onError(new Error("Google user info is missing or incomplete"));
+    } else {
+      console.log("[signIn] No user object returned from signIn:", response);
+      if (onError) onError(new Error("No user object returned from signIn"));
     }
   } catch (error) {
     if (onError) onError(error);
