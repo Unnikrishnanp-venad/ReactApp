@@ -1,6 +1,7 @@
 import React, { useLayoutEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image } from 'react-native';
+import Colors from '../constants/colors';
 import HomeScreen from '../screens/HomeScreen';
 import SearchScreen from './SearchScreen';
 import SettingsScreen from './SettingsScreen'; // Add this import
@@ -44,8 +45,8 @@ const HomeTabs = () => {
             />
           );
         },
-        tabBarActiveTintColor: '#FFD600', // Set active icon color to yellow
-        tabBarInactiveTintColor: '#fff',  // Set inactive icon color to white
+        tabBarActiveTintColor: Colors.button, // Set active icon color to yellow
+        tabBarInactiveTintColor: Colors.headerText,  // Set inactive icon color to white
         tabBarShowLabel: false,
         tabBarStyle: { height: 70, backgroundColor: '#000' },
         headerShown: false, // Hide the navigation title bar

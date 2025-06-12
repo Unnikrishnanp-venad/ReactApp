@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Alert, Image, TouchableOpacity, FlatList, SafeAreaView } from 'react-native';
+import Colors from '../constants/colors';
 
 const PLANS = [
   {
@@ -85,7 +86,7 @@ export default HomeScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000', // solid black
+    backgroundColor: Colors.header, // solid black
     paddingHorizontal: 0,
     paddingTop: 0,
   },
@@ -108,13 +109,13 @@ const styles = StyleSheet.create({
     borderColor: '#888', // Subtle border color
   },
   addPlanText: {
-    color: '#888',
+    color: Colors.inputText,
     fontWeight: 'bold',
     fontSize: 16,
     marginRight: 6,
   },
   addPlanPlus: {
-    color: '#888',
+    color: Colors.inputText,
     fontWeight: 'bold',
     fontSize: 22,
     marginTop: -2,
@@ -173,7 +174,7 @@ const styles = StyleSheet.create({
   },
   planValidity: {
     fontSize: 13,
-    color: '#888',
+    color: Colors.inputText,
     fontWeight: '500',
   },
   planPrice: {
@@ -190,7 +191,7 @@ const styles = StyleSheet.create({
   },
   flixTitle: {
     fontSize: 28,
-    color: '#FFD600',
+    color: Colors.button,
     fontWeight: 'bold',
     letterSpacing: 1.5,
   },

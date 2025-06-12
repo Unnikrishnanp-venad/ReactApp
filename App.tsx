@@ -9,6 +9,8 @@ import HomeTabs from './src/screens/HomeTabs';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import RegistrationScreen from './src/screens/RegistrationScreen';
 import SignInScreen from './src/screens/SignInScreen';
+import ReactNativeBiometrics from 'react-native-biometrics';
+import Colors from './src/constants/colors';
 
 const Stack = createNativeStackNavigator();
 
@@ -16,12 +18,13 @@ const MyTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    background: '#1e90ff', // match your splash color
+    background: Colors.background,
   },
 };
 
 const App = () => {
   const [initialRoute, setInitialRoute] = useState<string | null>(null);
+  const [checkingBiometric, setCheckingBiometric] = useState(false);
 
   useEffect(() => {
     const checkInitialRoute = async () => {
@@ -30,23 +33,48 @@ const App = () => {
         setInitialRoute('Onboarding');
       } else {
         const isAuthed = await AsyncStorage.getItem('isAuthed');
-        setInitialRoute(isAuthed === 'true' ? 'Home' : 'Auth');
+        if (isAuthed === 'true') {
+          setCheckingBiometric(true);
+          const rnBiometrics = new ReactNativeBiometrics();
+          const { available } = await rnBiometrics.isSensorAvailable();
+          if (!available) {
+            setInitialRoute('Auth');
+            setCheckingBiometric(false);
+            return;
+          }
+          rnBiometrics.simplePrompt({ promptMessage: 'Authenticate' })
+            .then(resultObject => {
+              const { success } = resultObject;
+              if (success) {
+                setInitialRoute('Home');
+              } else {
+                setInitialRoute('Auth');
+              }
+              setCheckingBiometric(false);
+            })
+            .catch(() => {
+              setInitialRoute('Auth');
+              setCheckingBiometric(false);
+            });
+        } else {
+          setInitialRoute('Auth');
+        }
       }
     };
     checkInitialRoute();
   }, []);
 
-  if (!initialRoute) return null; // or a splash/loading screen
+  if (!initialRoute || checkingBiometric) return null; // or a splash/loading screen
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#1e90ff' }}>
+    <View style={{ flex: 1, backgroundColor: Colors.background }}>
       <StatusBar hidden={true} />
       <NavigationContainer theme={MyTheme}>
         <Stack.Navigator
           screenOptions={{
             headerShown: false, // or true if you want the header
-            headerStyle: { backgroundColor: '#000' }, // Black header
-            headerTintColor: '#fff', // White text/icons
+            headerStyle: { backgroundColor: Colors.header }, // Black header
+            headerTintColor: Colors.headerText, // White text/icons
           }}
           initialRouteName={initialRoute}
         >

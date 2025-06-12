@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Colors from '../constants/colors';
 
 const { width } = Dimensions.get('window');
 
@@ -55,7 +56,7 @@ const OnboardingScreen = ({ navigation }: any) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#000' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.header }}>
       <View style={styles.container}>
         <FlatList
           ref={flatListRef}
@@ -115,8 +116,8 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   image: { width: '100%', height: 300, resizeMode: 'contain' },
-  title: { fontSize: 24, color: '#fff', fontWeight: 'bold', marginTop: 20 },
-  desc: { fontSize: 16, color: '#fff', textAlign: 'center', marginTop: 10 },
+  title: { fontSize: 24, color: Colors.headerText, fontWeight: 'bold', marginTop: 20 },
+  desc: { fontSize: 16, color: Colors.headerText, textAlign: 'center', marginTop: 10 },
   footer: { alignItems: 'center', paddingBottom: 40 },
   dots: { flexDirection: 'row', marginBottom: 20 },
   dot: {
@@ -128,7 +129,7 @@ const styles = StyleSheet.create({
   },
   activeDot: { backgroundColor: '#333' },
   button: {
-    backgroundColor: '#FFD600',
+    backgroundColor: Colors.button,
     paddingVertical: 12,
     borderRadius: 25,
     width: width * 0.9, // Make button width responsive to screen size

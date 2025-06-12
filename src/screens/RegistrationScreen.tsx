@@ -4,6 +4,7 @@ import {
     GoogleSignin,
     statusCodes,
 } from '@react-native-google-signin/google-signin';
+import Colors from '../constants/colors';
 
 const RegistrationScreen = () => {
   const [username, setUsername] = useState('');
@@ -18,7 +19,7 @@ const RegistrationScreen = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#000' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.header }}>
       <View style={styles.container}>
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
           <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
@@ -77,7 +78,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    color: '#fff',
+    color: Colors.headerText,
     fontWeight: 'bold',
     marginBottom: 32,
     marginTop: 32,

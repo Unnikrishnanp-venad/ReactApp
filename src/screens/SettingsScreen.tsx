@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert, Image, SafeAreaView } 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { signOut } from '../constants/googleSigIn';
 import { firebaseSignOut } from '../constants/firebase';
+import Colors from '../constants/colors';
 
 const SettingsScreen = ({ navigation }: any) => {
   const [user, setUser] = useState<{ name?: string; email?: string; photo?: string }>({});
@@ -55,7 +56,7 @@ const SettingsScreen = ({ navigation }: any) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#000' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.header }}>
       <View style={styles.container}>
         <View style={styles.profileContainer}>
           {user.photo ? (
@@ -97,7 +98,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#222',
   },
   name: {
-    color: '#fff',
+    color: Colors.headerText,
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 6,

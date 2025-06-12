@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Image, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Colors from '../constants/colors';
 
 interface HistoryItem {
 	id: string;
@@ -200,7 +201,7 @@ const styles = StyleSheet.create({
 	},
 	headerTitle: {
 		fontSize: 32,
-		color: '#fff',
+		color: Colors.headerText,
 		fontWeight: 'bold',
 	},
 	statementBtn: {
@@ -232,8 +233,8 @@ const styles = StyleSheet.create({
 		borderColor: '#222',
 	},
 	filterBtnActive: {
-		backgroundColor: '#FFD600',
-		borderColor: '#FFD600',
+		backgroundColor: Colors.button,
+		borderColor: Colors.button,
 	},
 	filterBtnText: {
 		color: '#888',
@@ -241,7 +242,7 @@ const styles = StyleSheet.create({
 		fontSize: 15,
 	},
 	filterBtnTextActive: {
-		color: '#000',
+		color: Colors.header,
 	},
 	searchRow: {
 		flexDirection: 'row',
@@ -288,7 +289,7 @@ const styles = StyleSheet.create({
 		marginBottom: 2,
 	},
 	itemDate: {
-		color: '#888',
+		color: Colors.inputText,
 		fontSize: 13,
 	},
 	itemAmount: {
@@ -297,7 +298,7 @@ const styles = StyleSheet.create({
 		fontWeight: 'bold',
 	},
 	itemDebited: {
-		color: '#888',
+		color: Colors.inputText,
 		fontSize: 13,
 		marginRight: 4,
 	},
