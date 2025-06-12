@@ -11,6 +11,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { StackActions } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '../constants/colors';
@@ -41,6 +42,7 @@ const slides = [
 ];
 
 const OnboardingScreen = ({ navigation }: any) => {
+  const insets = useSafeAreaInsets();
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
 
@@ -59,7 +61,7 @@ const OnboardingScreen = ({ navigation }: any) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.header }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background, paddingTop: insets?.top, paddingBottom: insets?.bottom }}>
       <View style={styles.container}>
         <FlatList
           ref={flatListRef}
@@ -105,8 +107,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    paddingTop: 32,
-    paddingBottom: 32,
+    paddingTop: 0,
+    paddingBottom: 0,
     justifyContent: 'center',
     backgroundColor: Colors.background, // solid black
   },

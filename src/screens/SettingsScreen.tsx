@@ -7,7 +7,7 @@ import Colors from '../constants/colors';
 import { StorageKeys } from '../constants/storageKeys';
 import { ScreenNames } from '../constants/screenNames';
 import { launchImageLibrary } from 'react-native-image-picker';
-const defaultAvatar = require('../../assets/home.png'); // Default avatar image
+const defaultAvatar = require('../../assets/user.png'); // Default avatar image
 
 const SettingsScreen = ({ navigation }: any) => {
   const [user, setUser] = useState<{ name?: string; email?: string; photo?: string }>({});
@@ -88,7 +88,7 @@ const SettingsScreen = ({ navigation }: any) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.header }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
       <View style={styles.container}>
         <View style={styles.profileContainer}>
           <Image

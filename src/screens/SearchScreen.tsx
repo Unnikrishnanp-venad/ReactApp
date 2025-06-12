@@ -65,7 +65,7 @@ const SearchScreen = () => {
     
       />
       <FlatList
-        style={{ backgroundColor: '#000' }}
+        style={{ backgroundColor: Colors.background }}
         data={sortedContacts}
         keyExtractor={item => item.recordID}
         renderItem={({ item }) => (

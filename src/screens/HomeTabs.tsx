@@ -49,8 +49,14 @@ const HomeTabs = () => {
         tabBarActiveTintColor: Colors.tabbarActiveTintColor, // Set active icon color to yellow
         tabBarInactiveTintColor: Colors.tabbarInactiveTintColor,  // Set inactive icon color to white
         tabBarShowLabel: true,
-        tabBarStyle: { height: 80, backgroundColor: Colors.tabbarBackground },
+        tabBarStyle: {
+          height: 80,
+          backgroundColor: Colors.tabbarBackground,
+          borderTopWidth: 1,
+          borderTopColor: Colors.borderColor, // Use your theme color if available
+        },
         headerShown: false, // Hide the navigation title bar
+
       })}
     >
       <Tab.Screen

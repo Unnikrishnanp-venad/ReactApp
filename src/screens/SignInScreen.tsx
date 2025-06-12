@@ -128,7 +128,10 @@ const SignInScreen = ({ navigation }: any) => {
                                 onLayout={e => setPasswordY(e.nativeEvent.layout.y)}
                             />
                             <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
-                                <Text style={{ color: Colors.inputText, fontSize: 18 }}>{showPassword ? '🙈' : '👁️'}</Text>
+                                <Image
+                                    source={showPassword ? require('../../assets/eye_open.png') : require('../../assets/eye_closed.png')}
+                                    style={{ width: 24, height: 24, tintColor: Colors.inputText }}
+                                />
                             </TouchableOpacity>
                         </View>
                         <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>

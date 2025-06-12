@@ -212,7 +212,7 @@ const AuthScreen = ({ navigation }: any) => {
                 ref={emailInputRef}
                 style={styles.input}
                 placeholder="Enter your email"
-                placeholderTextColor="#aaa"
+                placeholderTextColor={Colors.inputText}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 value={email}
@@ -225,7 +225,7 @@ const AuthScreen = ({ navigation }: any) => {
                   ref={passwordInputRef}
                   style={[styles.input, { marginBottom: 0 }]}
                   placeholder="Enter your password"
-                  placeholderTextColor="#aaa"
+                  placeholderTextColor={Colors.inputText}
                   secureTextEntry={!showPassword}
                   value={password}
                   onChangeText={setPassword}
