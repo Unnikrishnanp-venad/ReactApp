@@ -13,6 +13,7 @@ import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword } from '@re
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '../constants/colors';
+import { StackActions } from '@react-navigation/native';
 
 // import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
@@ -232,7 +233,7 @@ const AuthScreen = ({ navigation }: any) => {
               </TouchableOpacity>
             </View>
             <Text style={styles.loginText}>
-              Already have an account? <Text style={styles.loginLink} onPress={() => navigation.navigate('SignIn')}>Login Here</Text>
+              Already have an account? <Text style={styles.loginLink} onPress={() => navigation.dispatch(StackActions.push('SignIn'))}>Login Here</Text>
             </Text>
           </View>
         </ScrollView>

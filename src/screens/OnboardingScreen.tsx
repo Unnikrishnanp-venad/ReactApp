@@ -10,6 +10,7 @@ import {
   StyleSheet,
   SafeAreaView,
 } from 'react-native';
+import { StackActions } from '@react-navigation/native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '../constants/colors';
@@ -46,7 +47,7 @@ const OnboardingScreen = ({ navigation }: any) => {
       flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
     } else {
       await AsyncStorage.setItem('hasLaunched', 'true');
-      navigation.replace('Auth');
+      navigation.dispatch(StackActions.push('Auth'));
     }
   };
 
@@ -135,5 +136,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 20, // Optional: adds space on both sides
   },
-  buttonText: { color: '#000', fontSize: 16 },
+  buttonText: { color: Colors.buttonText, fontSize: 16 },
 });

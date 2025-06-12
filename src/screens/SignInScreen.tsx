@@ -4,6 +4,7 @@ import { getAuth, signInWithEmailAndPassword } from '@react-native-firebase/auth
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '../constants/colors';
+import { StackActions } from '@react-navigation/native';
 
 const SignInScreen = ({ navigation }: any) => {
     const [email, setEmail] = useState('');
@@ -38,7 +39,8 @@ const SignInScreen = ({ navigation }: any) => {
                 AsyncStorage.setItem('isAuthed', 'true');
                 AsyncStorage.setItem('signInType', 'firebase'); // Store sign-in type
                 console.log('User account created & signed in!', user);
-                navigation.replace('Home');
+                navigation.dispatch(StackActions.replace('Home'));
+
             })
             .catch(error => {
                 AsyncStorage.setItem('isAuthed', 'false');
@@ -130,7 +132,7 @@ const SignInScreen = ({ navigation }: any) => {
                         <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
                             <Text style={styles.signInButtonText}>Sign in</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => navigation.replace('Auth')}>
+                        <TouchableOpacity onPress={() => navigation.dispatch(StackActions.popTo('Auth'))}>
                             <Text style={styles.forgotText}>Create account?</Text>
                         </TouchableOpacity>
                     </View>
