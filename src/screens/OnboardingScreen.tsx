@@ -14,6 +14,8 @@ import { StackActions } from '@react-navigation/native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '../constants/colors';
+import { StorageKeys } from '../constants/storageKeys';
+import { ScreenNames } from '../constants/screenNames';
 
 const { width } = Dimensions.get('window');
 
@@ -46,8 +48,8 @@ const OnboardingScreen = ({ navigation }: any) => {
     if (currentIndex < slides.length - 1) {
       flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
     } else {
-      await AsyncStorage.setItem('hasLaunched', 'true');
-      navigation.dispatch(StackActions.push('Auth'));
+      await AsyncStorage.setItem(StorageKeys.HAS_LAUNCHED, 'true');
+      navigation.dispatch(StackActions.push(ScreenNames.AUTH));
     }
   };
 
@@ -138,3 +140,4 @@ const styles = StyleSheet.create({
   },
   buttonText: { color: Colors.buttonText, fontSize: 16 },
 });
+

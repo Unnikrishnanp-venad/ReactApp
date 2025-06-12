@@ -11,6 +11,8 @@ import RegistrationScreen from './src/screens/RegistrationScreen';
 import SignInScreen from './src/screens/SignInScreen';
 import ReactNativeBiometrics from 'react-native-biometrics';
 import Colors from './src/constants/colors';
+import { StorageKeys } from './src/constants/key';
+import { ScreenNames } from './src/constants/screenNames';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,15 +32,15 @@ const App = () => {
     const checkInitialRoute = async () => {
       const hasLaunched = await AsyncStorage.getItem('hasLaunched');
       if (!hasLaunched) {
-        setInitialRoute('Onboarding');
+        setInitialRoute(ScreenNames.ONBOARDING);
       } else {
-        const isAuthed = await AsyncStorage.getItem('isAuthed');
+        const isAuthed = await AsyncStorage.getItem(StorageKeys.IS_AUTHED);
         if (isAuthed === 'true') {
           setCheckingBiometric(true);
           const rnBiometrics = new ReactNativeBiometrics();
           const { available } = await rnBiometrics.isSensorAvailable();
           if (!available) {
-            setInitialRoute('Auth');
+            setInitialRoute(ScreenNames.AUTH);
             setCheckingBiometric(false);
             return;
           }
@@ -46,18 +48,18 @@ const App = () => {
             .then(resultObject => {
               const { success } = resultObject;
               if (success) {
-                setInitialRoute('Home');
+                setInitialRoute(ScreenNames.HOME);
               } else {
-                setInitialRoute('Auth');
+                setInitialRoute(ScreenNames.AUTH);
               }
               setCheckingBiometric(false);
             })
             .catch(() => {
-              setInitialRoute('Auth');
+              setInitialRoute(ScreenNames.AUTH);
               setCheckingBiometric(false);
             });
         } else {
-          setInitialRoute('Auth');
+          setInitialRoute(ScreenNames.AUTH);
         }
       }
     };
@@ -90,7 +92,7 @@ const App = () => {
           <Stack.Screen
             name="Registration"
             component={RegistrationScreen}
-            options={{ headerShown: true, title: 'Registration' }} // Show header and set title
+            options={{ headerShown: true, title: ScreenNames.REGISTRATION }} // Show header and set title
           />
           <Stack.Screen name="SignIn" component={SignInScreen} options={{ title: 'Sign In' }} />
         </Stack.Navigator>

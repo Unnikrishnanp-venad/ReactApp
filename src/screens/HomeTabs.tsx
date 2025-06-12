@@ -7,6 +7,7 @@ import SearchScreen from './SearchScreen';
 import SettingsScreen from './SettingsScreen'; // Add this import
 import HistoryScreen from './HistoryScreen';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
+import { ScreenNames } from '../constants/screenNames';
 
 const Tab = createBottomTabNavigator();
 
@@ -55,22 +56,22 @@ const HomeTabs = () => {
       <Tab.Screen
         name="HomeTab"
         component={HomeScreen}
-        options={{ title: 'Home' }} // <-- Set header title here
+        options={{ title: ScreenNames.HOME }} // <-- Set header title here
       />
       <Tab.Screen
         name="SearchTab"
         component={SearchScreen}
-        options={{ title: 'Search' }} // <-- Set header title here
+        options={{ title: ScreenNames.SEARCH }} // <-- Set header title here
       />
       <Tab.Screen
         name="HistoryTab"
         component={HistoryScreen}
-        options={{ title: 'History' }} // <-- Add this tab
+        options={{ title: ScreenNames.HISTORY }} // <-- Add this tab
       />
       <Tab.Screen
         name="SettingsTab"
         component={SettingsScreen}
-        options={{ title: 'Settings' }} // <-- Add this tab
+        options={{ title: ScreenNames.SETTINGS }} // <-- Add this tab
       />
     </Tab.Navigator>
   );

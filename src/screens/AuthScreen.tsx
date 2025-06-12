@@ -7,13 +7,14 @@ import {
   GoogleSigninButton,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
-import { IOS_CLIENT_ID, WEB_CLIENT_ID } from '../constants/key';
+import { IOS_CLIENT_ID, StorageKeys, WEB_CLIENT_ID } from '../constants/key';
 import { googleSignIn } from '../constants/googleSigIn';
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword } from '@react-native-firebase/auth';
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '../constants/colors';
 import { StackActions } from '@react-navigation/native';
+import { ScreenNames } from '../constants/screenNames';
 
 // import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
@@ -56,9 +57,9 @@ const AuthScreen = ({ navigation }: any) => {
   useEffect(() => {
     // Check AsyncStorage for isAuthed on mount
     const checkAuth = async () => {
-      const isAuthed = await AsyncStorage.getItem('isAuthed');
+      const isAuthed = await AsyncStorage.getItem(StorageKeys.IS_AUTHED);
       if (isAuthed === 'true') {
-        navigation.replace('HomeTabs');
+        navigation.dispatch(StackActions.replace(ScreenNames.HOME_TABS)); // Navigate to Home screen
       } else {
         setLoading(false);
       }
@@ -96,9 +97,9 @@ const AuthScreen = ({ navigation }: any) => {
         const { success } = resultObject;
 
         if (success) {
-          AsyncStorage.setItem('isAuthed', 'true');
+          AsyncStorage.setItem(StorageKeys.IS_AUTHED, 'true');
           Alert.alert('Authenticated!', 'You have successfully authenticated.');
-          navigation.replace('Home'); // Navigate to Home screen
+          navigation.dispatch(StackActions.replace(ScreenNames.HOME_TABS)); // Navigate to Home screen
         } else {
           Alert.alert('Authentication cancelled');
         }
@@ -116,13 +117,13 @@ const AuthScreen = ({ navigation }: any) => {
     setLoading(true);
     createUserWithEmailAndPassword(getAuth(), email, password)
       .then(() => {
-        AsyncStorage.setItem('isAuthed', 'true');
+        AsyncStorage.setItem(StorageKeys.IS_AUTHED, 'true');
         AsyncStorage.setItem('signInType', 'firebase');
         let user = getAuth().currentUser;
-        navigation.replace('Home');
+        navigation.dispatch(StackActions.replace(ScreenNames.HOME_TABS)); // Navigate to Home screen
       })
       .catch(error => {
-        AsyncStorage.setItem('isAuthed', 'false');
+        AsyncStorage.setItem(StorageKeys.IS_AUTHED, 'false');
         if (error.code === 'auth/email-already-in-use') {
           console.log('That email address is already in use!');
         }
@@ -136,8 +137,17 @@ const AuthScreen = ({ navigation }: any) => {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.header }}>
-        <ActivityIndicator size="large" color={Colors.button} />
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.background }}>
+        <View style={{
+          position: 'absolute',
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: Colors.loaderbackground,
+          zIndex: 10,
+        }} />
+        <View style={{ backgroundColor: Colors.background, borderRadius: 12, padding: 32, alignItems: 'center', elevation: 8 }}>
+          <ActivityIndicator size="large" color={Colors.button} />
+          <Text style={{ color: Colors.inputText, marginTop: 16, fontSize: 18, fontWeight: '600' }}>Please wait...</Text>
+        </View>
       </View>
     );
   }
@@ -166,19 +176,19 @@ const AuthScreen = ({ navigation }: any) => {
               size={GoogleSigninButton.Size.Wide}
               color={GoogleSigninButton.Color.Dark}
               onPress={() => {
+                setLoading(true);
                 googleSignIn(
                   () => {
-                    AsyncStorage.setItem('isAuthed', 'true');
+                    AsyncStorage.setItem(StorageKeys.IS_AUTHED, 'true');
                     AsyncStorage.setItem('signInType', 'google');
-                    navigation.replace('Home');
+                    navigation.dispatch(StackActions.replace(ScreenNames.HOME_TABS)); // Navigate to Home screen
                   },
                   (error) => {
+                    setLoading(false);
                     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
                       console.log("error occured SIGN_IN_CANCELLED");
-                      // user cancelled the login flow
                     } else if (error.code === statusCodes.IN_PROGRESS) {
                       console.log("error occured IN_PROGRESS");
-                      // operation (f.e. sign in) is in progress already
                     } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
                       console.log("error occured PLAY_SERVICES_NOT_AVAILABLE");
                     } else if (error.code === statusCodes.SIGN_IN_REQUIRED) {
@@ -197,7 +207,7 @@ const AuthScreen = ({ navigation }: any) => {
               <View style={styles.line} />
             </View>
             <View style={styles.form}>
-              <Text style={styles.label}>Email</Text>
+              <Text style={styles.subtitle}>Enter your details below</Text>
               <TextInput
                 ref={emailInputRef}
                 style={styles.input}
@@ -209,7 +219,7 @@ const AuthScreen = ({ navigation }: any) => {
                 onChangeText={setEmail}
                 onFocus={() => scrollToInput(emailInputRef)}
               />
-              <Text style={styles.label}>Password</Text>
+              {/* <Text style={styles.label}>Password</Text> */}
               <View style={{ position: 'relative', width: '100%', marginBottom: 16 }}>
                 <TextInput
                   ref={passwordInputRef}
@@ -233,7 +243,7 @@ const AuthScreen = ({ navigation }: any) => {
               </TouchableOpacity>
             </View>
             <Text style={styles.loginText}>
-              Already have an account? <Text style={styles.loginLink} onPress={() => navigation.dispatch(StackActions.push('SignIn'))}>Login Here</Text>
+              Already have an account? <Text style={styles.loginLink} onPress={() => navigation.dispatch(StackActions.push(ScreenNames.SIGN_IN))}>Login Here</Text>
             </Text>
           </View>
         </ScrollView>
@@ -281,8 +291,8 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: Colors.headerText,
-    marginBottom: 10,
+    color: Colors.inputText,
+    marginBottom: 15,
     alignSelf: 'flex-start',
   },
   googleButton: {

@@ -13,7 +13,11 @@ const Colors = {
   button: '#efb415',
   buttonText: '#121111',
   borderColor: '#333',
-  // Add more as needed
+  loaderColor: '#efb415',
+  loaderbackground: '#000',
+  error: '#ff0000', // Red for errors
+  success: '#00ff00', // Green for success messages
+  // Add more as needed 
 };
 
 export default Colors;

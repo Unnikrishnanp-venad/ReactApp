@@ -4,6 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { signOut } from '../constants/googleSigIn';
 import { firebaseSignOut } from '../constants/firebase';
 import Colors from '../constants/colors';
+import { StorageKeys } from '../constants/storageKeys';
+import { ScreenNames } from '../constants/screenNames';
 
 const SettingsScreen = ({ navigation }: any) => {
   const [user, setUser] = useState<{ name?: string; email?: string; photo?: string }>({});
@@ -22,6 +24,20 @@ const SettingsScreen = ({ navigation }: any) => {
     fetchUser();
   }, []);
 
+  // Utility function to clear authentication-related AsyncStorage keys
+  const clearAuthStorage = async () => {
+    try {
+      await AsyncStorage.removeItem(StorageKeys.IS_AUTHED);
+      await AsyncStorage.removeItem(StorageKeys.SIGN_IN_TYPE);
+      await AsyncStorage.removeItem(StorageKeys.GOOGLE_USER_NAME);
+      await AsyncStorage.removeItem(StorageKeys.GOOGLE_USER_EMAIL);
+      await AsyncStorage.removeItem(StorageKeys.GOOGLE_USER_PHOTO);
+      // Add any other keys you want to clear on sign out
+    } catch (e) {
+      console.error('Error clearing auth storage:', e);
+    }
+  };
+
   const handleLogout = async () => {
     Alert.alert(
       'Logout',
@@ -32,7 +48,7 @@ const SettingsScreen = ({ navigation }: any) => {
           text: 'Logout',
           style: 'destructive',
           onPress: async () => {
-            const signInType = await AsyncStorage.getItem('signInType');
+            const signInType = await AsyncStorage.getItem(StorageKeys.SIGN_IN_TYPE);
             if (signInType === 'google') {
               // Google sign out
               await signOut(); // from googleSigIn
@@ -47,8 +63,8 @@ const SettingsScreen = ({ navigation }: any) => {
               await signOut();
               console.log('Signed out from both (fallback)');
             }
-            await AsyncStorage.clear(); // Clear all saved data
-            navigation.replace('Auth');
+            await clearAuthStorage(); // Clear auth-related data
+            navigation.replace(ScreenNames.AUTH);
           },
         },
       ]
