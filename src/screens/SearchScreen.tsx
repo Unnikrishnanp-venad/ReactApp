@@ -94,21 +94,21 @@ const SearchScreen = () => {
 export default SearchScreen;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.header, marginTop: 80 }, // solid black
+  container: { flex: 1, backgroundColor: Colors.background, marginTop: 80 }, // solid black
   searchBar: {
     height: 40,
-    borderColor: '#222',      // valid dark border
+    borderColor: Colors.searchBarBackground,      // valid dark border
     borderWidth: 1,
     borderRadius: 8,
     margin: 16,
     paddingHorizontal: 12,
     fontSize: 16,
-    color: Colors.inputText,            // white text
-    backgroundColor: '#0000',  // solid black background
+    color: Colors.searchBarText,            // white text
+    backgroundColor: Colors.searchBarBackground,  // solid black background
     opacity: 1,
   },
-  item: { padding: 16, borderBottomWidth: 1, borderBottomColor: '#222', backgroundColor: '#000' },
+  item: { padding: 16, borderBottomWidth: 1, borderBottomColor:  Colors.searchBarseperator, backgroundColor: Colors.background },
   name: { fontSize: 16, color: Colors.headerText },
-  phone: { fontSize: 14, color: '#666' },
-  empty: { textAlign: 'center', marginTop: 40, color: '#888' },
+  phone: { fontSize: 14, color: Colors.contactItemPhone, marginTop: 4 },
+  empty: { textAlign: 'center', marginTop: 40, color:  Colors.contactItemPhone },
 });

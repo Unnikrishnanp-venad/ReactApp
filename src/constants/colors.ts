@@ -15,9 +15,29 @@ const Colors = {
   borderColor: '#333',
   loaderColor: '#efb415',
   loaderbackground: '#000',
-  error: '#ff0000', // Red for errors
-  success: '#00ff00', // Green for success messages
-  // Add more as needed 
+  tabbarBackground: '#292726',
+  tabbarActiveTintColor: '#efb415', // Active tab icon color
+  tabbarInactiveTintColor: '#888', // Inactive tab icon color
+  cardBackground: '#292726',
+  cardText: '#B9D9DC',
+  cardBorder: '#333',
+  cardShadow: '#000',
+  cardTitle: '#B9D9DC',
+  cardSubtitle: '#888',
+  cardButton: '#efb415',
+  cardButtonText: '#121111',
+  searchBarBackground: '#232323',
+  searchBarText: '#B9D9DC',
+  searchBarPlaceholder: '#888',
+  searchBarBorder: '#333',
+  searchBarActive: '#efb415',
+  searchBarInactive: '#888',
+  searchBarseperator: '#333',
+  contactItemBackground: '#292726',
+  contactItemText: '#B9D9DC',
+  contactItemPhone: '#888',
+  contactItemSeparator: '#333',
+  contactItemEmpty: '#888',
 };
 
 export default Colors;

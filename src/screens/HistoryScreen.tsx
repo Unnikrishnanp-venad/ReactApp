@@ -187,7 +187,7 @@ const HistoryScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: '#111',
+		backgroundColor: Colors.background,
 		paddingHorizontal: 0,
         paddingTop: 80, // Increased top padding for more space
 	},

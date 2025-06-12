@@ -48,7 +48,7 @@ const App = () => {
             .then(resultObject => {
               const { success } = resultObject;
               if (success) {
-                setInitialRoute(ScreenNames.HOME);
+                setInitialRoute(ScreenNames.HOME_TABS);
               } else {
                 setInitialRoute(ScreenNames.AUTH);
               }
@@ -80,21 +80,21 @@ const App = () => {
           }}
           initialRouteName={initialRoute}
         >
-          <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-          <Stack.Screen name="Auth" component={AuthScreen} />
+          <Stack.Screen name={ScreenNames.ONBOARDING} component={OnboardingScreen} />
+          <Stack.Screen name={ScreenNames.AUTH} component={AuthScreen} />
           <Stack.Screen
-            name="Home"
+            name={ScreenNames.HOME_TABS}
             component={HomeTabs}
             options={{
-              headerShown: false, // <-- Hide header for Home only
+              headerShown: false, // <-- Hide header for HomeTabs only
             }}
           />
           <Stack.Screen
-            name="Registration"
+            name={ScreenNames.REGISTRATION}
             component={RegistrationScreen}
             options={{ headerShown: true, title: ScreenNames.REGISTRATION }} // Show header and set title
           />
-          <Stack.Screen name="SignIn" component={SignInScreen} options={{ title: 'Sign In' }} />
+          <Stack.Screen name={ScreenNames.SIGN_IN} component={SignInScreen} options={{ title: 'Sign In' }} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>

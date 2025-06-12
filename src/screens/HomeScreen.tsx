@@ -38,17 +38,17 @@ const PLANS = [
 const HomeScreen = ({ navigation }: any) => {
   return (
     <SafeAreaView style={styles.container}>
-      {/* Top row: profile and add plan */}
+      {/* Top row: profile */}
       <View style={styles.topRow}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Image source={require('../../assets/A4.png')} style={styles.flixLogo} />
           <Text style={styles.flixTitle}>FLIX</Text>
         </View>
-        <TouchableOpacity style={styles.addPlanBtn}>
-          <Text style={styles.addPlanText}>Add new Plan</Text>
-          <Text style={styles.addPlanPlus}>+</Text>
-        </TouchableOpacity>
       </View>
+      {/* Floating Plus Button */}
+      <TouchableOpacity style={styles.fab} activeOpacity={0.8}>
+        <Text style={styles.fabPlus}>+</Text>
+      </TouchableOpacity>
       {/* Title */}
       <Text style={styles.title}>Always be{'\n'}in touch</Text>
       {/* Plans list */}
@@ -86,7 +86,7 @@ export default HomeScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.header, // solid black
+    backgroundColor: Colors.background, // solid black
     paddingHorizontal: 0,
     paddingTop: 0,
   },
@@ -98,31 +98,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     paddingHorizontal: 20,
   },
-  addPlanBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.background, // No fill color
-    borderRadius: 18,
-    paddingHorizontal: 18,
-    paddingVertical: 8,
-    borderWidth: 1.5, // Add border
-    borderColor: '#888', // Subtle border color
-  },
-  addPlanText: {
-    color: Colors.inputText,
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginRight: 6,
-  },
-  addPlanPlus: {
-    color: Colors.inputText,
-    fontWeight: 'bold',
-    fontSize: 22,
-    marginTop: -2,
-  },
   title: {
     fontSize: 44,
-    color: '#222',
+    color: Colors.headerText,
     fontWeight: 'bold',
     marginBottom: 18,
     marginLeft: 20,
@@ -194,5 +172,28 @@ const styles = StyleSheet.create({
     color: Colors.button,
     fontWeight: 'bold',
     letterSpacing: 1.5,
+  },
+  fab: {
+    position: 'absolute',
+    right: 24,
+    bottom: 40,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: Colors.button,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    zIndex: 100,
+  },
+  fabPlus: {
+    color: '#111',
+    fontSize: 36,
+    fontWeight: 'bold',
+    marginTop: -2,
   },
 });

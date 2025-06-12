@@ -46,10 +46,10 @@ const HomeTabs = () => {
             />
           );
         },
-        tabBarActiveTintColor: Colors.button, // Set active icon color to yellow
-        tabBarInactiveTintColor: Colors.headerText,  // Set inactive icon color to white
-        tabBarShowLabel: false,
-        tabBarStyle: { height: 70, backgroundColor: '#000' },
+        tabBarActiveTintColor: Colors.tabbarActiveTintColor, // Set active icon color to yellow
+        tabBarInactiveTintColor: Colors.tabbarInactiveTintColor,  // Set inactive icon color to white
+        tabBarShowLabel: true,
+        tabBarStyle: { height: 80, backgroundColor: Colors.tabbarBackground },
         headerShown: false, // Hide the navigation title bar
       })}
     >

@@ -41,7 +41,7 @@ const SignInScreen = ({ navigation }: any) => {
                 AsyncStorage.setItem(StorageKeys.IS_AUTHED, 'true');
                 AsyncStorage.setItem('signInType', 'firebase'); // Store sign-in type
                 console.log('User account created & signed in!', user);
-                navigation.dispatch(StackActions.replace(ScreenNames.HOME));
+                navigation.dispatch(StackActions.replace(ScreenNames.HOME_TABS));
 
             })
             .catch(error => {

@@ -6,6 +6,8 @@ import { firebaseSignOut } from '../constants/firebase';
 import Colors from '../constants/colors';
 import { StorageKeys } from '../constants/storageKeys';
 import { ScreenNames } from '../constants/screenNames';
+import { launchImageLibrary } from 'react-native-image-picker';
+const defaultAvatar = require('../../assets/home.png'); // Default avatar image
 
 const SettingsScreen = ({ navigation }: any) => {
   const [user, setUser] = useState<{ name?: string; email?: string; photo?: string }>({});
@@ -71,19 +73,34 @@ const SettingsScreen = ({ navigation }: any) => {
     );
   };
 
+  // Pick image from gallery and update avatar
+  const handlePickImage = async () => {
+    try {
+      const result = await launchImageLibrary({ mediaType: 'photo', quality: 0.8 });
+      if (result.assets && result.assets.length > 0) {
+        const uri = result.assets[0].uri;
+        setUser((prev) => ({ ...prev, photo: uri }));
+        await AsyncStorage.setItem(StorageKeys.GOOGLE_USER_PHOTO, uri || '');
+      }
+    } catch (e) {
+      console.error('Image pick error:', e);
+    }
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.header }}>
       <View style={styles.container}>
         <View style={styles.profileContainer}>
-          {user.photo ? (
-            <Image source={{ uri: user.photo }} style={styles.avatar} />
-          ) : (
-            <View style={[styles.avatar, { backgroundColor: '#333' }]} />
-          )}
+          <Image
+            source={user.photo ? { uri: user.photo } : defaultAvatar}
+            style={styles.avatar}
+          />
+          <TouchableOpacity style={styles.changePhotoButton} onPress={handlePickImage}>
+            <Text style={styles.changePhotoText}>Change Photo</Text>
+          </TouchableOpacity>
           <Text style={styles.name}>{user.name || 'User'}</Text>
-          <Text style={styles.email}>{user.email || ''}</Text>
+          <Text style={styles.email}>{user.email || 'test@test.com'}</Text>
         </View>
-        <View style={{ flex: 1 }} />
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
@@ -107,9 +124,9 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 300,
+    height: 300,
+    borderRadius: 150,
     marginBottom: 16,
     backgroundColor: '#222',
   },
@@ -126,9 +143,21 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     textAlign: 'center',
   },
+  changePhotoButton: {
+    marginBottom: 12,
+    backgroundColor: Colors.button,
+    borderRadius: 18,
+    paddingHorizontal: 18,
+    paddingVertical: 8,
+  },
+  changePhotoText: {
+    color: Colors.buttonText,
+    fontSize: 15,
+    fontWeight: '600',
+  },
   logoutButton: {
     width: '100%',
-    backgroundColor: '#5f6dff',
+    backgroundColor: Colors.button,
     paddingVertical: 14,
     borderRadius: 24,
     alignItems: 'center',
@@ -138,7 +167,7 @@ const styles = StyleSheet.create({
     left: 24,
     right: 24,
   },
-  logoutText: { color: '#fff', fontSize: 18, fontWeight: '600' },
+  logoutText: { color: Colors.buttonText, fontSize: 18, fontWeight: '600' },
 });
 
 export default SettingsScreen;
