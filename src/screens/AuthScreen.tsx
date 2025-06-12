@@ -142,7 +142,7 @@ const AuthScreen = ({ navigation }: any) => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.header, paddingTop: insets?.top, paddingBottom: insets?.bottom }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background, paddingTop: insets?.top, paddingBottom: insets?.bottom }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -150,93 +150,90 @@ const AuthScreen = ({ navigation }: any) => {
       >
         <ScrollView
           ref={scrollViewRef}
-          contentContainerStyle={undefined}
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.outerContainer}>
-            <View style={styles.container}>
-              <View style={styles.header}>
-                <Image source={require('../../assets/A4.png')} style={styles.logo} />
-                <Text style={styles.brand}>FLIX</Text>
-              </View>
-              <Text style={styles.title}>Keep your online{`\n`}business organized</Text>
-              <Text style={styles.subtitle}>Sign up to start your 30 days free trial</Text>
-              <GoogleSigninButton
-                style={styles.googleButton}
-                size={GoogleSigninButton.Size.Wide}
-                color={GoogleSigninButton.Color.Light}
-                onPress={() => {
-                  googleSignIn(
-                    () => {
-                      AsyncStorage.setItem('isAuthed', 'true');
-                      AsyncStorage.setItem('signInType', 'google'); // Store sign-in type
-                      navigation.replace('Home');
-                    },
-                    (error) => {
-                      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-                        console.log("error occured SIGN_IN_CANCELLED");
-                        // user cancelled the login flow
-                      } else if (error.code === statusCodes.IN_PROGRESS) {
-                        console.log("error occured IN_PROGRESS");
-                        // operation (f.e. sign in) is in progress already
-                      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-                        console.log("error occured PLAY_SERVICES_NOT_AVAILABLE");
-                      } else if (error.code === statusCodes.SIGN_IN_REQUIRED) {
-                        console.log("error occured SIGN_IN_REQUIRED");
-                      } else {
-                        console.log(error);
-                        console.log("error occured unknow error");
-                      }
+          <View style={styles.contentBox}>
+            <View style={styles.header}>
+              <Image source={require('../../assets/A4.png')} style={styles.logo} />
+              <Text style={styles.brand}>FLIX</Text>
+            </View>
+            <Text style={styles.title}>Keep your online{`\n`}business organized</Text>
+            <Text style={styles.subtitle}>Sign up to start your 30 days free trial</Text>
+            <GoogleSigninButton
+              style={styles.googleButton}
+              size={GoogleSigninButton.Size.Wide}
+              color={GoogleSigninButton.Color.Dark}
+              onPress={() => {
+                googleSignIn(
+                  () => {
+                    AsyncStorage.setItem('isAuthed', 'true');
+                    AsyncStorage.setItem('signInType', 'google');
+                    navigation.replace('Home');
+                  },
+                  (error) => {
+                    if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+                      console.log("error occured SIGN_IN_CANCELLED");
+                      // user cancelled the login flow
+                    } else if (error.code === statusCodes.IN_PROGRESS) {
+                      console.log("error occured IN_PROGRESS");
+                      // operation (f.e. sign in) is in progress already
+                    } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                      console.log("error occured PLAY_SERVICES_NOT_AVAILABLE");
+                    } else if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+                      console.log("error occured SIGN_IN_REQUIRED");
+                    } else {
+                      console.log(error);
+                      console.log("error occured unknow error");
                     }
-                  );
-                }}
-
+                  }
+                );
+              }}
+            />
+            <View style={styles.orRow}>
+              <View style={styles.line} />
+              <Text style={styles.orText}>or</Text>
+              <View style={styles.line} />
+            </View>
+            <View style={styles.form}>
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                ref={emailInputRef}
+                style={styles.input}
+                placeholder="Enter your email"
+                placeholderTextColor="#aaa"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={email}
+                onChangeText={setEmail}
+                onFocus={() => scrollToInput(emailInputRef)}
               />
-              <View style={styles.orRow}>
-                <View style={styles.line} />
-                <Text style={styles.orText}>or</Text>
-                <View style={styles.line} />
-              </View>
-              <View style={styles.form}>
-                <Text style={styles.label}>Email</Text>
+              <Text style={styles.label}>Password</Text>
+              <View style={{ position: 'relative', width: '100%', marginBottom: 16 }}>
                 <TextInput
-                  ref={emailInputRef}
-                  style={styles.input}
-                  placeholder="Enter your email"
+                  ref={passwordInputRef}
+                  style={[styles.input, { marginBottom: 0 }]}
+                  placeholder="Enter your password"
                   placeholderTextColor="#aaa"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  value={email}
-                  onChangeText={setEmail}
-                  onFocus={() => scrollToInput(emailInputRef)}
+                  secureTextEntry={!showPassword}
+                  value={password}
+                  onChangeText={setPassword}
+                  onFocus={() => scrollToInput(passwordInputRef)}
                 />
-                <Text style={styles.label}>Password</Text>
-                <View style={{ position: 'relative', width: '100%', marginBottom: 16 }}>
-                  <TextInput
-                    ref={passwordInputRef}
-                    style={[styles.input, { marginBottom: 0 }]}
-                    placeholder="Enter your password"
-                    placeholderTextColor="#aaa"
-                    secureTextEntry={!showPassword}
-                    value={password}
-                    onChangeText={setPassword}
-                    onFocus={() => scrollToInput(passwordInputRef)}
-                  />
-                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
-                    <Text style={{ color: Colors.inputText, fontSize: 18 }}>{showPassword ? '🙈' : '👁️'}</Text>
-                  </TouchableOpacity>
-                </View>
-                <TouchableOpacity
-                  style={styles.createButton}
-                  onPress={handleCreateAccount}
-                >
-                  <Text style={styles.createButtonText}>Create Account</Text>
+                <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
+                  <Text style={{ color: Colors.inputText, fontSize: 18 }}>{showPassword ? '🙈' : '👁️'}</Text>
                 </TouchableOpacity>
               </View>
-              <Text style={styles.loginText}>
-                Already have an account? <Text style={styles.loginLink} onPress={() => navigation.navigate('SignIn')}>Login Here</Text>
-              </Text>
+              <TouchableOpacity
+                style={styles.createButton}
+                onPress={handleCreateAccount}
+              >
+                <Text style={styles.createButtonText}>Create Account</Text>
+              </TouchableOpacity>
             </View>
+            <Text style={styles.loginText}>
+              Already have an account? <Text style={styles.loginLink} onPress={() => navigation.navigate('SignIn')}>Login Here</Text>
+            </Text>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -247,26 +244,18 @@ const AuthScreen = ({ navigation }: any) => {
 export default AuthScreen;
 
 const styles = StyleSheet.create({
-  outerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingTop: 48,
-    paddingBottom: 48,
-  },
-  container: {
-    flex: 1,
+  contentBox: {
+    width: '100%',
+    maxWidth: 420,
+    backgroundColor: Colors.background,
     alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: 100,
-    paddingBottom: 100,
-    justifyContent: 'center',
-    backgroundColor: 'transparent',
+    alignSelf: 'center',
+    padding: 0,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
-    marginBottom: 24,
   },
   logo: {
     width: 40,
@@ -282,7 +271,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 38,
     fontWeight: 'bold',
-    color: Colors.inputText,
+    color: Colors.headerText,
     textAlign: 'left',
     alignSelf: 'flex-start',
     marginBottom: 8,
@@ -291,39 +280,39 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: Colors.inputText,
-    marginBottom: 32,
+    color: Colors.headerText,
+    marginBottom: 10,
     alignSelf: 'flex-start',
   },
   googleButton: {
     width: '100%',
     height: 52,
     borderRadius: 12,
-    marginBottom: 24,
+    marginBottom: 10,
     alignSelf: 'center',
   },
   orRow: {
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    marginBottom: 24,
+    marginBottom: 10,
   },
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: '#eee',
+    backgroundColor: Colors.borderColor, // lighter border color
   },
   orText: {
     marginHorizontal: 12,
-    color: '#888',
+    color: Colors.headerText,
     fontSize: 16,
   },
   form: {
     width: '100%',
-    marginBottom: 24,
+    marginBottom: 10,
   },
   label: {
-    color: '#888',
+    color: Colors.headerText,
     fontWeight: '600',
     fontSize: 16,
     marginBottom: 4,
@@ -339,7 +328,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#333',
+    borderColor: Colors.borderColor,
     paddingRight: 40, // Add space for the eye icon
   },
   createButton: {
@@ -352,18 +341,18 @@ const styles = StyleSheet.create({
     marginTop: 18,
   },
   createButtonText: {
-    color: '#111', // Dark text for contrast on yellow
+    color: Colors.buttonText, // Dark text for contrast on yellow
     fontSize: 18,
     fontWeight: '600',
   },
   loginText: {
-    color: '#888',
+    color: Colors.headerText,
     fontSize: 15,
     marginTop: 0,
     marginBottom: 40,
   },
   loginLink: {
-    color: '#FFD600',
+    color: Colors.button,
     fontWeight: 'bold',
   },
   eyeButton: {

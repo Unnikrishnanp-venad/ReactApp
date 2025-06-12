@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   addPlanBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'transparent', // No fill color
+    backgroundColor: Colors.background, // No fill color
     borderRadius: 18,
     paddingHorizontal: 18,
     paddingVertical: 8,

@@ -2,15 +2,17 @@
 // Centralized color palette for the app
 
 const Colors = {
-  primary: '#262426', // Main blue
-  background: '#262426',
-  text: '#696367',
+  primary: '#FFD600', // Main blue
+  background: '#292726',
+  text: '#B9D9DC',
   header: '#000',
-  headerText: '#fff',
+  headerText: '#B9D9DC',
+  subtitle: '#888',
   inputBackground: '#232323',
   inputText: '#888',
-  button: '#FFD600',
-  buttonText: '#111',
+  button: '#efb415',
+  buttonText: '#121111',
+  borderColor: '#333',
   // Add more as needed
 };
 

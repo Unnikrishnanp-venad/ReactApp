@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     paddingTop: 32,
     paddingBottom: 32,
     justifyContent: 'center',
-    backgroundColor: 'transparent',
+    backgroundColor: Colors.background, // solid black
   },
   title: {
     fontSize: 28,

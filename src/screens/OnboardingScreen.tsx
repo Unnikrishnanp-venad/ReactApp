@@ -102,11 +102,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    // paddingHorizontal: 24,
     paddingTop: 32,
     paddingBottom: 32,
     justifyContent: 'center',
-    backgroundColor: 'transparent',
+    backgroundColor: Colors.background, // solid black
   },
   slide: {
     width: width , // Subtract horizontal padding (24*2) to match container

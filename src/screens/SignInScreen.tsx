@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform, Image, SafeAreaView, KeyboardAvoidingView, ScrollView, ActivityIndicator } from 'react-native';
 import { getAuth, signInWithEmailAndPassword } from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,7 +10,19 @@ const SignInScreen = ({ navigation }: any) => {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [emailY, setEmailY] = useState(0);
+    const [passwordY, setPasswordY] = useState(0);
     const insets = useSafeAreaInsets();
+    const scrollViewRef = useRef<ScrollView>(null);
+    const emailInputRef = useRef<TextInput | null>(null);
+    const passwordInputRef = useRef<TextInput | null>(null);
+
+    // Helper to scroll to input
+    const scrollToInput = (y: number) => {
+        setTimeout(() => {
+            scrollViewRef.current?.scrollTo({ y: Math.max(y - 40, 0), animated: true });
+        }, 100);
+    };
 
     const handleSignIn = async () => {
         if (!email || !password) {
@@ -50,16 +62,16 @@ const SignInScreen = ({ navigation }: any) => {
                 zIndex: 10,
                 justifyContent: 'center',
                 alignItems: 'center',
-                backgroundColor: 'transparent',
+                backgroundColor: Colors.background,
             }} pointerEvents="box-none">
                 <View style={{
                     position: 'absolute',
                     top: 0, left: 0, right: 0, bottom: 0,
-                    backgroundColor: 'rgba(255,255,255,0.1)',
+                    backgroundColor: Colors.background,
                     // Use backdropFilter for web, and fallback for native
                     ...(Platform.OS === 'web' ? { backdropFilter: 'blur(6px)' } : {}),
                 }} />
-                <View style={{ backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: 12, padding: 24, alignItems: 'center' }}>
+                <View style={{ backgroundColor: Colors.background, borderRadius: 12, padding: 24, alignItems: 'center' }}>
                     <ActivityIndicator size="large" color={Colors.button} />
                     <Text style={{ color: Colors.inputText, marginTop: 12, fontSize: 16 }}>Please wait...</Text>
                 </View>
@@ -68,61 +80,59 @@ const SignInScreen = ({ navigation }: any) => {
     }
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.header, paddingTop: insets?.top, paddingBottom: insets?.bottom }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background, paddingTop: insets?.top, paddingBottom: insets?.bottom }}>
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 64}
             >
                 <ScrollView
-                    contentContainerStyle={Platform.OS === 'ios' ? undefined : { minHeight: '100%' }}
+                    ref={scrollViewRef}
+                    contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}
                     keyboardShouldPersistTaps="handled"
                 >
-                    <View style={styles.outerContainer}>
-                        <View style={styles.container}>
-                            {/* Branding/logo row */}
-                            <View style={styles.header}>
-                                <Image source={require('../../assets/A4.png')} style={styles.logo} />
-                                <Text style={styles.brand}>FLIX</Text>
-                            </View>
-                            {/* Large subtitle */}
-                            <Text style={styles.bigSubtitle}>Keep your online{Platform.OS === 'web' ? '\n' : ' '}business organized</Text>
-                            <Text style={styles.trialSubtitle}>Sign up to start your 30 days free trial</Text>
-                            <Text style={styles.title}>Welcome Back</Text>
-                            <Text style={styles.subtitle}>Enter your details below</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Email Address"
-                                placeholderTextColor="#888"
-                                value={email}
-                                onChangeText={setEmail}
-                                keyboardType="email-address"
-                                autoCapitalize="none"
-                            />
-                            <View style={styles.passwordRow}>
-                                <TextInput
-                                    style={[styles.input, { flex: 1, marginBottom: 0 }]}
-                                    placeholder="Password"
-                                    placeholderTextColor={Colors.inputText}
-                                    value={password}
-                                    onChangeText={setPassword}
-                                    secureTextEntry={!showPassword}
-                                />
-                                <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
-                                    <Text style={{ color: Colors.inputText, fontSize: 18 }}>{showPassword ? '🙈' : '👁️'}</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
-                                <Text style={styles.signInButtonText}>Sign in</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => navigation.replace('Auth')}>
-                                <Text style={styles.forgotText}>Create account?</Text>
-                            </TouchableOpacity>
-                            {/* Removed Google sign-in button from SignInScreen */}
-                            {/* <View style={styles.socialRow}>
-                            <GoogleSigninButton ... />
-                        </View> */}
+                    <View style={styles.contentBox}>
+                        <View style={styles.header}>
+                            <Image source={require('../../assets/A4.png')} style={styles.logo} />
+                            <Text style={styles.brand}>FLIX</Text>
                         </View>
+                        <Text style={styles.bigSubtitle}>Keep your online{Platform.OS === 'web' ? '\n' : ' '}business organized</Text>
+
+                        <Text style={styles.subtitle}>Enter your details below</Text>
+                        <TextInput
+                            ref={emailInputRef}
+                            style={styles.input}
+                            placeholder="Email Address"
+                            placeholderTextColor="#888"
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            onFocus={() => scrollToInput(emailY)}
+                            onLayout={e => setEmailY(e.nativeEvent.layout.y)}
+                        />
+                        <View style={styles.passwordRow}>
+                            <TextInput
+                                ref={passwordInputRef}
+                                style={[styles.input, { flex: 1, marginBottom: 0 }]}
+                                placeholder="Password"
+                                placeholderTextColor={Colors.inputText}
+                                value={password}
+                                onChangeText={setPassword}
+                                secureTextEntry={!showPassword}
+                                onFocus={() => scrollToInput(passwordY)}
+                                onLayout={e => setPasswordY(e.nativeEvent.layout.y)}
+                            />
+                            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
+                                <Text style={{ color: Colors.inputText, fontSize: 18 }}>{showPassword ? '🙈' : '👁️'}</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
+                            <Text style={styles.signInButtonText}>Sign in</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.replace('Auth')}>
+                            <Text style={styles.forgotText}>Create account?</Text>
+                        </TouchableOpacity>
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
@@ -131,27 +141,20 @@ const SignInScreen = ({ navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
+    contentBox: {
+        width: '100%',
+        maxWidth: 420,
+        backgroundColor: Colors.background,
         alignItems: 'center',
-        paddingHorizontal: 24,
-        paddingTop: 32,
-        paddingBottom: 32,
-        justifyContent: 'center',
-        backgroundColor: 'transparent',
-    },
-    outerContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        paddingTop: 48,
-        paddingBottom: 48,
+        alignSelf: 'center',
+        padding: 0,
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         alignSelf: 'flex-start', // Align header to the left
-        marginBottom: 12,
-        marginTop: 48, // Add more top margin to push header below back button
+        marginBottom: 10,
+        marginTop: 0, // Add more top margin to push header below back button
     },
     logo: {
         width: 36,
@@ -167,21 +170,21 @@ const styles = StyleSheet.create({
     },
     bigSubtitle: {
         fontSize: 48,
-        color: Colors.inputText, // text color as #888
+        color: Colors.headerText, // text color as #888
         fontWeight: 'bold',
-        marginBottom: 0,
+        marginBottom: 30,
         alignSelf: 'flex-start',
-        lineHeight: 40,
+        lineHeight: 52, // Fix: lineHeight should be >= fontSize
     },
     trialSubtitle: {
         fontSize: 18,
-        color: Colors.inputText, // text color as #888
+        color: Colors.headerText, // text color as #888
         marginBottom: 32,
         alignSelf: 'flex-start',
     },
     title: {
         fontSize: 32,
-        color: Colors.inputText, // text color as #888
+        color: Colors.headerText, // text color as #888
         fontWeight: 'bold',
         marginBottom: 8,
         alignSelf: 'flex-start',
@@ -202,7 +205,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginBottom: 16,
         borderWidth: 1,
-        borderColor: '#333',
+        borderColor: Colors.borderColor, // subtle border color
     },
     passwordRow: {
         flexDirection: 'row',
@@ -227,12 +230,12 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     signInButtonText: {
-        color: '#000', // text color as #888
+        color: Colors.buttonText, // text color as #888
         fontSize: 18,
         fontWeight: '600',
     },
     forgotText: {
-        color: Colors.inputText, // text color as #888
+        color: Colors.headerText, // text color as #888
         fontSize: 15,
         marginBottom: 24,
     },
@@ -245,37 +248,20 @@ const styles = StyleSheet.create({
     line: {
         flex: 1,
         height: 1,
-        backgroundColor: '#333', // darker line
+        backgroundColor: Colors.borderColor, // darker line
     },
     orText: {
         marginHorizontal: 12,
         color: Colors.inputText, // text color as #888
         fontSize: 15,
     },
-    socialRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        width: '100%',
-        justifyContent: 'space-between',
-    },
+
     googleButton: {
         flex: 1,
         height: 48,
         marginRight: 8,
     },
-    fbButton: {
-        width: 48,
-        height: 48,
-        backgroundColor: Colors.inputBackground, // darker button
-        borderRadius: 8,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    fbText: {
-        color: Colors.inputText, // text color as #888
-        fontSize: 28,
-        fontWeight: 'bold',
-    },
+
 });
 
 export default SignInScreen;
