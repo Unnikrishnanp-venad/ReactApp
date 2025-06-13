@@ -71,7 +71,7 @@ const AddexpenseScreen = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
       {/* Back button header, matching AddScreen */}
-      <View style={[styles.headerRow, { paddingTop: 0 }]}> 
+      <View style={[styles.headerRow, { paddingTop: 20 }]}> 
         <TouchableOpacity onPress={() =>  navigation.dispatch(StackActions.pop(1))} style={styles.backButton}>
           <Image source={require('../../assets/back.png')} style={{ width: 28, height: 28, tintColor: Colors.button }} />
         </TouchableOpacity>

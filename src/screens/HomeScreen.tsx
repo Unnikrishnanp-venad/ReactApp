@@ -12,7 +12,7 @@ const CATEGORY_META: { [key: string]: { label: string; icon: any; color: string;
 const CARD_MARGIN = 4;
 const CARD_COLUMNS = 2;
 const SCREEN_WIDTH = Dimensions.get('window').width;
-const CARD_WIDTH = (SCREEN_WIDTH - (CARD_MARGIN * (CARD_COLUMNS * 2 + 1))) / CARD_COLUMNS;
+const CARD_WIDTH = (SCREEN_WIDTH * 0.9 - (CARD_MARGIN * (CARD_COLUMNS * 2 + 1))) / CARD_COLUMNS;
 const CARD_HEIGHT = CARD_WIDTH;
 
 const HomeScreen = ({ navigation }: any) => {
@@ -152,17 +152,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.borderColor,
     // width and height are set inline in renderItem for equal sizing
+    margin: 8, // Add margin around each cell
+    marginLeft: 10,
+    marginRight: 10,
   },
   planRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 10,
+    marginLeft: 10,
   },
   planIcon: {
     width: 22,
     height: 22,
     marginRight: 8,
+    marginLeft: 10,
     resizeMode: 'contain',
   },
   planCarrier: {
