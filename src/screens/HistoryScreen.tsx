@@ -149,7 +149,7 @@ const HistoryScreen = ({ navigation }: any) => {
 };
 
 // Utility to get history from AsyncStorage and add a new entry
-export async function addHistoryExpense({ label, amount }: { label: string; amount: string }) {
+export async function addHistoryExpense({ label, amount, category }: { label: string; amount: string; category?: string }) {
 	const stored = await AsyncStorage.getItem('history');
 	let data = stored ? JSON.parse(stored) : [];
 	// Add new expense entry
@@ -159,7 +159,7 @@ export async function addHistoryExpense({ label, amount }: { label: string; amou
 		amount: parseFloat(amount.replace(/[^\d.]/g, '')),
 		date: new Date(),
 		type: 'Paid',
-		subtitle: 'Expense',
+		subtitle: category || 'Expense',
 		bank: 'hdfc', // or any default
 	};
 	data = [newItem, ...data];

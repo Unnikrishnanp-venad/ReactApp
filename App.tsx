@@ -14,6 +14,7 @@ import ReactNativeBiometrics from 'react-native-biometrics';
 import Colors from './src/constants/colors';
 import { StorageKeys } from './src/constants/key';
 import { ScreenNames } from './src/constants/screenNames';
+import Toast from 'react-native-toast-message';
 
 const Stack = createNativeStackNavigator();
 
@@ -99,6 +100,7 @@ const App = () => {
           <Stack.Screen name={ScreenNames.ADD} component={AddScreen} options={{ title: 'Add' }} />
         </Stack.Navigator>
       </NavigationContainer>
+      <Toast />
     </View>
   );
 };
