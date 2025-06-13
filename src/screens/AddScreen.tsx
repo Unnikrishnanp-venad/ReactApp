@@ -1,13 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, ScrollView, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Colors from '../constants/colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { addHistoryExpense } from './HistoryScreen';
 import { ScreenNames } from '../constants/screenNames';
 import Toast from 'react-native-toast-message';
+import { ExpenseItem } from '../constants/model';
+import { StorageKeys } from '../constants/key';
 
-const STORAGE_KEY = 'lastAdded';
 
 // Define the type for an entry
 interface LastAddedEntry {
@@ -43,14 +43,13 @@ const AddScreen = () => {
   const navigation = useNavigation();
   const [amount, setAmount] = React.useState('');
   const [comment, setComment] = React.useState('');
-  const [lastAddedList, setLastAddedList] = React.useState<LastAddedEntry[]>([]); // Typed state
   const [selectedCategory, setSelectedCategory] = React.useState<ExpenseCategory>(ExpenseCategory.GROCERIES);
-
+  var userName: string;
   React.useEffect(() => {
     (async () => {
-      const stored = await AsyncStorage.getItem(STORAGE_KEY);
+      const stored = await AsyncStorage.getItem(StorageKeys.STORAGE_KEY);
       if (stored) {
-        setLastAddedList(JSON.parse(stored));
+        // Removed setLastAddedList as per the change request
       }
     })();
   }, []);
@@ -66,6 +65,7 @@ const AddScreen = () => {
   };
 
   const handleSave = async () => {
+    console.log('Please enter an amount before saving', amount);
     if (!amount) {
       Toast.show({
         type: 'error',
@@ -74,39 +74,59 @@ const AddScreen = () => {
         position: 'bottom',
         visibilityTime: 3000,
       });
+      console.log('[AddScreen] No amount entered, not saving.');
       return;
     }
-
-    let label = comment || 'Expense';
-    let color = '#e67e22';
-    let amountColor = '#e74c3c';
-    let icon = require('../../assets/history.png');
-    const newItem = {
+    const name = await AsyncStorage.getItem(StorageKeys.GOOGLE_USER_NAME);
+    const email = await AsyncStorage.getItem(StorageKeys.GOOGLE_USER_EMAIL);
+    console.log('[AddScreen] User name:', name);
+    let label = name || email || 'Unknown User';
+    const expense: ExpenseItem = {
       id: Date.now().toString(),
-      icon,
-      label,
-      date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-      amount: '-' + '$' + amount,
-      color,
-      amountColor,
-      category: selectedCategory, // Save selected category
+      title: selectedCategory,
+      subtitle: comment || label, // Use comment as subtitle if provided, else fallback to user label
+      amount: parseFloat(amount),
+      date: new Date().toISOString(),
+      type: selectedCategory,
+      user: label,
     };
-    const updated = [newItem, ...lastAddedList];
-    setLastAddedList(updated);
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    await addHistoryExpense({ label: newItem.label, amount, category: selectedCategory });
-    navigation.goBack();
+    console.log('[AddScreen] Saving expense:', expense);
+
+    // Fetch existing expenses from AsyncStorage
+    const stored = await AsyncStorage.getItem(StorageKeys.STORAGE_KEY);
+    console.log('[AddScreen] Raw stored value:', stored);
+    let updated: ExpenseItem[] = [];
+    try {
+      updated = stored ? [expense, ...JSON.parse(stored)] : [expense];
+    } catch (e) {
+      console.error('[AddScreen] Error parsing stored expenses:', e);
+      updated = [expense];
+    }
+    // Save the updated list back to AsyncStorage
+    try {
+      await AsyncStorage.setItem(StorageKeys.STORAGE_KEY, JSON.stringify(updated));
+      navigation.goBack();
+    } catch (e) {
+      console.error('[AddScreen] Error saving expenses:', e);
+      Toast.show({
+        type: 'error',
+        text1: 'Save failed',
+        text2: 'Could not save expense. Try again.',
+        position: 'bottom',
+        visibilityTime: 3000,
+      });
+    }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.headerRow}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
+      <View style={[styles.headerRow, { paddingTop: 0 }]}> {/* Remove extra top padding, SafeAreaView handles it */}
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Image source={require('../../assets/back.png')} style={{ width: 28, height: 28, tintColor: Colors.button }} />
         </TouchableOpacity>
       </View>
       {/* Horizontal collection chips */}
-      <View style={{ marginTop: 8, marginBottom: 16 }}>
+      <View style={{ marginTop: 0, marginBottom: 0 }}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 12, height: 50, minWidth: 150 }}>
           {Object.values(ExpenseCategory).map((cat) => {
             const isSelected = selectedCategory === cat;
@@ -122,19 +142,27 @@ const AddScreen = () => {
           })}
         </ScrollView>
       </View>
-      <View style={styles.formContent}>
+      <View style={[styles.formContent, { flex: 1, width: '100%' }]}> {/* Ensure formContent fills available space */}
         <Text style={styles.modalLabel}>Amount</Text>
         <View style={styles.amountRow}>
-          <Text style={styles.amountValue}>{amount || '0'}</Text>
+          <Text style={styles.amountValue} numberOfLines={1} ellipsizeMode="tail">{amount || '0'}</Text>
         </View>
-
-        <TouchableOpacity
-          style={{ width: '100%', marginBottom: 12 }}
-          activeOpacity={1}
-          onPress={() => { }} // For now, not editable
-        >
-          <Text style={{ color: '#888', fontSize: 16, padding: 8 }}>{comment}</Text>
-        </TouchableOpacity>
+        <TextInput
+          style={{
+            width: '100%',
+            backgroundColor: Colors.collectionBackground,
+            color: Colors.headerText,
+            fontSize: 16,
+            borderRadius: 10,
+            padding: 10,
+            marginBottom: 12,
+          }}
+          placeholder="Add a comment"
+          placeholderTextColor="#888"
+          value={comment}
+          onChangeText={setComment}
+          multiline
+        />
         {/* Keypad */}
         {[
           ['1', '2', '3'],
@@ -338,7 +366,7 @@ const styles = StyleSheet.create({
   modalLabel: {
     color: '#888',
     fontSize: 16,
-    marginBottom: 8,
+    marginBottom: 0,
     alignSelf: 'flex-start',
   },
   amountRow: {

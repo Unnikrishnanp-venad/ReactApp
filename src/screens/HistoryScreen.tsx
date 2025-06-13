@@ -1,17 +1,13 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Image, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, SectionList, TextInput, TouchableOpacity, Image, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '../constants/colors';
 import { useFocusEffect } from '@react-navigation/native';
+import { ExpenseItem } from '../constants/model';
+import { StorageKeys } from '../constants/key';
 
-interface HistoryItem {
-	id: string;
-	title: string;
-	amount: number;
-	date: Date;
-	type: string;
-	subtitle: string;
-	bank: keyof typeof BANK_ICONS;
+interface HistoryItem extends ExpenseItem {
+	bank?: keyof typeof BANK_ICONS;
 }
 
 const BANK_ICONS: Record<string, any> = {
@@ -19,31 +15,41 @@ const BANK_ICONS: Record<string, any> = {
 	sbi: require('../../assets/A2.png'),
 };
 
-const FILTERS = [
-	{ label: 'All', value: 'all' },
-	{ label: 'Paid', value: 'Paid' },
-	// Add more types if needed
-];
-
 const HistoryScreen = ({ navigation }: any) => {
-	const [history, setHistory] = useState<HistoryItem[]>([]);
+	const [history, setHistory] = useState<ExpenseItem[]>([]);
 	const [search, setSearch] = useState('');
-	const [filtered, setFiltered] = useState<HistoryItem[]>([]);
+	const [filtered, setFiltered] = useState<ExpenseItem[]>([]);
 	const [filterType, setFilterType] = useState('all');
 	const [showFilters, setShowFilters] = useState(false);
+	const [dynamicFilters, setDynamicFilters] = useState<{ label: string; value: string }[]>([
+		{ label: 'All', value: 'all' },
+	]);
 
-    useLayoutEffect(() => {
-        navigation?.setOptions?.({ headerShown: false });
-    }, [navigation]);
+	useLayoutEffect(() => {
+		navigation?.setOptions?.({ headerShown: false });
+	}, [navigation]);
 
 	// Replace useEffect for loading history with useFocusEffect
 	useFocusEffect(
 		React.useCallback(() => {
 			(async () => {
-				const stored = await AsyncStorage.getItem('history');
+				console.log('[History Load] Fetching history from AsyncStorage...');
+				const stored = await AsyncStorage.getItem(StorageKeys.STORAGE_KEY);
+				console.log('[History Load] Raw stored value:', stored);
 				let data = stored ? JSON.parse(stored) : [];
+				console.log('[History Load] Parsed data:', data);
 				// Convert date strings back to Date objects
 				data = data.map((item: any) => ({ ...item, date: new Date(item.date) }));
+
+				// Generate unique types for dynamic filters
+				const types = Array.from(new Set((data as ExpenseItem[]).map(item => String(item.type)))).filter(Boolean);
+				const filters = [
+					{ label: 'All', value: 'all' },
+					...types.map(type => ({ label: type, value: type })),
+				];
+				setDynamicFilters(filters);
+
+				console.log('[History Load] After converting dates:', data);
 				setHistory(data);
 				setFiltered(data);
 			})();
@@ -51,6 +57,7 @@ const HistoryScreen = ({ navigation }: any) => {
 	);
 
 	useEffect(() => {
+		console.log('[History Load] Raw stored value:');
 		// Filter by search and type
 		let data = history;
 		if (filterType !== 'all') {
@@ -65,25 +72,65 @@ const HistoryScreen = ({ navigation }: any) => {
 		}
 		setFiltered(data);
 	}, [search, history, filterType]);
+	const clearHistory = async () => {
+		try {
+			await AsyncStorage.removeItem(StorageKeys.STORAGE_KEY);
+			setHistory([]);
+			setFiltered([]);
+			console.log('[History] Cleared AsyncStorage');
+		} catch (error) {
+			console.error('[History] Error clearing storage:', error);
+		}
+	};
+	function getUserColor(user: string) {
+		// Generate a color based on the user's name/email (deterministic)
+		const colors = [
+			'#FFB300', '#F4511E', '#8E24AA', '#3949AB', '#039BE5', '#43A047', '#FDD835', '#FB8C00', '#6D4C41', '#757575', '#00897B', '#C62828'
+		];
+		let hash = 0;
+		for (let i = 0; i < user.length; i++) {
+			hash = user.charCodeAt(i) + ((hash << 5) - hash);
+		}
+		const idx = Math.abs(hash) % colors.length;
+		return colors[idx];
+	}
+	function getRandomColor(index: number) {
+		// Use a fixed palette for visually distinct colors
+		const colors = [
+			'#FFB300', '#F4511E', '#8E24AA', '#3949AB', '#039BE5', '#43A047', '#FDD835', '#FB8C00', '#6D4C41', '#757575', '#00897B', '#C62828',
+			'#00B8D4', '#D500F9', '#FF1744', '#00E676', '#FFEA00', '#FF6D00', '#AEEA00', '#00BFAE', '#B388FF', '#FF8A80', '#FFD600', '#C51162'
+		];
+		return colors[index % colors.length];
+	}
+	function getSectionTitle(dateString: string) {
+		const today = new Date();
+		const date = new Date(dateString);
+		// Remove time for comparison
+		today.setHours(0, 0, 0, 0);
+		date.setHours(0, 0, 0, 0);
+		const diffDays = Math.floor((today.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+		if (diffDays === 0) return 'Today';
+		if (diffDays === 1) return 'Yesterday';
+		if (diffDays < 7) return `${diffDays} days ago`;
+		if (diffDays < 30) return `${Math.floor(diffDays / 7)} week${Math.floor(diffDays / 7) > 1 ? 's' : ''} ago`;
+		if (diffDays < 365) return `${Math.floor(diffDays / 30)} month${Math.floor(diffDays / 30) > 1 ? 's' : ''} ago`;
+		return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+	}
 
-	const renderItem = ({ item }: { item: HistoryItem }) => (
+	const renderItem = ({ item, index }: { item: ExpenseItem, index: number }) => (
 		<View style={styles.itemRow}>
-			<View style={styles.iconBox}>
-				<Text style={{ fontSize: 22, color: '#fff' }}>↗️</Text>
+			<View style={[styles.iconBox, { backgroundColor: getUserColor(item.user || '') }]}> {/* iconBox color depends on user */}
+				<Text style={{ fontSize: 22, color: '#fff', fontWeight: 'bold' }}>
+					{item.user && typeof item.user === 'string' && item.user.length > 0 ? item.user[0].toUpperCase() : '?'}
+				</Text>
 			</View>
 			<View style={{ flex: 1 }}>
-				<Text style={styles.itemSubtitle}>{item.subtitle}</Text>
-				<Text style={styles.itemTitle}>{item.title}</Text>
-				<Text style={styles.itemDate}>{formatDate(item.date)}</Text>
+				<Text style={[styles.itemSubtitle, { maxWidth: 120 }]}>{item.subtitle}</Text>
+				<Text style={[styles.itemTitle, { maxWidth: 120 }]}>{item.title}</Text>
+				<Text style={[styles.itemDate, { maxWidth: 120 }]}>{formatDate(new Date(item.date))}</Text>
 			</View>
-			<View style={{ alignItems: 'flex-end' }}>
-				<Text style={styles.itemAmount}>₹{item.amount}</Text>
-				<View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
-					<Text style={styles.itemDebited}>Debited from </Text>
-					{item.bank && BANK_ICONS[item.bank] && (
-						<Image source={BANK_ICONS[item.bank]} style={styles.bankIcon} />
-					)}
-				</View>
+			<View style={{ alignItems: 'flex-end', maxWidth: 120 }}>
+				<Text style={[styles.itemAmount, { maxWidth: 120 }]} numberOfLines={1} ellipsizeMode="tail">₹{item.amount}</Text>
 			</View>
 		</View>
 	);
@@ -91,24 +138,42 @@ const HistoryScreen = ({ navigation }: any) => {
 	function formatDate(date: Date) {
 		const now = new Date();
 		const diff = (now.getTime() - date.getTime()) / 1000;
-		if (diff < 60 * 60 * 24) {
-			// less than 1 day
-			if (diff < 60 * 60) {
-				const hours = Math.floor(diff / 3600);
-				return hours <= 1 ? 'Just now' : `${hours} hours ago`;
-			}
+		if (diff < 60) {
+			return 'Just now';
+		} else if (diff < 60 * 60) {
+			const mins = Math.floor(diff / 60);
+			return mins === 1 ? '1 minute ago' : `${mins} minutes ago`;
+		} else if (diff < 60 * 60 * 24) {
+			const hours = Math.floor(diff / 3600);
+			return hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+		} else {
 			const days = Math.floor(diff / (60 * 60 * 24));
-			return days <= 1 ? '1 day ago' : `${days} days ago`;
+			return days === 1 ? '1 day ago' : `${days} days ago`;
 		}
-		// Otherwise, show date
-		return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+	}
+
+	// Helper to group expenses by date (YYYY-MM-DD)
+	function groupByDate(expenses: ExpenseItem[]) {
+		const groups: { [date: string]: ExpenseItem[] } = {};
+		expenses.forEach(item => {
+			const dateKey = new Date(item.date).toLocaleDateString('en-CA'); // YYYY-MM-DD
+			if (!groups[dateKey]) groups[dateKey] = [];
+			groups[dateKey].push(item);
+		});
+		// Convert to SectionList format
+		return Object.entries(groups)
+			.sort((a, b) => (a[0] < b[0] ? 1 : -1)) // newest date first
+			.map(([date, data]) => ({
+				title: date,
+				data,
+			}));
 	}
 
 	return (
-        <SafeAreaView style={styles.container}>
+		<SafeAreaView style={styles.container}>
 			<View style={styles.headerRow}>
 				<Text style={styles.headerTitle}>History</Text>
-				<TouchableOpacity style={styles.statementBtn}>
+				<TouchableOpacity style={styles.statementBtn} onPress={clearHistory}>
 					<Text style={styles.statementBtnText}>My Statements</Text>
 				</TouchableOpacity>
 			</View>
@@ -116,7 +181,7 @@ const HistoryScreen = ({ navigation }: any) => {
 				<TextInput
 					style={styles.searchInput}
 					placeholder="Search transactions"
-					placeholderTextColor="#888"
+					placeholderTextColor={Colors.inputText}
 					value={search}
 					onChangeText={setSearch}
 				/>
@@ -126,7 +191,7 @@ const HistoryScreen = ({ navigation }: any) => {
 			</View>
 			{showFilters && (
 				<View style={styles.filterRow}>
-					{FILTERS.map(f => (
+					{dynamicFilters.map(f => (
 						<TouchableOpacity
 							key={f.value}
 							style={[styles.filterBtn, filterType === f.value && styles.filterBtnActive]}
@@ -137,47 +202,35 @@ const HistoryScreen = ({ navigation }: any) => {
 					))}
 				</View>
 			)}
-			<FlatList
-				data={filtered}
+			<SectionList
+				sections={groupByDate(filtered)}
 				keyExtractor={item => item.id}
 				renderItem={renderItem}
+				renderSectionHeader={({ section: { title } }) => (
+					<Text style={{ color: Colors.inputText,fontWeight:'bold', fontSize: 18, marginLeft: 18, marginTop: 18, marginBottom: 10, backgroundColor: Colors.background }}>
+						{getSectionTitle(title)}
+					</Text>
+				)}
 				contentContainerStyle={{ paddingBottom: 32 }}
-				style={{ marginTop: 12 }}
+				style={{ marginTop: 0 }}
+				stickySectionHeadersEnabled={false}
 			/>
-        </SafeAreaView>
+		</SafeAreaView>
 	);
 };
-
-// Utility to get history from AsyncStorage and add a new entry
-export async function addHistoryExpense({ label, amount, category }: { label: string; amount: string; category?: string }) {
-	const stored = await AsyncStorage.getItem('history');
-	let data = stored ? JSON.parse(stored) : [];
-	// Add new expense entry
-	const newItem = {
-		id: Date.now().toString(),
-		title: label,
-		amount: parseFloat(amount.replace(/[^\d.]/g, '')),
-		date: new Date(),
-		type: 'Paid',
-		subtitle: category || 'Expense',
-		bank: 'hdfc', // or any default
-	};
-	data = [newItem, ...data];
-	await AsyncStorage.setItem('history', JSON.stringify(data));
-}
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: Colors.background,
 		paddingHorizontal: 0,
-        paddingTop: 80, // Increased top padding for more space
+		paddingTop: 80, // Increased top padding for more space
 	},
 	headerRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
-        marginTop: 0, // Remove extra margin, handled by container
+		marginTop: 0, // Remove extra margin, handled by container
 		marginBottom: 16,
 		paddingHorizontal: 20,
 	},
@@ -232,7 +285,7 @@ const styles = StyleSheet.create({
 		backgroundColor: '#222',
 		borderRadius: 32,
 		marginHorizontal: 16,
-		marginBottom: 12,
+		marginBottom: 0,
 		height: 56,
 	},
 	searchInput: {

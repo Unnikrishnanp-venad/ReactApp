@@ -4,6 +4,7 @@ export const ANDROID_CLIENT_ID = "37313957899-2gr8klc4784b00ooar3rqmom2esqh5rt.a
 
 // Enum-like class for AsyncStorage keys
 export class StorageKeys {
+  static readonly STORAGE_KEY = 'FLIX_EXPENSES';
   static readonly HAS_LAUNCHED = 'hasLaunched';
   static readonly IS_AUTHED = 'isAuthed';
   static readonly SIGN_IN_TYPE = 'signInType';

@@ -32,7 +32,7 @@ const App = () => {
 
   useEffect(() => {
     const checkInitialRoute = async () => {
-      const hasLaunched = await AsyncStorage.getItem('hasLaunched');
+      const hasLaunched = await AsyncStorage.getItem(StorageKeys.HAS_LAUNCHED);
       if (!hasLaunched) {
         setInitialRoute(ScreenNames.ONBOARDING);
       } else {

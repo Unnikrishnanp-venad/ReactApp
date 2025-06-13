@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Alert, Image, TouchableOpacity, FlatList, SafeA
 import Colors from '../constants/colors';
 import { ScreenNames } from '../constants/screenNames';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { StorageKeys } from '../constants/key';
 
 const CATEGORIES = [
   {
@@ -47,7 +48,7 @@ const HomeScreen = ({ navigation }: any) => {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       (async () => {
-        const stored = await AsyncStorage.getItem('history');
+        const stored = await AsyncStorage.getItem(StorageKeys.STORAGE_KEY);
         let data = stored ? JSON.parse(stored) : [];
         const newTotals: { [key: string]: number } = {};
         for (const cat of CATEGORIES) {
