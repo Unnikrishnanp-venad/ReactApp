@@ -1,41 +1,66 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Alert, Image, TouchableOpacity, FlatList, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, Alert, Image, TouchableOpacity, FlatList, SafeAreaView, Dimensions } from 'react-native';
 import Colors from '../constants/colors';
+import { ScreenNames } from '../constants/screenNames';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const PLANS = [
+const CATEGORIES = [
   {
-    id: '1',
-    carrier: 'AT&T',
-    country: 'Mexico',
+    key: 'grocery',
+    label: 'Grocery',
     icon: require('../../assets/A1.png'),
-    details: '2GB / 60min',
-    validity: 'VALID FOR 24 DAYS',
-    price: '$32,10',
-    color: '#e3d6fa',
+    color: '#27ae60',
+    bg: '#eafbe7',
   },
   {
-    id: '2',
-    carrier: 'Vivo',
-    country: 'Brazil',
+    key: 'swiggy',
+    label: 'Swiggy',
     icon: require('../../assets/A2.png'),
-    details: '5GB',
-    validity: 'VALID FOR 30 DAYS',
-    price: '$15',
-    color: '#d2eaf7',
+    color: '#ff9800',
+    bg: '#fff7e6',
   },
   {
-    id: '3',
-    carrier: 'Vodafone',
-    country: 'France',
+    key: 'water',
+    label: 'Water',
     icon: require('../../assets/A3.png'),
-    details: '1GB',
-    validity: 'VALID FOR 12 DAYS',
-    price: '$104,20',
-    color: '#f7d7d7',
+    color: '#2196f3',
+    bg: '#e3f2fd',
+  },
+  {
+    key: 'medicine',
+    label: 'Medicine',
+    icon: require('../../assets/A4.png'),
+    color: '#9c27b0',
+    bg: '#f3e5f5',
   },
 ];
 
+const CARD_MARGIN = 4;
+const CARD_COLUMNS = 2;
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const CARD_WIDTH = (SCREEN_WIDTH - (CARD_MARGIN * (CARD_COLUMNS * 2 + 1))) / CARD_COLUMNS;
+const CARD_HEIGHT = CARD_WIDTH; // Fixed height for all cards
+
 const HomeScreen = ({ navigation }: any) => {
+  const [totals, setTotals] = React.useState<{ [key: string]: number }>({});
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      (async () => {
+        const stored = await AsyncStorage.getItem('history');
+        let data = stored ? JSON.parse(stored) : [];
+        const newTotals: { [key: string]: number } = {};
+        for (const cat of CATEGORIES) {
+          newTotals[cat.key] = data
+            .filter((item: any) => item.title && item.title.toLowerCase() === cat.label.toLowerCase())
+            .reduce((sum: number, item: any) => sum + (typeof item.amount === 'number' ? item.amount : parseFloat(item.amount)), 0);
+        }
+        setTotals(newTotals);
+      })();
+    });
+    return unsubscribe;
+  }, [navigation]);
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Top row: profile */}
@@ -46,34 +71,47 @@ const HomeScreen = ({ navigation }: any) => {
         </View>
       </View>
       {/* Floating Plus Button */}
-      <TouchableOpacity style={styles.fab} activeOpacity={0.8}>
+      <TouchableOpacity
+        style={styles.fab}
+        activeOpacity={0.8}
+        onPress={() => navigation.navigate(ScreenNames.ADD)}
+      >
         <Text style={styles.fabPlus}>+</Text>
       </TouchableOpacity>
       {/* Title */}
       <Text style={styles.title}>Always be{'\n'}in touch</Text>
-      {/* Plans list */}
+      {/* Category tiles */}
       <FlatList
-        data={PLANS}
-        keyExtractor={item => item.id}
+        data={CATEGORIES}
+        keyExtractor={item => item.key}
+        numColumns={2}
+        columnWrapperStyle={{ justifyContent: 'space-between', marginHorizontal: CARD_MARGIN }}
         renderItem={({ item }) => (
-          <View style={[styles.planCard, { backgroundColor: item.color }]}>
+          <View style={[
+            styles.planCard,
+            {
+              backgroundColor: Colors.collectionBackground,
+              width: CARD_WIDTH,
+              height: CARD_HEIGHT,
+              marginBottom: CARD_MARGIN * 2,
+              marginHorizontal: 0,
+              padding: 20,
+              justifyContent: 'center',
+            },
+          ]}>
             <View style={styles.planRow}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Image source={item.icon} style={styles.planIcon} />
-                <Text style={styles.planCarrier}>{item.carrier}</Text>
+
+                <Text style={[styles.planCarrier, { color: item.color, fontSize: 22 }]}>{item.label}</Text>
               </View>
-              <Text style={styles.planCountry}>{item.country}</Text>
             </View>
             <View style={styles.planDetailsRow}>
-              <View>
-                <Text style={styles.planDetails}>{item.details}</Text>
-                <Text style={styles.planValidity}>{item.validity}</Text>
-              </View>
-              <Text style={styles.planPrice}>{item.price}</Text>
+
+              <Text style={[styles.planPrice, { color: item.color, fontSize: 28 }]}>{(totals[item.key] || 0).toFixed(2)}</Text>
             </View>
           </View>
         )}
-        contentContainerStyle={{ paddingBottom: 32 }}
+        contentContainerStyle={{ paddingBottom: 32, paddingTop: 8 }}
         style={{ marginTop: 16 }}
         showsVerticalScrollIndicator={false}
       />
@@ -109,13 +147,13 @@ const styles = StyleSheet.create({
   },
   planCard: {
     borderRadius: 28,
-    marginHorizontal: 16,
-    marginBottom: 18,
-    padding: 22,
     shadowColor: '#000',
     shadowOpacity: 0.06,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 2 },
+    borderWidth: 1,
+    borderColor: Colors.borderColor,
+    // width and height are set inline in renderItem for equal sizing
   },
   planRow: {
     flexDirection: 'row',

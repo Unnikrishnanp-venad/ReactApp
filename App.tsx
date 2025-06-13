@@ -9,6 +9,7 @@ import HomeTabs from './src/screens/HomeTabs';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import RegistrationScreen from './src/screens/RegistrationScreen';
 import SignInScreen from './src/screens/SignInScreen';
+import AddScreen from './src/screens/AddScreen';
 import ReactNativeBiometrics from 'react-native-biometrics';
 import Colors from './src/constants/colors';
 import { StorageKeys } from './src/constants/key';
@@ -95,6 +96,7 @@ const App = () => {
             options={{ headerShown: true, title: ScreenNames.REGISTRATION }} // Show header and set title
           />
           <Stack.Screen name={ScreenNames.SIGN_IN} component={SignInScreen} options={{ title: 'Sign In' }} />
+          <Stack.Screen name={ScreenNames.ADD} component={AddScreen} options={{ title: 'Add' }} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>

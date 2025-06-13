@@ -2,6 +2,7 @@ import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Image, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '../constants/colors';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface HistoryItem {
 	id: string;
@@ -12,45 +13,6 @@ interface HistoryItem {
 	subtitle: string;
 	bank: keyof typeof BANK_ICONS;
 }
-
-const MOCK_HISTORY: HistoryItem[] = [
-	{
-		id: '1',
-		title: 'J J ENTERPRISES',
-		amount: 85,
-		date: new Date(Date.now() - 7 * 60 * 60 * 1000), // 7 hours ago
-		type: 'Paid',
-		subtitle: 'Paid to',
-		bank: 'hdfc',
-	},
-	{
-		id: '2',
-		title: 'Jio Prepaid Recharges',
-		amount: 899,
-		date: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
-		type: 'Paid',
-		subtitle: 'Paid to',
-		bank: 'hdfc',
-	},
-	{
-		id: '3',
-		title: 'J J ENTERPRISES',
-		amount: 194,
-		date: new Date(Date.now() - 25 * 60 * 60 * 1000), // 1 day ago
-		type: 'Paid',
-		subtitle: 'Paid to',
-		bank: 'hdfc',
-	},
-	{
-		id: '4',
-		title: 'JJ Enterprises',
-		amount: 25,
-		date: new Date('2025-06-09'),
-		type: 'Paid',
-		subtitle: 'Paid to',
-		bank: 'sbi',
-	},
-];
 
 const BANK_ICONS: Record<string, any> = {
 	hdfc: require('../../assets/A1.png'),
@@ -74,17 +36,19 @@ const HistoryScreen = ({ navigation }: any) => {
         navigation?.setOptions?.({ headerShown: false });
     }, [navigation]);
 
-	useEffect(() => {
-		// Load from storage or use mock
-		(async () => {
-			const stored = await AsyncStorage.getItem('history');
-			let data = stored ? JSON.parse(stored) : MOCK_HISTORY;
-			// Convert date strings back to Date objects
-			data = data.map((item: any) => ({ ...item, date: new Date(item.date) }));
-			setHistory(data);
-			setFiltered(data);
-		})();
-	}, []);
+	// Replace useEffect for loading history with useFocusEffect
+	useFocusEffect(
+		React.useCallback(() => {
+			(async () => {
+				const stored = await AsyncStorage.getItem('history');
+				let data = stored ? JSON.parse(stored) : [];
+				// Convert date strings back to Date objects
+				data = data.map((item: any) => ({ ...item, date: new Date(item.date) }));
+				setHistory(data);
+				setFiltered(data);
+			})();
+		}, [])
+	);
 
 	useEffect(() => {
 		// Filter by search and type
@@ -183,6 +147,24 @@ const HistoryScreen = ({ navigation }: any) => {
         </SafeAreaView>
 	);
 };
+
+// Utility to get history from AsyncStorage and add a new entry
+export async function addHistoryExpense({ label, amount }: { label: string; amount: string }) {
+	const stored = await AsyncStorage.getItem('history');
+	let data = stored ? JSON.parse(stored) : [];
+	// Add new expense entry
+	const newItem = {
+		id: Date.now().toString(),
+		title: label,
+		amount: parseFloat(amount.replace(/[^\d.]/g, '')),
+		date: new Date(),
+		type: 'Paid',
+		subtitle: 'Expense',
+		bank: 'hdfc', // or any default
+	};
+	data = [newItem, ...data];
+	await AsyncStorage.setItem('history', JSON.stringify(data));
+}
 
 const styles = StyleSheet.create({
 	container: {

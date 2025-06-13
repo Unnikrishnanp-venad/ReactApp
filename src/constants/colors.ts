@@ -38,6 +38,10 @@ const Colors = {
   contactItemPhone: '#888',
   contactItemSeparator: '#333',
   contactItemEmpty: '#888',
+  modalOverlay: '#292726',
+  modalOverlayExpense: '#292726',
+  modalOverlayIncome: '#292726',
+  collectionBackground: '#181818',
 };
 
 export default Colors;
