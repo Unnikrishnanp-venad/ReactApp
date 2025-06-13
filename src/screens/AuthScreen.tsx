@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, Alert, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, Alert, TextInput, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, SafeAreaView, Keyboard } from 'react-native';
 import ReactNativeBiometrics from 'react-native-biometrics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -7,10 +7,14 @@ import {
   GoogleSigninButton,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
-import { IOS_CLIENT_ID, WEB_CLIENT_ID } from '../constants/key';
+import { IOS_CLIENT_ID, StorageKeys, WEB_CLIENT_ID } from '../constants/key';
 import { googleSignIn } from '../constants/googleSigIn';
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword } from '@react-native-firebase/auth';
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Colors from '../constants/colors';
+import { StackActions } from '@react-navigation/native';
+import { ScreenNames } from '../constants/screenNames';
 
 // import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
@@ -25,19 +29,37 @@ GoogleSignin.configure({
 const { width } = Dimensions.get('window');
 
 const AuthScreen = ({ navigation }: any) => {
+  const insets = useSafeAreaInsets();
   // const auth = firebaseAuth
   const [biometricAvailable, setBiometricAvailable] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const scrollViewRef = React.useRef<ScrollView>(null);
+  const emailInputRef = React.useRef<TextInput | null>(null);
+  const passwordInputRef = React.useRef<TextInput | null>(null);
+
+  // Helper to scroll to input
+  const scrollToInput = (ref: React.RefObject<TextInput | null>) => {
+    setTimeout(() => {
+      ref.current?.measureLayout(
+        scrollViewRef.current?.getInnerViewNode?.() || scrollViewRef.current,
+        (x, y) => {
+          scrollViewRef.current?.scrollTo({ y: Math.max(y - 40, 0), animated: true });
+        },
+        () => { }
+      );
+    }, 100);
+  };
 
   useEffect(() => {
     // Check AsyncStorage for isAuthed on mount
     const checkAuth = async () => {
-      const isAuthed = await AsyncStorage.getItem('isAuthed');
+      const isAuthed = await AsyncStorage.getItem(StorageKeys.IS_AUTHED);
       if (isAuthed === 'true') {
-        navigation.replace('HomeTabs');
+        navigation.dispatch(StackActions.replace(ScreenNames.HOME_TABS)); // Navigate to Home screen
       } else {
         setLoading(false);
       }
@@ -50,6 +72,15 @@ const AuthScreen = ({ navigation }: any) => {
       setBiometricAvailable(!!available);
     };
     checkBiometric();
+  }, []);
+
+  useEffect(() => {
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      if (scrollViewRef.current) {
+        scrollViewRef.current.scrollTo({ y: 0, animated: true });
+      }
+    });
+    return () => keyboardDidHideListener.remove();
   }, []);
 
   const handleBiometricAuth = async () => {
@@ -66,9 +97,9 @@ const AuthScreen = ({ navigation }: any) => {
         const { success } = resultObject;
 
         if (success) {
-          AsyncStorage.setItem('isAuthed', 'true');
+          AsyncStorage.setItem(StorageKeys.IS_AUTHED, 'true');
           Alert.alert('Authenticated!', 'You have successfully authenticated.');
-          navigation.replace('Home'); // Navigate to Home screen
+          navigation.dispatch(StackActions.replace(ScreenNames.HOME_TABS)); // Navigate to Home screen
         } else {
           Alert.alert('Authentication cancelled');
         }
@@ -79,16 +110,20 @@ const AuthScreen = ({ navigation }: any) => {
   };
 
   const handleCreateAccount = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please enter both email and password');
+      return;
+    }
+    setLoading(true);
     createUserWithEmailAndPassword(getAuth(), email, password)
       .then(() => {
-        AsyncStorage.setItem('isAuthed', 'true');
-        AsyncStorage.setItem('signInType', 'firebase'); // Store sign-in type
+        AsyncStorage.setItem(StorageKeys.IS_AUTHED, 'true');
+        AsyncStorage.setItem('signInType', 'firebase');
         let user = getAuth().currentUser;
-        navigation.replace('Home');
-        console.log('User account created & signed in!', user);
+        navigation.dispatch(StackActions.replace(ScreenNames.HOME_TABS)); // Navigate to Home screen
       })
       .catch(error => {
-        AsyncStorage.setItem('isAuthed', 'false');
+        AsyncStorage.setItem(StorageKeys.IS_AUTHED, 'false');
         if (error.code === 'auth/email-already-in-use') {
           console.log('That email address is already in use!');
         }
@@ -96,97 +131,142 @@ const AuthScreen = ({ navigation }: any) => {
           console.log('That email address is invalid!');
         }
         console.error(error);
-      });
-  }
+      })
+      .finally(() => setLoading(false));
+  };
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#000', justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#FFD600" />
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.background }}>
+        <View style={{
+          position: 'absolute',
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: Colors.loaderbackground,
+          zIndex: 10,
+        }} />
+        <View style={{ backgroundColor: Colors.background, borderRadius: 12, padding: 32, alignItems: 'center', elevation: 8 }}>
+          <ActivityIndicator size="large" color={Colors.button} />
+          <Text style={{ color: Colors.inputText, marginTop: 16, fontSize: 18, fontWeight: '600' }}>Please wait...</Text>
+        </View>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Image source={require('../../assets/A4.png')} style={styles.logo} />
-        <Text style={styles.brand}>FLIX</Text>
-      </View>
-      <Text style={styles.title}>Keep your online{`\n`}business organized</Text>
-      <Text style={styles.subtitle}>Sign up to start your 30 days free trial</Text>
-      <GoogleSigninButton
-        style={styles.googleButton}
-        size={GoogleSigninButton.Size.Wide}
-        color={GoogleSigninButton.Color.Light}
-        onPress={() => {
-          googleSignIn(
-            () => {
-              AsyncStorage.setItem('isAuthed', 'true');
-              AsyncStorage.setItem('signInType', 'google'); // Store sign-in type
-              navigation.replace('Home');
-            },
-            (error) => {
-              if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-                console.log("error occured SIGN_IN_CANCELLED");
-                // user cancelled the login flow
-              } else if (error.code === statusCodes.IN_PROGRESS) {
-                console.log("error occured IN_PROGRESS");
-                // operation (f.e. sign in) is in progress already
-              } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-                console.log("error occured PLAY_SERVICES_NOT_AVAILABLE");
-              } else if (error.code === statusCodes.SIGN_IN_REQUIRED) {
-                console.log("error occured SIGN_IN_REQUIRED");
-              } else {
-                console.log(error);
-                console.log("error occured unknow error");
-              }
-            }
-          );
-        }}
-
-      />
-      <View style={styles.orRow}>
-        <View style={styles.line} />
-        <Text style={styles.orText}>or</Text>
-        <View style={styles.line} />
-      </View>
-      <View style={styles.form}>
-        <Text style={styles.label}>Name<Text style={{ color: '#FFD600' }}>*</Text></Text>
-        <TextInput style={styles.input} placeholder="Enter your name" placeholderTextColor="#aaa" value={name} onChangeText={setName} />
-        <Text style={styles.label}>Email<Text style={{ color: '#FFD600' }}>*</Text></Text>
-        <TextInput style={styles.input} placeholder="Enter your email" placeholderTextColor="#aaa" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
-        <Text style={styles.label}>Password<Text style={{ color: '#FFD600' }}>*</Text></Text>
-        <TextInput style={styles.input} placeholder="Enter your password" placeholderTextColor="#aaa" secureTextEntry value={password} onChangeText={setPassword} />
-        <TouchableOpacity
-          style={styles.createButton}
-          onPress={handleCreateAccount}
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background, paddingTop: insets?.top, paddingBottom: insets?.bottom }}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 64}
+      >
+        <ScrollView
+          ref={scrollViewRef}
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}
+          keyboardShouldPersistTaps="handled"
         >
-          <Text style={styles.createButtonText}>Create Account</Text>
-        </TouchableOpacity>
-      </View>
-      <Text style={styles.loginText}>
-        Already have an account? <Text style={styles.loginLink} onPress={() => navigation.navigate('SignIn')}>Login Here</Text>
-      </Text>
-    </View>
+          <View style={styles.contentBox}>
+            <View style={styles.header}>
+              <Image source={require('../../assets/A4.png')} style={styles.logo} />
+              <Text style={styles.brand}>FLIX</Text>
+            </View>
+            <Text style={styles.title}>Keep your online{`\n`}business organized</Text>
+            <Text style={styles.subtitle}>Sign up to start your 30 days free trial</Text>
+            <GoogleSigninButton
+              style={styles.googleButton}
+              size={GoogleSigninButton.Size.Wide}
+              color={GoogleSigninButton.Color.Dark}
+              onPress={() => {
+                setLoading(true);
+                googleSignIn(
+                  () => {
+                    AsyncStorage.setItem(StorageKeys.IS_AUTHED, 'true');
+                    AsyncStorage.setItem('signInType', 'google');
+                    navigation.dispatch(StackActions.replace(ScreenNames.HOME_TABS)); // Navigate to Home screen
+                  },
+                  (error) => {
+                    setLoading(false);
+                    if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+                      console.log("error occured SIGN_IN_CANCELLED");
+                    } else if (error.code === statusCodes.IN_PROGRESS) {
+                      console.log("error occured IN_PROGRESS");
+                    } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                      console.log("error occured PLAY_SERVICES_NOT_AVAILABLE");
+                    } else if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+                      console.log("error occured SIGN_IN_REQUIRED");
+                    } else {
+                      console.log(error);
+                      console.log("error occured unknow error");
+                    }
+                  }
+                );
+              }}
+            />
+            <View style={styles.orRow}>
+              <View style={styles.line} />
+              <Text style={styles.orText}>or</Text>
+              <View style={styles.line} />
+            </View>
+            <View style={styles.form}>
+              <Text style={styles.subtitle}>Enter your details below</Text>
+              <TextInput
+                ref={emailInputRef}
+                style={styles.input}
+                placeholder="Enter your email"
+                placeholderTextColor={Colors.inputText}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={email}
+                onChangeText={setEmail}
+                onFocus={() => scrollToInput(emailInputRef)}
+              />
+              {/* <Text style={styles.label}>Password</Text> */}
+              <View style={{ position: 'relative', width: '100%', marginBottom: 16 }}>
+                <TextInput
+                  ref={passwordInputRef}
+                  style={[styles.input, { marginBottom: 0 }]}
+                  placeholder="Enter your password"
+                  placeholderTextColor={Colors.inputText}
+                  secureTextEntry={!showPassword}
+                  value={password}
+                  onChangeText={setPassword}
+                  onFocus={() => scrollToInput(passwordInputRef)}
+                />
+                <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
+                  <Text style={{ color: Colors.inputText, fontSize: 18 }}>{showPassword ? '🙈' : '👁️'}</Text>
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity
+                style={styles.createButton}
+                onPress={handleCreateAccount}
+              >
+                <Text style={styles.createButtonText}>Create Account</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.loginText}>
+              Already have an account? <Text style={styles.loginLink} onPress={() => navigation.dispatch(StackActions.push(ScreenNames.SIGN_IN))}>Login Here</Text>
+            </Text>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
 export default AuthScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000', // Set background to black
+  contentBox: {
+    width: '100%',
+    maxWidth: 420,
+    backgroundColor: Colors.background,
     alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: 48,
+    alignSelf: 'center',
+    padding: 0,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
-    marginBottom: 24,
   },
   logo: {
     width: 40,
@@ -197,12 +277,12 @@ const styles = StyleSheet.create({
   brand: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#FFD600',
+    color: Colors.button,
   },
   title: {
     fontSize: 38,
     fontWeight: 'bold',
-    color: '#888',
+    color: Colors.headerText,
     textAlign: 'left',
     alignSelf: 'flex-start',
     marginBottom: 8,
@@ -211,39 +291,39 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: '#888',
-    marginBottom: 32,
+    color: Colors.inputText,
+    marginBottom: 15,
     alignSelf: 'flex-start',
   },
   googleButton: {
     width: '100%',
     height: 52,
     borderRadius: 12,
-    marginBottom: 24,
+    marginBottom: 10,
     alignSelf: 'center',
   },
   orRow: {
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    marginBottom: 24,
+    marginBottom: 10,
   },
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: '#eee',
+    backgroundColor: Colors.borderColor, // lighter border color
   },
   orText: {
     marginHorizontal: 12,
-    color: '#888',
+    color: Colors.headerText,
     fontSize: 16,
   },
   form: {
     width: '100%',
-    marginBottom: 24,
+    marginBottom: 10,
   },
   label: {
-    color: '#888',
+    color: Colors.headerText,
     fontWeight: '600',
     fontSize: 16,
     marginBottom: 4,
@@ -252,37 +332,45 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: 48,
-    backgroundColor: '#fafafa',
+    backgroundColor: Colors.inputBackground, // darker input background
     borderRadius: 8,
     paddingHorizontal: 16,
-    color: '#222',
+    color: Colors.inputText, // text color as #888
     fontSize: 16,
-    marginBottom: 8,
+    marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#eee',
+    borderColor: Colors.borderColor,
+    paddingRight: 40, // Add space for the eye icon
   },
   createButton: {
     width: '100%',
     height: 48,
-    backgroundColor: '#FFD600', // Yellow button
+    backgroundColor: Colors.button, // Yellow button
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 18,
   },
   createButtonText: {
-    color: '#111', // Dark text for contrast on yellow
+    color: Colors.buttonText, // Dark text for contrast on yellow
     fontSize: 18,
     fontWeight: '600',
   },
   loginText: {
-    color: '#888',
+    color: Colors.headerText,
     fontSize: 15,
-    marginTop: 12,
-    marginBottom: 24,
+    marginTop: 0,
+    marginBottom: 40,
   },
   loginLink: {
-    color: '#FFD600',
+    color: Colors.button,
     fontWeight: 'bold',
+  },
+  eyeButton: {
+    position: 'absolute',
+    right: 16,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

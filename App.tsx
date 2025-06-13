@@ -9,6 +9,11 @@ import HomeTabs from './src/screens/HomeTabs';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import RegistrationScreen from './src/screens/RegistrationScreen';
 import SignInScreen from './src/screens/SignInScreen';
+import AddScreen from './src/screens/AddScreen';
+import ReactNativeBiometrics from 'react-native-biometrics';
+import Colors from './src/constants/colors';
+import { StorageKeys } from './src/constants/key';
+import { ScreenNames } from './src/constants/screenNames';
 
 const Stack = createNativeStackNavigator();
 
@@ -16,55 +21,82 @@ const MyTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    background: '#1e90ff', // match your splash color
+    background: Colors.background,
   },
 };
 
 const App = () => {
   const [initialRoute, setInitialRoute] = useState<string | null>(null);
+  const [checkingBiometric, setCheckingBiometric] = useState(false);
 
   useEffect(() => {
     const checkInitialRoute = async () => {
       const hasLaunched = await AsyncStorage.getItem('hasLaunched');
       if (!hasLaunched) {
-        setInitialRoute('Onboarding');
+        setInitialRoute(ScreenNames.ONBOARDING);
       } else {
-        const isAuthed = await AsyncStorage.getItem('isAuthed');
-        setInitialRoute(isAuthed === 'true' ? 'Home' : 'Auth');
+        const isAuthed = await AsyncStorage.getItem(StorageKeys.IS_AUTHED);
+        if (isAuthed === 'true') {
+          setCheckingBiometric(true);
+          const rnBiometrics = new ReactNativeBiometrics();
+          const { available } = await rnBiometrics.isSensorAvailable();
+          if (!available) {
+            setInitialRoute(ScreenNames.AUTH);
+            setCheckingBiometric(false);
+            return;
+          }
+          rnBiometrics.simplePrompt({ promptMessage: 'Authenticate' })
+            .then(resultObject => {
+              const { success } = resultObject;
+              if (success) {
+                setInitialRoute(ScreenNames.HOME_TABS);
+              } else {
+                setInitialRoute(ScreenNames.AUTH);
+              }
+              setCheckingBiometric(false);
+            })
+            .catch(() => {
+              setInitialRoute(ScreenNames.AUTH);
+              setCheckingBiometric(false);
+            });
+        } else {
+          setInitialRoute(ScreenNames.AUTH);
+        }
       }
     };
     checkInitialRoute();
   }, []);
 
-  if (!initialRoute) return null; // or a splash/loading screen
+  if (!initialRoute || checkingBiometric) return null; // or a splash/loading screen
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#1e90ff' }}>
+    <View style={{ flex: 1, backgroundColor: Colors.background }}>
       <StatusBar hidden={true} />
       <NavigationContainer theme={MyTheme}>
         <Stack.Navigator
           screenOptions={{
             headerShown: false, // or true if you want the header
-            headerStyle: { backgroundColor: '#000' }, // Black header
-            headerTintColor: '#fff', // White text/icons
+            headerStyle: { backgroundColor: Colors.header }, // Black header
+            headerTintColor: Colors.headerText, // White text/icons
           }}
           initialRouteName={initialRoute}
         >
-          <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-          <Stack.Screen name="Auth" component={AuthScreen} />
+          <Stack.Screen name={ScreenNames.ONBOARDING} component={OnboardingScreen} />
+          <Stack.Screen name={ScreenNames.AUTH} component={AuthScreen} />
           <Stack.Screen
-            name="Home"
+            name={ScreenNames.HOME_TABS}
             component={HomeTabs}
             options={{
-              headerShown: false, // <-- Hide header for Home only
+              headerShown: false, // <-- Hide header for HomeTabs only
             }}
           />
           <Stack.Screen
-            name="Registration"
+            name={ScreenNames.REGISTRATION}
             component={RegistrationScreen}
-            options={{ headerShown: true, title: 'Registration' }} // Show header and set title
+            options={{ headerShown: true, title: ScreenNames.REGISTRATION }} // Show header and set title
           />
-          <Stack.Screen name="SignIn" component={SignInScreen} options={{ title: 'Sign In' }} />
+          <Stack.Screen name={ScreenNames.SIGN_IN} component={SignInScreen} options={{ title: 'Sign In' }} />
+          <Stack.Screen name={ScreenNames.ADD} component={AddScreen} options={{ title: 'Add' }} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>

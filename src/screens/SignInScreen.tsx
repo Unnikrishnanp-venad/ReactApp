@@ -1,12 +1,31 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform, Image } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform, Image, SafeAreaView, KeyboardAvoidingView, ScrollView, ActivityIndicator } from 'react-native';
 import { getAuth, signInWithEmailAndPassword } from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Colors from '../constants/colors';
+import { StackActions } from '@react-navigation/native';
+import { StorageKeys } from '../constants/key';
+import { ScreenNames } from '../constants/screenNames';
 
 const SignInScreen = ({ navigation }: any) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [emailY, setEmailY] = useState(0);
+    const [passwordY, setPasswordY] = useState(0);
+    const insets = useSafeAreaInsets();
+    const scrollViewRef = useRef<ScrollView>(null);
+    const emailInputRef = useRef<TextInput | null>(null);
+    const passwordInputRef = useRef<TextInput | null>(null);
+
+    // Helper to scroll to input
+    const scrollToInput = (y: number) => {
+        setTimeout(() => {
+            scrollViewRef.current?.scrollTo({ y: Math.max(y - 40, 0), animated: true });
+        }, 100);
+    };
 
     const handleSignIn = async () => {
         if (!email || !password) {
@@ -14,17 +33,19 @@ const SignInScreen = ({ navigation }: any) => {
             console.log('SignIn attempt failed: missing email or password');
             return;
         }
+        setLoading(true);
         console.log('Attempting sign in with:', email);
         signInWithEmailAndPassword(getAuth(), email, password)
             .then(() => {
                 let user = getAuth().currentUser;
-                AsyncStorage.setItem('isAuthed', 'true');
+                AsyncStorage.setItem(StorageKeys.IS_AUTHED, 'true');
                 AsyncStorage.setItem('signInType', 'firebase'); // Store sign-in type
                 console.log('User account created & signed in!', user);
-                navigation.replace('Home');
+                navigation.dispatch(StackActions.replace(ScreenNames.HOME_TABS));
+
             })
             .catch(error => {
-                AsyncStorage.setItem('isAuthed', 'false');
+                AsyncStorage.setItem(StorageKeys.IS_AUTHED, 'false');
                 console.log('SignIn error:', error);
                 if (error.code === 'auth/email-already-in-use') {
                     console.log('That email address is already in use!');
@@ -33,77 +54,114 @@ const SignInScreen = ({ navigation }: any) => {
                     console.log('That email address is invalid!');
                 }
                 console.error(error);
-            });
+            })
+            .finally(() => setLoading(false));
     };
 
+    if (loading) {
+        return (
+            <View style={{
+                position: 'absolute',
+                top: 0, left: 0, right: 0, bottom: 0,
+                zIndex: 10,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: Colors.background,
+            }} pointerEvents="box-none">
+                <View style={{
+                    position: 'absolute',
+                    top: 0, left: 0, right: 0, bottom: 0,
+                    backgroundColor: Colors.background,
+                    // Use backdropFilter for web, and fallback for native
+                    ...(Platform.OS === 'web' ? { backdropFilter: 'blur(6px)' } : {}),
+                }} />
+                <View style={{ backgroundColor: Colors.background, borderRadius: 12, padding: 24, alignItems: 'center' }}>
+                    <ActivityIndicator size="large" color={Colors.button} />
+                    <Text style={{ color: Colors.inputText, marginTop: 12, fontSize: 16 }}>Please wait...</Text>
+                </View>
+            </View>
+        );
+    }
+
     return (
-        <View style={styles.container}>
-            {/* Back button if navigated from AuthScreen */}
-            {navigation.canGoBack() && (
-                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                    <Text style={styles.backButtonText}>{'Back'}</Text>
-                </TouchableOpacity>
-            )}
-            {/* Branding/logo row */}
-            <View style={styles.header}>
-                <Image source={require('../../assets/A4.png')} style={styles.logo} />
-                <Text style={styles.brand}>FLIX</Text>
-            </View>
-            {/* Large subtitle */}
-            <Text style={styles.bigSubtitle}>Keep your online{Platform.OS === 'web' ? '\n' : ' '}business organized</Text>
-            <Text style={styles.trialSubtitle}>Sign up to start your 30 days free trial</Text>
-            <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>Enter your details below</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Email Address"
-                placeholderTextColor="#888"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-            />
-            <View style={styles.passwordRow}>
-                <TextInput
-                    style={[styles.input, { flex: 1, marginBottom: 0 }]}
-                    placeholder="Password"
-                    placeholderTextColor="#888"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry={!showPassword}
-                />
-                <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
-                    <Text style={{ color: '#888', fontSize: 18 }}>{showPassword ? '🙈' : '👁️'}</Text>
-                </TouchableOpacity>
-            </View>
-            <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
-                <Text style={styles.signInButtonText}>Sign in</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => Alert.alert('Forgot password pressed')}>
-                <Text style={styles.forgotText}>Forgot your password?</Text>
-            </TouchableOpacity>
-            {/* Removed Google sign-in button from SignInScreen */}
-            {/* <View style={styles.socialRow}>
-                <GoogleSigninButton ... />
-            </View> */}
-        </View>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background, paddingTop: insets?.top, paddingBottom: insets?.bottom }}>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 64}
+            >
+                <ScrollView
+                    ref={scrollViewRef}
+                    contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}
+                    keyboardShouldPersistTaps="handled"
+                >
+                    <View style={styles.contentBox}>
+                        <View style={styles.header}>
+                            <Image source={require('../../assets/A4.png')} style={styles.logo} />
+                            <Text style={styles.brand}>FLIX</Text>
+                        </View>
+                        <Text style={styles.bigSubtitle}>Keep your online{Platform.OS === 'web' ? '\n' : ' '}business organized</Text>
+
+                        <Text style={styles.subtitle}>Enter your details below</Text>
+                        <TextInput
+                            ref={emailInputRef}
+                            style={styles.input}
+                            placeholder="Email Address"
+                            placeholderTextColor="#888"
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            onFocus={() => scrollToInput(emailY)}
+                            onLayout={e => setEmailY(e.nativeEvent.layout.y)}
+                        />
+                        <View style={styles.passwordRow}>
+                            <TextInput
+                                ref={passwordInputRef}
+                                style={[styles.input, { flex: 1, marginBottom: 0 }]}
+                                placeholder="Password"
+                                placeholderTextColor={Colors.inputText}
+                                value={password}
+                                onChangeText={setPassword}
+                                secureTextEntry={!showPassword}
+                                onFocus={() => scrollToInput(passwordY)}
+                                onLayout={e => setPasswordY(e.nativeEvent.layout.y)}
+                            />
+                            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
+                                <Image
+                                    source={showPassword ? require('../../assets/eye_open.png') : require('../../assets/eye_closed.png')}
+                                    style={{ width: 24, height: 24, tintColor: Colors.inputText }}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                        <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
+                            <Text style={styles.signInButtonText}>Sign in</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.dispatch(StackActions.popTo(ScreenNames.AUTH))}>
+                            <Text style={styles.forgotText}>Create account?</Text>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#000', // dark background
+    contentBox: {
+        width: '100%',
+        maxWidth: 420,
+        backgroundColor: Colors.background,
         alignItems: 'center',
-        justifyContent: 'center',
-        paddingHorizontal: 24,
+        alignSelf: 'center',
+        padding: 0,
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
-        alignSelf: 'flex-start',
-        marginBottom: 12,
-        marginTop: 8,
+        alignSelf: 'flex-start', // Align header to the left
+        marginBottom: 10,
+        marginTop: 0, // Add more top margin to push header below back button
     },
     logo: {
         width: 36,
@@ -113,48 +171,48 @@ const styles = StyleSheet.create({
     },
     brand: {
         fontSize: 28,
-        color: '#FFD600',
+        color: Colors.button,
         fontWeight: 'bold',
         letterSpacing: 1,
     },
     bigSubtitle: {
-        fontSize: 36,
-        color: '#888', // text color as #888
+        fontSize: 48,
+        color: Colors.headerText, // text color as #888
         fontWeight: 'bold',
-        marginBottom: 0,
+        marginBottom: 30,
         alignSelf: 'flex-start',
-        lineHeight: 40,
+        lineHeight: 52, // Fix: lineHeight should be >= fontSize
     },
     trialSubtitle: {
         fontSize: 18,
-        color: '#888', // text color as #888
+        color: Colors.headerText, // text color as #888
         marginBottom: 32,
         alignSelf: 'flex-start',
     },
     title: {
         fontSize: 32,
-        color: '#888', // text color as #888
+        color: Colors.headerText, // text color as #888
         fontWeight: 'bold',
         marginBottom: 8,
         alignSelf: 'flex-start',
     },
     subtitle: {
         fontSize: 16,
-        color: '#888', // text color as #888
+        color: Colors.inputText, // text color as #888
         marginBottom: 24,
         alignSelf: 'flex-start',
     },
     input: {
         width: '100%',
         height: 48,
-        backgroundColor: '#232323', // darker input background
+        backgroundColor: Colors.inputBackground, // darker input background
         borderRadius: 8,
         paddingHorizontal: 16,
-        color: '#888', // text color as #888
+        color: Colors.inputText, // text color as #888
         fontSize: 16,
         marginBottom: 16,
         borderWidth: 1,
-        borderColor: '#333',
+        borderColor: Colors.borderColor, // subtle border color
     },
     passwordRow: {
         flexDirection: 'row',
@@ -172,19 +230,19 @@ const styles = StyleSheet.create({
     signInButton: {
         width: '100%',
         height: 48,
-        backgroundColor: '#FFD600', // darker button
+        backgroundColor: Colors.button, // darker button
         borderRadius: 12,
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 16,
     },
     signInButtonText: {
-        color: '#000', // text color as #888
+        color: Colors.buttonText, // text color as #888
         fontSize: 18,
         fontWeight: '600',
     },
     forgotText: {
-        color: '#888', // text color as #888
+        color: Colors.headerText, // text color as #888
         fontSize: 15,
         marginBottom: 24,
     },
@@ -197,49 +255,20 @@ const styles = StyleSheet.create({
     line: {
         flex: 1,
         height: 1,
-        backgroundColor: '#333', // darker line
+        backgroundColor: Colors.borderColor, // darker line
     },
     orText: {
         marginHorizontal: 12,
-        color: '#888', // text color as #888
+        color: Colors.inputText, // text color as #888
         fontSize: 15,
     },
-    socialRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        width: '100%',
-        justifyContent: 'space-between',
-    },
+
     googleButton: {
         flex: 1,
         height: 48,
         marginRight: 8,
     },
-    fbButton: {
-        width: 48,
-        height: 48,
-        backgroundColor: '#232323', // darker button
-        borderRadius: 8,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    fbText: {
-        color: '#888', // text color as #888
-        fontSize: 28,
-        fontWeight: 'bold',
-    },
-    backButton: {
-        position: 'absolute',
-        top: 48,
-        left: 24,
-        zIndex: 10,
-        padding: 8,
-    },
-    backButtonText: {
-        color: '#FFD600',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
+
 });
 
 export default SignInScreen;

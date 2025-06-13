@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Platform, PermissionsAndroid, TextInput } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Platform, PermissionsAndroid, TextInput, SafeAreaView } from 'react-native';
 import Contacts from 'react-native-contacts';
+import Colors from '../constants/colors';
 
 const SearchScreen = () => {
   const [contacts, setContacts] = useState<any[]>([]);
@@ -54,7 +55,7 @@ const SearchScreen = () => {
   });
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TextInput
         style={styles.searchBar}
         placeholder="Search contacts"
@@ -64,7 +65,7 @@ const SearchScreen = () => {
     
       />
       <FlatList
-        style={{ backgroundColor: '#000' }}
+        style={{ backgroundColor: Colors.background }}
         data={sortedContacts}
         keyExtractor={item => item.recordID}
         renderItem={({ item }) => (
@@ -86,28 +87,28 @@ const SearchScreen = () => {
         )}
         ListEmptyComponent={<Text style={styles.empty}>No contacts found.</Text>}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
 export default SearchScreen;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000' }, // solid black
+  container: { flex: 1, backgroundColor: Colors.background, marginTop: 80 }, // solid black
   searchBar: {
     height: 40,
-    borderColor: '#222',      // valid dark border
+    borderColor: Colors.searchBarBackground,      // valid dark border
     borderWidth: 1,
     borderRadius: 8,
     margin: 16,
     paddingHorizontal: 12,
     fontSize: 16,
-    color: '#32a852',            // white text
-    backgroundColor: '#0000',  // solid black background
+    color: Colors.searchBarText,            // white text
+    backgroundColor: Colors.searchBarBackground,  // solid black background
     opacity: 1,
   },
-  item: { padding: 16, borderBottomWidth: 1, borderBottomColor: '#222', backgroundColor: '#000' },
-  name: { fontSize: 16, color: '#fff' },
-  phone: { fontSize: 14, color: '#666' },
-  empty: { textAlign: 'center', marginTop: 40, color: '#888' },
+  item: { padding: 16, borderBottomWidth: 1, borderBottomColor:  Colors.searchBarseperator, backgroundColor: Colors.background },
+  name: { fontSize: 16, color: Colors.headerText },
+  phone: { fontSize: 14, color: Colors.contactItemPhone, marginTop: 4 },
+  empty: { textAlign: 'center', marginTop: 40, color:  Colors.contactItemPhone },
 });
