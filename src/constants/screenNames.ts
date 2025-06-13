@@ -11,5 +11,6 @@ export class ScreenNames {
   static readonly HISTORY = "History";
   static readonly SEARCH = "Search";
   static readonly ADD = "AddScreen";
+  static readonly ADDEXPENSE = "Addexpense";
   // Add more screen names as needed
 }

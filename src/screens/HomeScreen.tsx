@@ -4,59 +4,43 @@ import Colors from '../constants/colors';
 import { ScreenNames } from '../constants/screenNames';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StorageKeys } from '../constants/key';
+import { ExpenseItem } from '../constants/model';
+import { StackActions } from '@react-navigation/native';
 
-const CATEGORIES = [
-  {
-    key: 'grocery',
-    label: 'Grocery',
-    icon: require('../../assets/A1.png'),
-    color: '#27ae60',
-    bg: '#eafbe7',
-  },
-  {
-    key: 'swiggy',
-    label: 'Swiggy',
-    icon: require('../../assets/A2.png'),
-    color: '#ff9800',
-    bg: '#fff7e6',
-  },
-  {
-    key: 'water',
-    label: 'Water',
-    icon: require('../../assets/A3.png'),
-    color: '#2196f3',
-    bg: '#e3f2fd',
-  },
-  {
-    key: 'medicine',
-    label: 'Medicine',
-    icon: require('../../assets/A4.png'),
-    color: '#9c27b0',
-    bg: '#f3e5f5',
-  },
-];
+const CATEGORY_META: { [key: string]: { label: string; icon: any; color: string; bg: string } } = {};
 
 const CARD_MARGIN = 4;
 const CARD_COLUMNS = 2;
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CARD_WIDTH = (SCREEN_WIDTH - (CARD_MARGIN * (CARD_COLUMNS * 2 + 1))) / CARD_COLUMNS;
-const CARD_HEIGHT = CARD_WIDTH; // Fixed height for all cards
+const CARD_HEIGHT = CARD_WIDTH;
 
 const HomeScreen = ({ navigation }: any) => {
-  const [totals, setTotals] = React.useState<{ [key: string]: number }>({});
+  const [categoryTotals, setCategoryTotals] = React.useState<{ [key: string]: number }>({});
+  const [categories, setCategories] = React.useState<string[]>([]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       (async () => {
         const stored = await AsyncStorage.getItem(StorageKeys.STORAGE_KEY);
-        let data = stored ? JSON.parse(stored) : [];
-        const newTotals: { [key: string]: number } = {};
-        for (const cat of CATEGORIES) {
-          newTotals[cat.key] = data
-            .filter((item: any) => item.title && item.title.toLowerCase() === cat.label.toLowerCase())
-            .reduce((sum: number, item: any) => sum + (typeof item.amount === 'number' ? item.amount : parseFloat(item.amount)), 0);
+        console.log('Stored data:', stored);
+        // Parse stored data or initialize as empty array
+        // If stored data is null, initialize as empty array
+        let data: ExpenseItem[] = stored ? JSON.parse(stored) : [];
+        // Get all unique types from expenses
+        const uniqueTypes = Array.from(new Set(data.map(item => item.type)));
+        console.log('Unique types:', uniqueTypes);
+        // Set categories state with unique types
+        setCategories(uniqueTypes);
+        // Calculate totals for each type
+        const totals: { [key: string]: number } = {};
+        for (const type of uniqueTypes) {
+          totals[type] = data
+            .filter(item => item.type === type)
+            .reduce((sum, item) => sum + (typeof item.amount === 'number' ? item.amount : parseFloat(item.amount as any)), 0);
         }
-        setTotals(newTotals);
+        console.log('Category totals:', totals);
+        setCategoryTotals(totals);
       })();
     });
     return unsubscribe;
@@ -75,7 +59,11 @@ const HomeScreen = ({ navigation }: any) => {
       <TouchableOpacity
         style={styles.fab}
         activeOpacity={0.8}
-        onPress={() => navigation.navigate(ScreenNames.ADD)}
+        onPress={
+          () =>
+             navigation.dispatch(StackActions.push(ScreenNames.ADDEXPENSE))
+          // navigation.navigate(ScreenNames.ADD)
+        }
       >
         <Text style={styles.fabPlus}>+</Text>
       </TouchableOpacity>
@@ -83,35 +71,44 @@ const HomeScreen = ({ navigation }: any) => {
       <Text style={styles.title}>Always be{'\n'}in touch</Text>
       {/* Category tiles */}
       <FlatList
-        data={CATEGORIES}
-        keyExtractor={item => item.key}
+        data={categories}
+        keyExtractor={item => item}
         numColumns={2}
         columnWrapperStyle={{ justifyContent: 'space-between', marginHorizontal: CARD_MARGIN }}
-        renderItem={({ item }) => (
-          <View style={[
-            styles.planCard,
-            {
-              backgroundColor: Colors.collectionBackground,
-              width: CARD_WIDTH,
-              height: CARD_HEIGHT,
-              marginBottom: CARD_MARGIN * 2,
-              marginHorizontal: 0,
-              padding: 20,
-              justifyContent: 'center',
-            },
-          ]}>
-            <View style={styles.planRow}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-
-                <Text style={[styles.planCarrier, { color: item.color, fontSize: 22 }]}>{item.label}</Text>
+        renderItem={({ item }) => {
+          const meta = CATEGORY_META[item] || {
+            label: item,
+            icon: null,
+            color: '#888',
+            bg: '#eee',
+          };
+          return (
+            <View style={[
+              styles.planCard,
+              {
+                backgroundColor: Colors.collectionBackground,
+                width: CARD_WIDTH,
+                height: CARD_HEIGHT,
+                marginBottom: CARD_MARGIN * 2,
+                marginHorizontal: 0,
+                padding: 20,
+                justifyContent: 'center',
+              },
+            ]}>
+              <View style={styles.planRow}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  {meta.icon && <Image source={meta.icon} style={styles.planIcon} />}
+                  <Text style={[styles.planCarrier, { color: meta.color, fontSize: 22 }]}>{meta.label}</Text>
+                </View>
+              </View>
+              <View style={styles.planDetailsRow}>
+                <Text style={[styles.planPrice, { color: meta.color, fontSize: 28 }]} numberOfLines={1} ellipsizeMode="tail">
+                  {(categoryTotals[item] || 0).toFixed(2)}
+                </Text>
               </View>
             </View>
-            <View style={styles.planDetailsRow}>
-
-              <Text style={[styles.planPrice, { color: item.color, fontSize: 28 }]}>{(totals[item.key] || 0).toFixed(2)}</Text>
-            </View>
-          </View>
-        )}
+          );
+        }}
         contentContainerStyle={{ paddingBottom: 32, paddingTop: 8 }}
         style={{ marginTop: 16 }}
         showsVerticalScrollIndicator={false}
