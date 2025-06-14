@@ -8,6 +8,7 @@ import { StackActions } from '@react-navigation/native';
 import { StorageKeys } from '../constants/key';
 import { ScreenNames } from '../constants/screenNames';
 import Toast, { ToastPosition, ToastType } from 'react-native-toast-message';
+import FontSize from '../constants/fontsize';
 const SignInScreen = ({ navigation }: any) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -200,13 +201,13 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
     },
     brand: {
-        fontSize: 28,
+        fontSize: FontSize.huge,
         color: Colors.primary,
         fontWeight: 'bold',
         letterSpacing: 1,
     },
     bigSubtitle: {
-        fontSize: 48,
+        fontSize: FontSize.massive,
         color: Colors.primaryText, // text color as #888
         fontWeight: 'bold',
         marginBottom: 30,
@@ -214,20 +215,20 @@ const styles = StyleSheet.create({
         lineHeight: 52, // Fix: lineHeight should be >= fontSize
     },
     trialSubtitle: {
-        fontSize: 18,
+        fontSize: FontSize.xxxhuge,
         color: Colors.primaryText, // text color as #888
         marginBottom: 32,
         alignSelf: 'flex-start',
     },
     title: {
-        fontSize: 32,
+        fontSize: FontSize.xxxhuge,
         color: Colors.primaryText, // text color as #888
         fontWeight: 'bold',
         marginBottom: 8,
         alignSelf: 'flex-start',
     },
     subtitle: {
-        fontSize: 16,
+        fontSize: FontSize.large,
         color: Colors.inputText, // text color as #888
         marginBottom: 24,
         alignSelf: 'flex-start',
@@ -239,7 +240,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         paddingHorizontal: 16,
         color: Colors.inputText, // text color as #888
-        fontSize: 16,
+        fontSize: FontSize.large,
         marginBottom: 16,
         borderWidth: 1,
         borderColor: Colors.borderColor, // subtle border color
@@ -268,12 +269,12 @@ const styles = StyleSheet.create({
     },
     signInButtonText: {
         color: Colors.buttonText, // text color as #888
-        fontSize: 18,
+        fontSize: FontSize.xlarge,
         fontWeight: '600',
     },
     forgotText: {
         color: Colors.inputText, // text color as #888
-        fontSize: 15,
+        fontSize: FontSize.medium,
         marginBottom: 24,
     },
     orRow: {
@@ -290,7 +291,7 @@ const styles = StyleSheet.create({
     orText: {
         marginHorizontal: 12,
         color: Colors.inputText, // text color as #888
-        fontSize: 15,
+        fontSize: FontSize.medium,
     },
 
     googleButton: {

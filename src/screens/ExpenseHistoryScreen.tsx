@@ -5,6 +5,7 @@ import Colors from '../constants/colors';
 import { useFocusEffect } from '@react-navigation/native';
 import { ExpenseItem } from '../constants/model';
 import { StorageKeys } from '../constants/key';
+import FontSize from '../constants/fontsize';
 
 const ExpenseHistoryScreen = ({ navigation }: any) => {
   const [history, setHistory] = useState<ExpenseItem[]>([]);
@@ -216,7 +217,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   headerTitle: {
-    fontSize: 32,
+    fontSize: FontSize.xlarge,
     color: Colors.primaryText,
     fontWeight: 'bold',
   },
@@ -231,7 +232,7 @@ const styles = StyleSheet.create({
   statementBtnText: {
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: FontSize.large,
   },
   filterRow: {
     flexDirection: 'row',
@@ -256,7 +257,7 @@ const styles = StyleSheet.create({
   filterBtnText: {
     color: '#888',
     fontWeight: 'bold',
-    fontSize: 15,
+    fontSize: FontSize.medium,
   },
   filterBtnTextActive: {
     color: Colors.header,
@@ -273,7 +274,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     color: '#fff',
-    fontSize: 18,
+    fontSize: FontSize.large,
     marginLeft: 18,
   },
   itemRow: {
@@ -296,27 +297,27 @@ const styles = StyleSheet.create({
   },
   itemSubtitle: {
     color: Colors.subtitle,
-    fontSize: 14,
+    fontSize: FontSize.medium,
     marginBottom: 2,
   },
   itemTitle: {
     color: Colors.primaryText,
-    fontSize: 18,
+    fontSize: FontSize.large,
     fontWeight: 'bold',
     marginBottom: 2,
   },
   itemDate: {
     color: Colors.subtitle,
-    fontSize: 13,
+    fontSize: FontSize.medium,
   },
   itemAmount: {
     color: Colors.primary,
-    fontSize: 20,
+    fontSize: FontSize.large,
     fontWeight: 'bold',
   },
   itemDebited: {
     color: Colors.inputText,
-    fontSize: 13,
+    fontSize: FontSize.medium,
     marginRight: 4,
   },
   bankIcon: {

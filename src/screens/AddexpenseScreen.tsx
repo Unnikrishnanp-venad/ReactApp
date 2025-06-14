@@ -7,6 +7,7 @@ import { ScreenNames } from '../constants/screenNames';
 import Toast from 'react-native-toast-message';
 import { ExpenseItem } from '../constants/model';
 import { ExpenseCategory, StorageKeys } from '../constants/key';
+import FontSize from '../constants/fontsize';
 
 const AddexpenseScreen = () => {
   const navigation = useNavigation();
@@ -103,7 +104,7 @@ const AddexpenseScreen = () => {
             width: '100%',
             backgroundColor: Colors.searchBarBackground,
             color: Colors.primaryText,
-            fontSize: 16,
+            fontSize: FontSize.large,
             borderRadius: 10,
             padding: 10,
             marginBottom: 12,
@@ -186,7 +187,7 @@ const styles = StyleSheet.create({
   },
   modalLabel: {
     color: Colors.subtitle,
-    fontSize: 16,
+    fontSize: FontSize.large,
     marginBottom: 0,
     alignSelf: 'flex-start',
   },
@@ -196,7 +197,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   amountValue: {
-    fontSize: 48,
+    fontSize: FontSize.xlarge,
     fontWeight: 'bold',
     color: Colors.primaryText,
   },
@@ -213,7 +214,7 @@ const styles = StyleSheet.create({
   },
   bottomBackButtonText: {
     color: Colors.primaryText,
-    fontSize: 20,
+    fontSize: FontSize.xlarge,
     fontWeight: 'bold',
   },
   chip: {
@@ -231,7 +232,7 @@ const styles = StyleSheet.create({
   },
   chipText: {
     color: Colors.buttonText,
-    fontSize: 17,
+    fontSize: FontSize.large,
     fontWeight: 'bold',
     letterSpacing: 0.2,
     textAlign: 'center',
@@ -277,7 +278,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.borderColor,
   },
   keypadText: {
-    fontSize: 40,
+    fontSize: FontSize.xlarge,
     color: Colors.primaryText,
     fontWeight: 'bold',
   },

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, Platform, PermissionsAndroid, TextInput, SafeAreaView } from 'react-native';
 import Contacts from 'react-native-contacts';
 import Colors from '../constants/colors';
+import FontSize from '../constants/fontsize';
 
 const SearchScreen = () => {
   const [contacts, setContacts] = useState<any[]>([]);
@@ -102,13 +103,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     margin: 16,
     paddingHorizontal: 12,
-    fontSize: 16,
+    fontSize: FontSize.large,
     color: Colors.searchBarText,            // white text
     backgroundColor: Colors.searchBarBackground,  // solid black background
     opacity: 1,
   },
   item: { padding: 16, borderBottomWidth: 1, borderBottomColor:  Colors.searchBarseperator, backgroundColor: Colors.background },
-  name: { fontSize: 16, color: Colors.primaryText },
-  phone: { fontSize: 14, color: Colors.inactiveDot, marginTop: 4 },
+  name: { fontSize: FontSize.large, color: Colors.primaryText },
+  phone: { fontSize: FontSize.medium, color: Colors.inactiveDot, marginTop: 4 },
   empty: { textAlign: 'center', marginTop: 40, color:  Colors.subtitle },
 });

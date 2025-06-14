@@ -1,11 +1,9 @@
-// src/constants/colors.ts
-// Centralized color palette for the app
 
 const Colors = {
-  primary: '#FFD600', // Main blue
+  primary:'#34eb8f',//#FFD600', // Main blue
   secondary: '#292726', // Secondary background color
 
-  primaryText: '#B9D9DC', // Main text color
+  primaryText: '#ffff', // Main text color
   secondaryText: '#B9D9DC', // Secondary text color
   subtitle: '#888', 
   buttonText: '#121111',

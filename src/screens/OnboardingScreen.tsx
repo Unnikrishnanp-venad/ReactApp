@@ -17,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '../constants/colors';
 import { StorageKeys } from '../constants/storageKeys';
 import { ScreenNames } from '../constants/screenNames';
+import FontSize from '../constants/fontsize';
 
 const { width } = Dimensions.get('window');
 
@@ -120,8 +121,8 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   image: { width: '100%', height: 300, resizeMode: 'contain' },
-  title: { fontSize: 24, color: Colors.primaryText, fontWeight: 'bold', marginTop: 20 },
-  desc: { fontSize: 16, color: Colors.subtitle, textAlign: 'center', marginTop: 10 },
+  title: { fontSize: FontSize.xlarge, color: Colors.primaryText, fontWeight: 'bold', marginTop: 20 },
+  desc: { fontSize: FontSize.large, color: Colors.subtitle, textAlign: 'center', marginTop: 10 },
   footer: { alignItems: 'center', paddingBottom: 40 },
   dots: { flexDirection: 'row', marginBottom: 20 },
   dot: {

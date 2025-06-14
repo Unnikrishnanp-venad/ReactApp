@@ -15,6 +15,7 @@ import { googleSignIn } from '../constants/googleSigIn';
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword } from '@react-native-firebase/auth';
 const { width } = Dimensions.get('window');
 import Toast, { ToastPosition, ToastType } from 'react-native-toast-message';
+import FontSize from '../constants/fontsize';
 
 const RegistrationScreen = ({ navigation }: any) => {
     const insets = useSafeAreaInsets();
@@ -263,12 +264,12 @@ const styles = StyleSheet.create({
         marginRight: 8,
     },
     brand: {
-        fontSize: 24,
+        fontSize: FontSize.xxxhuge,
         fontWeight: 'bold',
         color: Colors.primary,
     },
     title: {
-        fontSize: 38,
+        fontSize: FontSize.xxxhuge,
         fontWeight: 'bold',
         color: Colors.primaryText,
         textAlign: 'left',
@@ -278,7 +279,7 @@ const styles = StyleSheet.create({
         lineHeight: 44,
     },
     subtitle: {
-        fontSize: 16,
+        fontSize: FontSize.large,
         color: Colors.inputText,
         marginBottom: 15,
         alignSelf: 'flex-start',
@@ -294,7 +295,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         paddingHorizontal: 16,
         color: Colors.inputText,
-        fontSize: 16,
+        fontSize: FontSize.large,
         marginBottom: 16,
         borderWidth: 1,
         borderColor: Colors.borderColor,
@@ -311,12 +312,12 @@ const styles = StyleSheet.create({
     },
     createButtonText: {
         color: Colors.buttonText,
-        fontSize: 18,
+        fontSize: FontSize.large,
         fontWeight: '600',
     },
     loginText: {
         color: Colors.inputText,
-        fontSize: 15,
+        fontSize: FontSize.medium,
         marginTop: 10,
         marginBottom: 40,
     },
@@ -352,7 +353,7 @@ const styles = StyleSheet.create({
     orText: {
         marginHorizontal: 12,
         color: Colors.primaryText,
-        fontSize: 16,
+        fontSize: FontSize.large,
     },
 });
 

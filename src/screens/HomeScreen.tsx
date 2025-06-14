@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StorageKeys } from '../constants/key';
 import { ExpenseItem } from '../constants/model';
 import { StackActions } from '@react-navigation/native';
+import FontSize from '../constants/fontsize';
 
 const CATEGORY_META: { [key: string]: { label: string; icon: any; color: string; bg: string } } = {};
 
@@ -138,7 +139,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   title: {
-    fontSize: 44,
+    fontSize: FontSize.massive,
     color: Colors.primaryText,
     fontWeight: 'bold',
     marginBottom: 18,
@@ -174,12 +175,12 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   planCarrier: {
-    fontSize: 16,
+    fontSize: FontSize.large,
     color: '#222',
     fontWeight: 'bold',
   },
   planCountry: {
-    fontSize: 16,
+    fontSize: FontSize.large,
     color: '#222',
     fontWeight: 'bold',
   },
@@ -189,18 +190,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   planDetails: {
-    fontSize: 18,
+    fontSize: FontSize.large,
     color: '#222',
     fontWeight: 'bold',
     marginBottom: 2,
   },
   planValidity: {
-    fontSize: 13,
+    fontSize: FontSize.medium,
     color: Colors.inputText,
     fontWeight: '500',
   },
   planPrice: {
-    fontSize: 28,
+    fontSize: FontSize.large,
     color: Colors.primary,
     fontWeight: 'bold',
     alignSelf: 'flex-end',
@@ -212,7 +213,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   flixTitle: {
-    fontSize: 28,
+    fontSize: FontSize.huge,
     color: Colors.primary,
     fontWeight: 'bold',
     letterSpacing: 1.5,
@@ -236,7 +237,7 @@ const styles = StyleSheet.create({
   },
   fabPlus: {
     color: Colors.buttonText,
-    fontSize: 36,
+    fontSize: FontSize.xlarge,
     fontWeight: 'bold',
     marginTop: -2,
   },

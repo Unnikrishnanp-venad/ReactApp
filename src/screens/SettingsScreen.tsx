@@ -8,6 +8,7 @@ import { StorageKeys } from '../constants/storageKeys';
 import { ScreenNames } from '../constants/screenNames';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { StackActions } from '@react-navigation/native';
+import FontSize from '../constants/fontsize';
 
 const defaultAvatar = require('../../assets/user.png'); // Default avatar image
 
@@ -137,14 +138,14 @@ const styles = StyleSheet.create({
   },
   name: {
     color: Colors.primaryText,
-    fontSize: 22,
+    fontSize: FontSize.xxhuge,
     fontWeight: 'bold',
     marginBottom: 6,
     textAlign: 'center',
   },
   email: {
     color: Colors.subtitle,
-    fontSize: 16,
+    fontSize: FontSize.large,
     marginBottom: 8,
     textAlign: 'center',
   },
@@ -157,7 +158,7 @@ const styles = StyleSheet.create({
   },
   changePhotoText: {
     color: Colors.buttonText,
-    fontSize: 15,
+    fontSize: FontSize.medium,
     fontWeight: '600',
   },
   logoutButton: {
