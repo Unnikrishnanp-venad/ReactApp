@@ -46,8 +46,8 @@ const HomeTabs = () => {
             />
           );
         },
-        tabBarActiveTintColor: Colors.tabbarActiveTintColor, // Set active icon color to yellow
-        tabBarInactiveTintColor: Colors.tabbarInactiveTintColor,  // Set inactive icon color to white
+        tabBarActiveTintColor: Colors.primary, // Set active icon color to yellow
+        tabBarInactiveTintColor: Colors.inactiveDot,  // Set inactive icon color to white
         tabBarShowLabel: true,
         tabBarStyle: {
           height: 80,

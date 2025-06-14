@@ -129,7 +129,7 @@ const ExpenseHistoryScreen = ({ navigation }: any) => {
   const renderItem = ({ item, index }: { item: ExpenseItem, index: number }) => (
     <View style={styles.itemRow}>
       <View style={[styles.iconBox, { backgroundColor: getUserColor(item.user || '') }]}> 
-        <Text style={{ fontSize: 22, color: '#fff', fontWeight: 'bold' }}>
+        <Text style={{ fontSize: 22, color: Colors.buttonText, fontWeight: 'bold' }}>
           {item.user && typeof item.user === 'string' && item.user.length > 0 ? item.user[0].toUpperCase() : '?'}
         </Text>
       </View>
@@ -156,12 +156,12 @@ const ExpenseHistoryScreen = ({ navigation }: any) => {
         <TextInput
           style={styles.searchInput}
           placeholder="Search transactions"
-          placeholderTextColor={Colors.inputText}
+          placeholderTextColor={Colors.searchBarPlaceholder}
           value={search}
           onChangeText={setSearch}
         />
         <TouchableOpacity onPress={() => setShowFilters(f => !f)}>
-          <Image source={require('../../assets/filter.png')} style={{ width: 24, height: 24, marginRight: 18, tintColor: '#888' }} />
+          <Image source={require('../../assets/filter.png')} style={{ width: 24, height: 24, marginRight: 18, tintColor:Colors.searchBarPlaceholder}} />
         </TouchableOpacity>
       </View>
       {showFilters && (
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 32,
-    color: Colors.headerText,
+    color: Colors.primaryText,
     fontWeight: 'bold',
   },
   statementBtn: {
@@ -238,19 +238,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
     marginLeft: 16,
+    marginTop: 18,
   },
   filterBtn: {
     paddingHorizontal: 16,
     paddingVertical: 6,
     borderRadius: 16,
-    backgroundColor: '#181818',
+    backgroundColor: Colors.filterButtonBackgroundColor,
     marginRight: 10,
     borderWidth: 1,
-    borderColor: '#222',
+    borderColor: Colors.borderColor,
   },
   filterBtnActive: {
-    backgroundColor: Colors.button,
-    borderColor: Colors.button,
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
   },
   filterBtnText: {
     color: '#888',
@@ -263,7 +264,7 @@ const styles = StyleSheet.create({
   searchRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#222',
+    backgroundColor: Colors.searchBarBackground,
     borderRadius: 32,
     marginHorizontal: 16,
     marginBottom: 0,
@@ -294,22 +295,22 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   itemSubtitle: {
-    color: '#aaa',
+    color: Colors.subtitle,
     fontSize: 14,
     marginBottom: 2,
   },
   itemTitle: {
-    color: '#fff',
+    color: Colors.primaryText,
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 2,
   },
   itemDate: {
-    color: Colors.inputText,
+    color: Colors.subtitle,
     fontSize: 13,
   },
   itemAmount: {
-    color: '#fff',
+    color: Colors.primary,
     fontSize: 20,
     fontWeight: 'bold',
   },

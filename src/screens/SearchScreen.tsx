@@ -61,7 +61,7 @@ const SearchScreen = () => {
         placeholder="Search contacts"
         value={searchText}
         onChangeText={setSearchText}
-        placeholderTextColor="#888"
+        placeholderTextColor={Colors.inactiveDot}
     
       />
       <FlatList
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     opacity: 1,
   },
   item: { padding: 16, borderBottomWidth: 1, borderBottomColor:  Colors.searchBarseperator, backgroundColor: Colors.background },
-  name: { fontSize: 16, color: Colors.headerText },
-  phone: { fontSize: 14, color: Colors.contactItemPhone, marginTop: 4 },
-  empty: { textAlign: 'center', marginTop: 40, color:  Colors.contactItemPhone },
+  name: { fontSize: 16, color: Colors.primaryText },
+  phone: { fontSize: 14, color: Colors.inactiveDot, marginTop: 4 },
+  empty: { textAlign: 'center', marginTop: 40, color:  Colors.subtitle },
 });

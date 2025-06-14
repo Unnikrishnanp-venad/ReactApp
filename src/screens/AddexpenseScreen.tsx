@@ -73,7 +73,7 @@ const AddexpenseScreen = () => {
       {/* Back button header, matching AddScreen */}
       <View style={[styles.headerRow, { paddingTop: 20 }]}> 
         <TouchableOpacity onPress={() =>  navigation.dispatch(StackActions.pop(1))} style={styles.backButton}>
-          <Image source={require('../../assets/back.png')} style={{ width: 28, height: 28, tintColor: Colors.button }} />
+          <Image source={require('../../assets/back.png')} style={{ width: 28, height: 28, tintColor: Colors.primary }} />
         </TouchableOpacity>
       </View>
       {/* Horizontal collection chips */}
@@ -84,10 +84,10 @@ const AddexpenseScreen = () => {
             return (
               <TouchableOpacity
                 key={cat}
-                style={[styles.chip, isSelected && { borderColor: Colors.borderColor, backgroundColor: Colors.button }]}
+                style={[styles.chip, isSelected && { borderColor: Colors.borderColor, backgroundColor: Colors.primary }]}
                 onPress={() => setSelectedCategory(cat as ExpenseCategory)}
               >
-                <Text style={[styles.chipText, !isSelected && { color: Colors.headerText }]}>{cat}</Text>
+                <Text style={[styles.chipText, !isSelected && { color: Colors.subtitle }]}>{cat}</Text>
               </TouchableOpacity>
             );
           })}
@@ -101,15 +101,15 @@ const AddexpenseScreen = () => {
          <TextInput
           style={{
             width: '100%',
-            backgroundColor: Colors.collectionBackground,
-            color: Colors.headerText,
+            backgroundColor: Colors.searchBarBackground,
+            color: Colors.primaryText,
             fontSize: 16,
             borderRadius: 10,
             padding: 10,
             marginBottom: 12,
           }}
           placeholder="Add a comment"
-          placeholderTextColor="#888"
+          placeholderTextColor={Colors.inactiveDot}
           value={comment}
           onChangeText={setComment}
           multiline
@@ -134,7 +134,7 @@ const AddexpenseScreen = () => {
                 >
                   <Image
                     source={require('../../assets/delete.png')}
-                    style={{ width: 28, height: 28, tintColor: Colors.headerText }}
+                    style={{ width: 28, height: 28, tintColor: Colors.primaryText }}
                   />
                 </TouchableOpacity>
               );
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalLabel: {
-    color: '#888',
+    color: Colors.subtitle,
     fontSize: 16,
     marginBottom: 0,
     alignSelf: 'flex-start',
@@ -198,12 +198,12 @@ const styles = StyleSheet.create({
   amountValue: {
     fontSize: 48,
     fontWeight: 'bold',
-    color: Colors.headerText,
+    color: Colors.primaryText,
   },
   bottomBackButton: {
     width: '90%',
     alignSelf: 'center',
-    backgroundColor: Colors.button,
+    backgroundColor: Colors.primary,
     paddingVertical: 16,
     borderRadius: 24,
     alignItems: 'center',
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   bottomBackButtonText: {
-    color: Colors.buttonText,
+    color: Colors.primaryText,
     fontSize: 20,
     fontWeight: 'bold',
   },
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
   },
   keypadText: {
     fontSize: 40,
-    color: Colors.headerText,
+    color: Colors.primaryText,
     fontWeight: 'bold',
   },
 });

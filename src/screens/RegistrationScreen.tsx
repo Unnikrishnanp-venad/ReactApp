@@ -48,8 +48,8 @@ const RegistrationScreen = ({ navigation }: any) => {
             showErrorToast(
                 'error',
                 'bottom',
-                'Enter amount',
-                'Please enter an email and password before saving.');
+                'Enter Details',
+                'Please enter an email and password');
             return;
         }
         setLoading(true);
@@ -107,7 +107,7 @@ const RegistrationScreen = ({ navigation }: any) => {
                     ...(Platform.OS === 'web' ? { backdropFilter: 'blur(6px)' } : {}),
                 }} />
                 <View style={{ backgroundColor: Colors.background, borderRadius: 12, padding: 24, alignItems: 'center' }}>
-                    <ActivityIndicator size="large" color={Colors.button} />
+                    <ActivityIndicator size="large" color={Colors.primary} />
                     <Text style={{ color: Colors.inputText, marginTop: 12, fontSize: 16 }}>Please wait...</Text>
                 </View>
             </View>
@@ -219,7 +219,10 @@ const RegistrationScreen = ({ navigation }: any) => {
                                     onLayout={e => setPasswordY(e.nativeEvent.layout.y)}
                                 />
                                 <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
-                                    <Text style={{ color: Colors.inputText, fontSize: 18 }}>{showPassword ? '🙈' : '👁️'}</Text>
+                                    <Image
+                                        source={showPassword ? require('../../assets/eye_open.png') : require('../../assets/eye_closed.png')}
+                                        style={{ width: 24, height: 24, tintColor: Colors.inputText }}
+                                    />
                                 </TouchableOpacity>
                             </View>
                             <TouchableOpacity
@@ -262,12 +265,12 @@ const styles = StyleSheet.create({
     brand: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: Colors.button,
+        color: Colors.primary,
     },
     title: {
         fontSize: 38,
         fontWeight: 'bold',
-        color: Colors.headerText,
+        color: Colors.primaryText,
         textAlign: 'left',
         alignSelf: 'flex-start',
         marginBottom: 8,
@@ -300,7 +303,7 @@ const styles = StyleSheet.create({
     createButton: {
         width: '100%',
         height: 48,
-        backgroundColor: Colors.button,
+        backgroundColor: Colors.primary,
         borderRadius: 8,
         justifyContent: 'center',
         alignItems: 'center',
@@ -312,13 +315,13 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     loginText: {
-        color: Colors.headerText,
+        color: Colors.inputText,
         fontSize: 15,
         marginTop: 10,
         marginBottom: 40,
     },
     loginLink: {
-        color: Colors.button,
+        color: Colors.primary,
         fontWeight: 'bold',
     },
     eyeButton: {
@@ -348,7 +351,7 @@ const styles = StyleSheet.create({
     },
     orText: {
         marginHorizontal: 12,
-        color: Colors.headerText,
+        color: Colors.primaryText,
         fontSize: 16,
     },
 });

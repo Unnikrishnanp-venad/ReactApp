@@ -78,7 +78,7 @@ const App = () => {
           screenOptions={{
             headerShown: false, // or true if you want the header
             headerStyle: { backgroundColor: Colors.header }, // Black header
-            headerTintColor: Colors.headerText, // White text/icons
+            headerTintColor: Colors.primaryText, // White text/icons
           }}
           initialRouteName={initialRoute}
         >

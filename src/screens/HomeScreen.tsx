@@ -81,8 +81,8 @@ const HomeScreen = ({ navigation }: any) => {
               const meta = CATEGORY_META[item] || {
                 label: item,
                 icon: null,
-                color: '#888',
-                bg: '#eee',
+                color: Colors.primary,
+                bg: Colors.primary,
               };
               return (
                 <View style={[
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 44,
-    color: Colors.headerText,
+    color: Colors.primaryText,
     fontWeight: 'bold',
     marginBottom: 18,
     marginLeft: 20,
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
   },
   planPrice: {
     fontSize: 28,
-    color: '#222',
+    color: Colors.primary,
     fontWeight: 'bold',
     alignSelf: 'flex-end',
   },
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   },
   flixTitle: {
     fontSize: 28,
-    color: Colors.button,
+    color: Colors.primary,
     fontWeight: 'bold',
     letterSpacing: 1.5,
   },
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: Colors.button,
+    backgroundColor: Colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 6,
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     zIndex: 100,
   },
   fabPlus: {
-    color: '#111',
+    color: Colors.buttonText,
     fontSize: 36,
     fontWeight: 'bold',
     marginTop: -2,

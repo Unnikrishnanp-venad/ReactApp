@@ -136,21 +136,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#222',
   },
   name: {
-    color: Colors.headerText,
+    color: Colors.primaryText,
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 6,
     textAlign: 'center',
   },
   email: {
-    color: '#aaa',
+    color: Colors.subtitle,
     fontSize: 16,
     marginBottom: 8,
     textAlign: 'center',
   },
   changePhotoButton: {
     marginBottom: 12,
-    backgroundColor: Colors.button,
+    backgroundColor: Colors.primary,
     borderRadius: 18,
     paddingHorizontal: 18,
     paddingVertical: 8,
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     width: '100%',
-    backgroundColor: Colors.button,
+    backgroundColor: Colors.primary,
     paddingVertical: 14,
     borderRadius: 24,
     alignItems: 'center',

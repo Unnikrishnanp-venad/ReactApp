@@ -7,7 +7,7 @@ import Colors from '../constants/colors';
 import { StackActions } from '@react-navigation/native';
 import { StorageKeys } from '../constants/key';
 import { ScreenNames } from '../constants/screenNames';
-
+import Toast, { ToastPosition, ToastType } from 'react-native-toast-message';
 const SignInScreen = ({ navigation }: any) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -26,7 +26,7 @@ const SignInScreen = ({ navigation }: any) => {
             scrollViewRef.current?.scrollTo({ y: Math.max(y - 40, 0), animated: true });
         }, 100);
     };
-  const showErrorAlert = async (title: string, message: string) => {
+    const showErrorAlert = async (title: string, message: string) => {
         Alert.alert(
             title,
             message,
@@ -35,10 +35,22 @@ const SignInScreen = ({ navigation }: any) => {
             ]
         );
     };
+    const showErrorToast = async (type: ToastType, position: ToastPosition, title: string, message: string) => {
+        Toast.show({
+            type: type,
+            text1: title,
+            text2: message,
+            position: position,
+            visibilityTime: 3000,
+        });
+    };
     const handleSignIn = async () => {
         if (!email || !password) {
-            Alert.alert('Error', 'Please enter both email and password');
-            console.log('SignIn attempt failed: missing email or password');
+            showErrorToast(
+                'error',
+                'bottom',
+                'Enter Details',
+                'Please enter an email and password');
             return;
         }
         setLoading(true);
@@ -94,7 +106,7 @@ const SignInScreen = ({ navigation }: any) => {
                     ...(Platform.OS === 'web' ? { backdropFilter: 'blur(6px)' } : {}),
                 }} />
                 <View style={{ backgroundColor: Colors.background, borderRadius: 12, padding: 24, alignItems: 'center' }}>
-                    <ActivityIndicator size="large" color={Colors.button} />
+                    <ActivityIndicator size="large" color={Colors.primary} />
                     <Text style={{ color: Colors.inputText, marginTop: 12, fontSize: 16 }}>Please wait...</Text>
                 </View>
             </View>
@@ -189,13 +201,13 @@ const styles = StyleSheet.create({
     },
     brand: {
         fontSize: 28,
-        color: Colors.button,
+        color: Colors.primary,
         fontWeight: 'bold',
         letterSpacing: 1,
     },
     bigSubtitle: {
         fontSize: 48,
-        color: Colors.headerText, // text color as #888
+        color: Colors.primaryText, // text color as #888
         fontWeight: 'bold',
         marginBottom: 30,
         alignSelf: 'flex-start',
@@ -203,13 +215,13 @@ const styles = StyleSheet.create({
     },
     trialSubtitle: {
         fontSize: 18,
-        color: Colors.headerText, // text color as #888
+        color: Colors.primaryText, // text color as #888
         marginBottom: 32,
         alignSelf: 'flex-start',
     },
     title: {
         fontSize: 32,
-        color: Colors.headerText, // text color as #888
+        color: Colors.primaryText, // text color as #888
         fontWeight: 'bold',
         marginBottom: 8,
         alignSelf: 'flex-start',
@@ -248,7 +260,7 @@ const styles = StyleSheet.create({
     signInButton: {
         width: '100%',
         height: 48,
-        backgroundColor: Colors.button, // darker button
+        backgroundColor: Colors.primary, // darker button
         borderRadius: 12,
         justifyContent: 'center',
         alignItems: 'center',
@@ -260,7 +272,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     forgotText: {
-        color: Colors.headerText, // text color as #888
+        color: Colors.inputText, // text color as #888
         fontSize: 15,
         marginBottom: 24,
     },
