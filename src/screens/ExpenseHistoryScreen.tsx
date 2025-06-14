@@ -23,8 +23,13 @@ const ExpenseHistoryScreen = ({ navigation }: any) => {
   useFocusEffect(
     React.useCallback(() => {
       (async () => {
+        const userEmail = await AsyncStorage.getItem(StorageKeys.GOOGLE_USER_EMAIL);
         const stored = await AsyncStorage.getItem(StorageKeys.STORAGE_KEY);
         let data = stored ? JSON.parse(stored) : [];
+        // Only use expenses for the logged-in user
+        if (userEmail) {
+          data = data.filter((item: any) => item.user === userEmail);
+        }
         data = data.map((item: any) => ({ ...item, date: new Date(item.date) }));
         const types = Array.from(new Set((data as ExpenseItem[]).map(item => String(item.type)))).filter(Boolean);
         const filters = [

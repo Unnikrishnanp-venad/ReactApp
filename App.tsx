@@ -7,9 +7,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AuthScreen from './src/screens/AuthScreen';
 import HomeTabs from './src/screens/HomeTabs';
 import OnboardingScreen from './src/screens/OnboardingScreen';
-import RegistrationScreen from './src/screens/RegistrationScreen';
 import SignInScreen from './src/screens/SignInScreen';
 import AddexpenseScreen from './src/screens/AddexpenseScreen';
+import RegistrationScreen from './src/screens/RegistrationScreen';
 import ReactNativeBiometrics from 'react-native-biometrics';
 import Colors from './src/constants/colors';
 import { StorageKeys } from './src/constants/key';
@@ -83,18 +83,13 @@ const App = () => {
           initialRouteName={initialRoute}
         >
           <Stack.Screen name={ScreenNames.ONBOARDING} component={OnboardingScreen} />
-          <Stack.Screen name={ScreenNames.AUTH} component={AuthScreen} />
+          <Stack.Screen name={ScreenNames.AUTH} component={RegistrationScreen} />
           <Stack.Screen
             name={ScreenNames.HOME_TABS}
             component={HomeTabs}
             options={{
               headerShown: false, // <-- Hide header for HomeTabs only
             }}
-          />
-          <Stack.Screen
-            name={ScreenNames.REGISTRATION}
-            component={RegistrationScreen}
-            options={{ headerShown: true, title: ScreenNames.REGISTRATION }} // Show header and set title
           />
           <Stack.Screen name={ScreenNames.SIGN_IN} component={SignInScreen} options={{ title: 'Sign In' }} />
           <Stack.Screen name={ScreenNames.ADDEXPENSE} component={AddexpenseScreen} options={{ title: 'Add Expense' }} />

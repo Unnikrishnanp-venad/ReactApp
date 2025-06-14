@@ -45,7 +45,7 @@ const AddexpenseScreen = () => {
       amount: parseFloat(amount),
       date: new Date().toISOString(),
       type: selectedCategory,
-      user: label,
+      user: email || label, // Always use email for user field
     };
     const stored = await AsyncStorage.getItem(StorageKeys.STORAGE_KEY);
     let updated: ExpenseItem[] = [];

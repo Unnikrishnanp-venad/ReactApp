@@ -26,7 +26,15 @@ const SignInScreen = ({ navigation }: any) => {
             scrollViewRef.current?.scrollTo({ y: Math.max(y - 40, 0), animated: true });
         }, 100);
     };
-
+  const showErrorAlert = async (title: string, message: string) => {
+        Alert.alert(
+            title,
+            message,
+            [
+                { text: 'Ok', style: 'default' },
+            ]
+        );
+    };
     const handleSignIn = async () => {
         if (!email || !password) {
             Alert.alert('Error', 'Please enter both email and password');
@@ -39,6 +47,8 @@ const SignInScreen = ({ navigation }: any) => {
             .then(() => {
                 let user = getAuth().currentUser;
                 AsyncStorage.setItem(StorageKeys.IS_AUTHED, 'true');
+                AsyncStorage.setItem(StorageKeys.GOOGLE_USER_NAME, email);
+                AsyncStorage.setItem(StorageKeys.GOOGLE_USER_EMAIL, email);
                 AsyncStorage.setItem('signInType', 'firebase'); // Store sign-in type
                 console.log('User account created & signed in!', user);
                 navigation.dispatch(StackActions.replace(ScreenNames.HOME_TABS));
@@ -47,13 +57,21 @@ const SignInScreen = ({ navigation }: any) => {
             .catch(error => {
                 AsyncStorage.setItem(StorageKeys.IS_AUTHED, 'false');
                 console.log('SignIn error:', error);
-                if (error.code === 'auth/email-already-in-use') {
+                 if (error.code === 'auth/email-already-in-use') {
+                    showErrorAlert(
+                        'Email Already in Use',
+                        'That email address is already in use! Please try a different one.'
+                    );
                     console.log('That email address is already in use!');
+
                 }
                 if (error.code === 'auth/invalid-email') {
+                      showErrorAlert(
+                        'Invalid Email',
+                        'That email address is invalid! Please enter a valid email address.'
+                    );
                     console.log('That email address is invalid!');
                 }
-                console.error(error);
             })
             .finally(() => setLoading(false));
     };
