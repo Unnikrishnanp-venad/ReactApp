@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
   loginText: {
     color: Colors.headerText,
     fontSize: 15,
-    marginTop: 0,
+    marginTop: 10,
     marginBottom: 40,
   },
   loginLink: {

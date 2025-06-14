@@ -5,7 +5,7 @@ import Colors from '../constants/colors';
 import HomeScreen from '../screens/HomeScreen';
 import SearchScreen from './SearchScreen';
 import SettingsScreen from './SettingsScreen'; // Add this import
-import HistoryScreen from './HistoryScreen';
+import ExpenseHistoryScreen from './ExpenseHistoryScreen';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
 import { ScreenNames } from '../constants/screenNames';
 
@@ -33,10 +33,10 @@ const HomeTabs = () => {
             source = require('../../assets/home.png');
           } else if (route.name === 'SearchTab') {
             source = require('../../assets/search.png');
-          } else if (route.name === 'HistoryTab') {
-            source = require('../../assets/history.png');
           } else if (route.name === 'SettingsTab') {
             source = require('../../assets/settings.png');
+          } else if (route.name === 'ExpenseHistoryTab') {
+            source = require('../../assets/history.png');
           }
           return (
             <Image
@@ -70,9 +70,18 @@ const HomeTabs = () => {
         options={{ title: ScreenNames.SEARCH }} // <-- Set header title here
       />
       <Tab.Screen
-        name="HistoryTab"
-        component={HistoryScreen}
-        options={{ title: ScreenNames.HISTORY }} // <-- Add this tab
+        name="ExpenseHistoryTab"
+        component={ExpenseHistoryScreen}
+        options={{
+          title: 'History',
+          tabBarIcon: ({ color, focused }) => (
+            <Image
+              source={require('../../assets/history.png')}
+              style={{ width: 20, height: 20, tintColor: color }}
+              resizeMode="contain"
+            />
+          ),
+        }}
       />
       <Tab.Screen
         name="SettingsTab"

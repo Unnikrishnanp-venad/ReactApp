@@ -4,6 +4,7 @@ export const ANDROID_CLIENT_ID = "37313957899-2gr8klc4784b00ooar3rqmom2esqh5rt.a
 
 // Enum-like class for AsyncStorage keys
 export class StorageKeys {
+  static readonly STORAGE_KEY = 'FLIX_EXPENSES';
   static readonly HAS_LAUNCHED = 'hasLaunched';
   static readonly IS_AUTHED = 'isAuthed';
   static readonly SIGN_IN_TYPE = 'signInType';
@@ -11,4 +12,22 @@ export class StorageKeys {
   static readonly GOOGLE_USER_EMAIL = 'googleUserEmail';
   static readonly GOOGLE_USER_PHOTO = 'googleUserPhoto';
   // Add more keys as needed
+}
+// Expense category enum
+export enum ExpenseCategory {
+  GROCERIES = 'Groceries',
+  FOOD = 'Food',
+  FUEL = 'Fuel',
+  WATER = 'Water',
+  RENT = 'Rent',
+  ELECTRICITY = 'Electricity',
+  MEDICAL = 'Medical',
+  INTERNET = 'Internet',
+  AMAZON = 'Amazon',
+  PERSONAL_CARE = 'Personal Care',
+  VEHICLE_MAINTENANCE = 'Vehicle Maintenance',
+  CLOTHING = 'Clothing',
+  LOAN_EMI = 'Loan EMI',
+  ENTERTAINMENT = 'Entertainment',
+  TRAVEL = 'Travel',
 }

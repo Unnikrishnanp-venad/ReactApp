@@ -11,12 +11,13 @@ const defaultAvatar = require('../../assets/user.png'); // Default avatar image
 
 const SettingsScreen = ({ navigation }: any) => {
   const [user, setUser] = useState<{ name?: string; email?: string; photo?: string }>({});
+  
 
   useEffect(() => {
     const fetchUser = async () => {
-      const name = await AsyncStorage.getItem('googleUserName');
-      const email = await AsyncStorage.getItem('googleUserEmail');
-      const photo = await AsyncStorage.getItem('googleUserPhoto');
+      const name = await AsyncStorage.getItem(StorageKeys.GOOGLE_USER_NAME);
+      const email = await AsyncStorage.getItem(StorageKeys.GOOGLE_USER_EMAIL);
+      const photo = await AsyncStorage.getItem(StorageKeys.GOOGLE_USER_PHOTO);
       setUser({
         name: name || undefined,
         email: email || undefined,
