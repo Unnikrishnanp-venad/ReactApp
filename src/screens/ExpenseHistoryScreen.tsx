@@ -172,19 +172,25 @@ const ExpenseHistoryScreen = ({ navigation }: any) => {
           ))}
         </View>
       )}
-      <SectionList
-        sections={groupByDate(filtered)}
-        keyExtractor={item => item.id}
-        renderItem={renderItem}
-        renderSectionHeader={({ section: { title } }) => (
-          <Text style={{ color: Colors.inputText,fontWeight:'bold', fontSize: 18, marginLeft: 18, marginTop: 18, marginBottom: 10, backgroundColor: Colors.background }}>
-            {getSectionTitle(title)}
-          </Text>
-        )}
-        contentContainerStyle={{ paddingBottom: 32 }}
-        style={{ marginTop: 0 }}
-        stickySectionHeadersEnabled={false}
-      />
+      {filtered.length === 0 ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ color: Colors.inputText, fontSize: 20, marginTop: 40 }}>No Records Found</Text>
+        </View>
+      ) : (
+          <SectionList
+            sections={groupByDate(filtered)}
+            keyExtractor={item => item.id}
+            renderItem={renderItem}
+            renderSectionHeader={({ section: { title } }) => (
+              <Text style={{ color: Colors.inputText, fontWeight: 'bold', fontSize: 18, marginLeft: 18, marginTop: 18, marginBottom: 10, backgroundColor: Colors.background }}>
+                {getSectionTitle(title)}
+              </Text>
+            )}
+            contentContainerStyle={{ paddingBottom: 32 }}
+            style={{ marginTop: 0 }}
+            stickySectionHeadersEnabled={false}
+          />
+      )}
     </SafeAreaView>
   );
 };

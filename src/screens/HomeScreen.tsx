@@ -70,49 +70,55 @@ const HomeScreen = ({ navigation }: any) => {
       {/* Title */}
       <Text style={styles.title}>Always be{'\n'}in touch</Text>
       {/* Category tiles */}
-      <FlatList
-        data={categories}
-        keyExtractor={item => item}
-        numColumns={2}
-        columnWrapperStyle={{ justifyContent: 'space-between', marginHorizontal: CARD_MARGIN }}
-        renderItem={({ item }) => {
-          const meta = CATEGORY_META[item] || {
-            label: item,
-            icon: null,
-            color: '#888',
-            bg: '#eee',
-          };
-          return (
-            <View style={[
-              styles.planCard,
-              {
-                backgroundColor: Colors.collectionBackground,
-                width: CARD_WIDTH,
-                height: CARD_HEIGHT,
-                marginBottom: CARD_MARGIN * 2,
-                marginHorizontal: 0,
-                padding: 20,
-                justifyContent: 'center',
-              },
-            ]}>
-              <View style={styles.planRow}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  {meta.icon && <Image source={meta.icon} style={styles.planIcon} />}
-                  <Text style={[styles.planCarrier, { color: meta.color, fontSize: 22 }]}>{meta.label}</Text>
+      {categories.length === 0 ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ color: Colors.inputText, fontSize: 20, marginTop: 40 }}>No Record Found</Text>
+        </View>
+      ) : (
+          <FlatList
+            data={categories}
+            keyExtractor={item => item}
+            numColumns={2}
+            columnWrapperStyle={{ justifyContent: 'space-between', marginHorizontal: CARD_MARGIN }}
+            renderItem={({ item }) => {
+              const meta = CATEGORY_META[item] || {
+                label: item,
+                icon: null,
+                color: '#888',
+                bg: '#eee',
+              };
+              return (
+                <View style={[
+                  styles.planCard,
+                  {
+                    backgroundColor: Colors.collectionBackground,
+                    width: CARD_WIDTH,
+                    height: CARD_HEIGHT,
+                    marginBottom: CARD_MARGIN * 2,
+                    marginHorizontal: 0,
+                    padding: 20,
+                    justifyContent: 'center',
+                  },
+                ]}>
+                  <View style={styles.planRow}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      {meta.icon && <Image source={meta.icon} style={styles.planIcon} />}
+                      <Text style={[styles.planCarrier, { color: meta.color, fontSize: 22 }]}>{meta.label}</Text>
+                    </View>
+                  </View>
+                  <View style={styles.planDetailsRow}>
+                    <Text style={[styles.planPrice, { color: meta.color, fontSize: 28 }]} numberOfLines={1} ellipsizeMode="tail">
+                      {(categoryTotals[item] || 0).toFixed(2)}
+                    </Text>
+                  </View>
                 </View>
-              </View>
-              <View style={styles.planDetailsRow}>
-                <Text style={[styles.planPrice, { color: meta.color, fontSize: 28 }]} numberOfLines={1} ellipsizeMode="tail">
-                  {(categoryTotals[item] || 0).toFixed(2)}
-                </Text>
-              </View>
-            </View>
-          );
-        }}
-        contentContainerStyle={{ paddingBottom: 32, paddingTop: 8 }}
-        style={{ marginTop: 16 }}
-        showsVerticalScrollIndicator={false}
-      />
+              );
+            }}
+            contentContainerStyle={{ paddingBottom: 32, paddingTop: 8 }}
+            style={{ marginTop: 16 }}
+            showsVerticalScrollIndicator={false}
+          />
+      )}
     </SafeAreaView>
   );
 };
