@@ -4,7 +4,6 @@ export class ScreenNames {
   static readonly ONBOARDING = "Onboarding";
   static readonly AUTH = "Auth";
   static readonly SIGN_IN = "SignIn";
-  static readonly REGISTRATION = "Registration";
   static readonly HOME = "Home";
   static readonly HOME_TABS = "HomeTabs";
   static readonly SETTINGS = "Settings";

@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StorageKeys } from '../constants/key';
 import { ExpenseItem } from '../constants/model';
 import { StackActions } from '@react-navigation/native';
+import FontSize from '../constants/fontsize';
 
 const CATEGORY_META: { [key: string]: { label: string; icon: any; color: string; bg: string } } = {};
 
@@ -22,24 +23,21 @@ const HomeScreen = ({ navigation }: any) => {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       (async () => {
+        const userEmail = await AsyncStorage.getItem(StorageKeys.GOOGLE_USER_EMAIL);
         const stored = await AsyncStorage.getItem(StorageKeys.STORAGE_KEY);
-        console.log('Stored data:', stored);
-        // Parse stored data or initialize as empty array
-        // If stored data is null, initialize as empty array
         let data: ExpenseItem[] = stored ? JSON.parse(stored) : [];
-        // Get all unique types from expenses
+        // Only use expenses for the logged-in user
+        if (userEmail) {
+          data = data.filter(item => item.user === userEmail);
+        }
         const uniqueTypes = Array.from(new Set(data.map(item => item.type)));
-        console.log('Unique types:', uniqueTypes);
-        // Set categories state with unique types
         setCategories(uniqueTypes);
-        // Calculate totals for each type
         const totals: { [key: string]: number } = {};
         for (const type of uniqueTypes) {
           totals[type] = data
             .filter(item => item.type === type)
             .reduce((sum, item) => sum + (typeof item.amount === 'number' ? item.amount : parseFloat(item.amount as any)), 0);
         }
-        console.log('Category totals:', totals);
         setCategoryTotals(totals);
       })();
     });
@@ -84,8 +82,8 @@ const HomeScreen = ({ navigation }: any) => {
               const meta = CATEGORY_META[item] || {
                 label: item,
                 icon: null,
-                color: '#888',
-                bg: '#eee',
+                color: Colors.primary,
+                bg: Colors.primary,
               };
               return (
                 <View style={[
@@ -141,8 +139,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   title: {
-    fontSize: 44,
-    color: Colors.headerText,
+    fontSize: FontSize.massive,
+    color: Colors.primaryText,
     fontWeight: 'bold',
     marginBottom: 18,
     marginLeft: 20,
@@ -177,12 +175,12 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   planCarrier: {
-    fontSize: 16,
+    fontSize: FontSize.large,
     color: '#222',
     fontWeight: 'bold',
   },
   planCountry: {
-    fontSize: 16,
+    fontSize: FontSize.large,
     color: '#222',
     fontWeight: 'bold',
   },
@@ -192,19 +190,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   planDetails: {
-    fontSize: 18,
+    fontSize: FontSize.large,
     color: '#222',
     fontWeight: 'bold',
     marginBottom: 2,
   },
   planValidity: {
-    fontSize: 13,
+    fontSize: FontSize.medium,
     color: Colors.inputText,
     fontWeight: '500',
   },
   planPrice: {
-    fontSize: 28,
-    color: '#222',
+    fontSize: FontSize.large,
+    color: Colors.primary,
     fontWeight: 'bold',
     alignSelf: 'flex-end',
   },
@@ -215,8 +213,8 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   flixTitle: {
-    fontSize: 28,
-    color: Colors.button,
+    fontSize: FontSize.huge,
+    color: Colors.primary,
     fontWeight: 'bold',
     letterSpacing: 1.5,
   },
@@ -227,7 +225,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: Colors.button,
+    backgroundColor: Colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 6,
@@ -238,8 +236,8 @@ const styles = StyleSheet.create({
     zIndex: 100,
   },
   fabPlus: {
-    color: '#111',
-    fontSize: 36,
+    color: Colors.buttonText,
+    fontSize: FontSize.xlarge,
     fontWeight: 'bold',
     marginTop: -2,
   },

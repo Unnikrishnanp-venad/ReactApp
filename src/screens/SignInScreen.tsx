@@ -7,7 +7,8 @@ import Colors from '../constants/colors';
 import { StackActions } from '@react-navigation/native';
 import { StorageKeys } from '../constants/key';
 import { ScreenNames } from '../constants/screenNames';
-
+import Toast, { ToastPosition, ToastType } from 'react-native-toast-message';
+import FontSize from '../constants/fontsize';
 const SignInScreen = ({ navigation }: any) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -26,11 +27,31 @@ const SignInScreen = ({ navigation }: any) => {
             scrollViewRef.current?.scrollTo({ y: Math.max(y - 40, 0), animated: true });
         }, 100);
     };
-
+    const showErrorAlert = async (title: string, message: string) => {
+        Alert.alert(
+            title,
+            message,
+            [
+                { text: 'Ok', style: 'default' },
+            ]
+        );
+    };
+    const showErrorToast = async (type: ToastType, position: ToastPosition, title: string, message: string) => {
+        Toast.show({
+            type: type,
+            text1: title,
+            text2: message,
+            position: position,
+            visibilityTime: 3000,
+        });
+    };
     const handleSignIn = async () => {
         if (!email || !password) {
-            Alert.alert('Error', 'Please enter both email and password');
-            console.log('SignIn attempt failed: missing email or password');
+            showErrorToast(
+                'error',
+                'bottom',
+                'Enter Details',
+                'Please enter an email and password');
             return;
         }
         setLoading(true);
@@ -39,6 +60,8 @@ const SignInScreen = ({ navigation }: any) => {
             .then(() => {
                 let user = getAuth().currentUser;
                 AsyncStorage.setItem(StorageKeys.IS_AUTHED, 'true');
+                AsyncStorage.setItem(StorageKeys.GOOGLE_USER_NAME, email);
+                AsyncStorage.setItem(StorageKeys.GOOGLE_USER_EMAIL, email);
                 AsyncStorage.setItem('signInType', 'firebase'); // Store sign-in type
                 console.log('User account created & signed in!', user);
                 navigation.dispatch(StackActions.replace(ScreenNames.HOME_TABS));
@@ -47,13 +70,21 @@ const SignInScreen = ({ navigation }: any) => {
             .catch(error => {
                 AsyncStorage.setItem(StorageKeys.IS_AUTHED, 'false');
                 console.log('SignIn error:', error);
-                if (error.code === 'auth/email-already-in-use') {
+                 if (error.code === 'auth/email-already-in-use') {
+                    showErrorAlert(
+                        'Email Already in Use',
+                        'That email address is already in use! Please try a different one.'
+                    );
                     console.log('That email address is already in use!');
+
                 }
                 if (error.code === 'auth/invalid-email') {
+                      showErrorAlert(
+                        'Invalid Email',
+                        'That email address is invalid! Please enter a valid email address.'
+                    );
                     console.log('That email address is invalid!');
                 }
-                console.error(error);
             })
             .finally(() => setLoading(false));
     };
@@ -76,7 +107,7 @@ const SignInScreen = ({ navigation }: any) => {
                     ...(Platform.OS === 'web' ? { backdropFilter: 'blur(6px)' } : {}),
                 }} />
                 <View style={{ backgroundColor: Colors.background, borderRadius: 12, padding: 24, alignItems: 'center' }}>
-                    <ActivityIndicator size="large" color={Colors.button} />
+                    <ActivityIndicator size="large" color={Colors.primary} />
                     <Text style={{ color: Colors.inputText, marginTop: 12, fontSize: 16 }}>Please wait...</Text>
                 </View>
             </View>
@@ -170,34 +201,34 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
     },
     brand: {
-        fontSize: 28,
-        color: Colors.button,
+        fontSize: FontSize.huge,
+        color: Colors.primary,
         fontWeight: 'bold',
         letterSpacing: 1,
     },
     bigSubtitle: {
-        fontSize: 48,
-        color: Colors.headerText, // text color as #888
+        fontSize: FontSize.massive,
+        color: Colors.primaryText, // text color as #888
         fontWeight: 'bold',
         marginBottom: 30,
         alignSelf: 'flex-start',
         lineHeight: 52, // Fix: lineHeight should be >= fontSize
     },
     trialSubtitle: {
-        fontSize: 18,
-        color: Colors.headerText, // text color as #888
+        fontSize: FontSize.xxxhuge,
+        color: Colors.primaryText, // text color as #888
         marginBottom: 32,
         alignSelf: 'flex-start',
     },
     title: {
-        fontSize: 32,
-        color: Colors.headerText, // text color as #888
+        fontSize: FontSize.xxxhuge,
+        color: Colors.primaryText, // text color as #888
         fontWeight: 'bold',
         marginBottom: 8,
         alignSelf: 'flex-start',
     },
     subtitle: {
-        fontSize: 16,
+        fontSize: FontSize.large,
         color: Colors.inputText, // text color as #888
         marginBottom: 24,
         alignSelf: 'flex-start',
@@ -209,7 +240,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         paddingHorizontal: 16,
         color: Colors.inputText, // text color as #888
-        fontSize: 16,
+        fontSize: FontSize.large,
         marginBottom: 16,
         borderWidth: 1,
         borderColor: Colors.borderColor, // subtle border color
@@ -230,7 +261,7 @@ const styles = StyleSheet.create({
     signInButton: {
         width: '100%',
         height: 48,
-        backgroundColor: Colors.button, // darker button
+        backgroundColor: Colors.primary, // darker button
         borderRadius: 12,
         justifyContent: 'center',
         alignItems: 'center',
@@ -238,12 +269,12 @@ const styles = StyleSheet.create({
     },
     signInButtonText: {
         color: Colors.buttonText, // text color as #888
-        fontSize: 18,
+        fontSize: FontSize.xlarge,
         fontWeight: '600',
     },
     forgotText: {
-        color: Colors.headerText, // text color as #888
-        fontSize: 15,
+        color: Colors.inputText, // text color as #888
+        fontSize: FontSize.medium,
         marginBottom: 24,
     },
     orRow: {
@@ -260,7 +291,7 @@ const styles = StyleSheet.create({
     orText: {
         marginHorizontal: 12,
         color: Colors.inputText, // text color as #888
-        fontSize: 15,
+        fontSize: FontSize.medium,
     },
 
     googleButton: {

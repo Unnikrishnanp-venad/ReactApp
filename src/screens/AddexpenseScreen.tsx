@@ -7,6 +7,7 @@ import { ScreenNames } from '../constants/screenNames';
 import Toast from 'react-native-toast-message';
 import { ExpenseItem } from '../constants/model';
 import { ExpenseCategory, StorageKeys } from '../constants/key';
+import FontSize from '../constants/fontsize';
 
 const AddexpenseScreen = () => {
   const navigation = useNavigation();
@@ -45,7 +46,7 @@ const AddexpenseScreen = () => {
       amount: parseFloat(amount),
       date: new Date().toISOString(),
       type: selectedCategory,
-      user: label,
+      user: email || label, // Always use email for user field
     };
     const stored = await AsyncStorage.getItem(StorageKeys.STORAGE_KEY);
     let updated: ExpenseItem[] = [];
@@ -73,7 +74,7 @@ const AddexpenseScreen = () => {
       {/* Back button header, matching AddScreen */}
       <View style={[styles.headerRow, { paddingTop: 20 }]}> 
         <TouchableOpacity onPress={() =>  navigation.dispatch(StackActions.pop(1))} style={styles.backButton}>
-          <Image source={require('../../assets/back.png')} style={{ width: 28, height: 28, tintColor: Colors.button }} />
+          <Image source={require('../../assets/back.png')} style={{ width: 28, height: 28, tintColor: Colors.primary }} />
         </TouchableOpacity>
       </View>
       {/* Horizontal collection chips */}
@@ -84,10 +85,10 @@ const AddexpenseScreen = () => {
             return (
               <TouchableOpacity
                 key={cat}
-                style={[styles.chip, isSelected && { borderColor: Colors.borderColor, backgroundColor: Colors.button }]}
+                style={[styles.chip, isSelected && { borderColor: Colors.borderColor, backgroundColor: Colors.primary }]}
                 onPress={() => setSelectedCategory(cat as ExpenseCategory)}
               >
-                <Text style={[styles.chipText, !isSelected && { color: Colors.headerText }]}>{cat}</Text>
+                <Text style={[styles.chipText, !isSelected && { color: Colors.subtitle }]}>{cat}</Text>
               </TouchableOpacity>
             );
           })}
@@ -101,15 +102,15 @@ const AddexpenseScreen = () => {
          <TextInput
           style={{
             width: '100%',
-            backgroundColor: Colors.collectionBackground,
-            color: Colors.headerText,
-            fontSize: 16,
+            backgroundColor: Colors.searchBarBackground,
+            color: Colors.primaryText,
+            fontSize: FontSize.large,
             borderRadius: 10,
             padding: 10,
             marginBottom: 12,
           }}
           placeholder="Add a comment"
-          placeholderTextColor="#888"
+          placeholderTextColor={Colors.inactiveDot}
           value={comment}
           onChangeText={setComment}
           multiline
@@ -134,7 +135,7 @@ const AddexpenseScreen = () => {
                 >
                   <Image
                     source={require('../../assets/delete.png')}
-                    style={{ width: 28, height: 28, tintColor: Colors.headerText }}
+                    style={{ width: 28, height: 28, tintColor: Colors.primaryText }}
                   />
                 </TouchableOpacity>
               );
@@ -185,8 +186,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalLabel: {
-    color: '#888',
-    fontSize: 16,
+    color: Colors.subtitle,
+    fontSize: FontSize.large,
     marginBottom: 0,
     alignSelf: 'flex-start',
   },
@@ -196,14 +197,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   amountValue: {
-    fontSize: 48,
+    fontSize: FontSize.xlarge,
     fontWeight: 'bold',
-    color: Colors.headerText,
+    color: Colors.primaryText,
   },
   bottomBackButton: {
     width: '90%',
     alignSelf: 'center',
-    backgroundColor: Colors.button,
+    backgroundColor: Colors.primary,
     paddingVertical: 16,
     borderRadius: 24,
     alignItems: 'center',
@@ -212,8 +213,8 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   bottomBackButtonText: {
-    color: Colors.buttonText,
-    fontSize: 20,
+    color: Colors.primaryText,
+    fontSize: FontSize.xlarge,
     fontWeight: 'bold',
   },
   chip: {
@@ -231,7 +232,7 @@ const styles = StyleSheet.create({
   },
   chipText: {
     color: Colors.buttonText,
-    fontSize: 17,
+    fontSize: FontSize.large,
     fontWeight: 'bold',
     letterSpacing: 0.2,
     textAlign: 'center',
@@ -277,8 +278,8 @@ const styles = StyleSheet.create({
     borderColor: Colors.borderColor,
   },
   keypadText: {
-    fontSize: 40,
-    color: Colors.headerText,
+    fontSize: FontSize.xlarge,
+    color: Colors.primaryText,
     fontWeight: 'bold',
   },
 });

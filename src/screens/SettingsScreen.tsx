@@ -7,6 +7,9 @@ import Colors from '../constants/colors';
 import { StorageKeys } from '../constants/storageKeys';
 import { ScreenNames } from '../constants/screenNames';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { StackActions } from '@react-navigation/native';
+import FontSize from '../constants/fontsize';
+
 const defaultAvatar = require('../../assets/user.png'); // Default avatar image
 
 const SettingsScreen = ({ navigation }: any) => {
@@ -18,6 +21,8 @@ const SettingsScreen = ({ navigation }: any) => {
       const name = await AsyncStorage.getItem(StorageKeys.GOOGLE_USER_NAME);
       const email = await AsyncStorage.getItem(StorageKeys.GOOGLE_USER_EMAIL);
       const photo = await AsyncStorage.getItem(StorageKeys.GOOGLE_USER_PHOTO);
+
+      console.log('Fetched user:', { name, email, photo });
       setUser({
         name: name || undefined,
         email: email || undefined,
@@ -67,7 +72,7 @@ const SettingsScreen = ({ navigation }: any) => {
               console.log('Signed out from both (fallback)');
             }
             await clearAuthStorage(); // Clear auth-related data
-            navigation.replace(ScreenNames.AUTH);
+            navigation.dispatch(StackActions.replace(ScreenNames.AUTH));
           },
         },
       ]
@@ -132,33 +137,33 @@ const styles = StyleSheet.create({
     backgroundColor: '#222',
   },
   name: {
-    color: Colors.headerText,
-    fontSize: 22,
+    color: Colors.primaryText,
+    fontSize: FontSize.xxhuge,
     fontWeight: 'bold',
     marginBottom: 6,
     textAlign: 'center',
   },
   email: {
-    color: '#aaa',
-    fontSize: 16,
+    color: Colors.subtitle,
+    fontSize: FontSize.large,
     marginBottom: 8,
     textAlign: 'center',
   },
   changePhotoButton: {
     marginBottom: 12,
-    backgroundColor: Colors.button,
+    backgroundColor: Colors.primary,
     borderRadius: 18,
     paddingHorizontal: 18,
     paddingVertical: 8,
   },
   changePhotoText: {
     color: Colors.buttonText,
-    fontSize: 15,
+    fontSize: FontSize.medium,
     fontWeight: '600',
   },
   logoutButton: {
     width: '100%',
-    backgroundColor: Colors.button,
+    backgroundColor: Colors.primary,
     paddingVertical: 14,
     borderRadius: 24,
     alignItems: 'center',

@@ -5,6 +5,7 @@ import Colors from '../constants/colors';
 import { useFocusEffect } from '@react-navigation/native';
 import { ExpenseItem } from '../constants/model';
 import { StorageKeys } from '../constants/key';
+import FontSize from '../constants/fontsize';
 
 const ExpenseHistoryScreen = ({ navigation }: any) => {
   const [history, setHistory] = useState<ExpenseItem[]>([]);
@@ -23,8 +24,13 @@ const ExpenseHistoryScreen = ({ navigation }: any) => {
   useFocusEffect(
     React.useCallback(() => {
       (async () => {
+        const userEmail = await AsyncStorage.getItem(StorageKeys.GOOGLE_USER_EMAIL);
         const stored = await AsyncStorage.getItem(StorageKeys.STORAGE_KEY);
         let data = stored ? JSON.parse(stored) : [];
+        // Only use expenses for the logged-in user
+        if (userEmail) {
+          data = data.filter((item: any) => item.user === userEmail);
+        }
         data = data.map((item: any) => ({ ...item, date: new Date(item.date) }));
         const types = Array.from(new Set((data as ExpenseItem[]).map(item => String(item.type)))).filter(Boolean);
         const filters = [
@@ -124,7 +130,7 @@ const ExpenseHistoryScreen = ({ navigation }: any) => {
   const renderItem = ({ item, index }: { item: ExpenseItem, index: number }) => (
     <View style={styles.itemRow}>
       <View style={[styles.iconBox, { backgroundColor: getUserColor(item.user || '') }]}> 
-        <Text style={{ fontSize: 22, color: '#fff', fontWeight: 'bold' }}>
+        <Text style={{ fontSize: 22, color: Colors.buttonText, fontWeight: 'bold' }}>
           {item.user && typeof item.user === 'string' && item.user.length > 0 ? item.user[0].toUpperCase() : '?'}
         </Text>
       </View>
@@ -151,12 +157,12 @@ const ExpenseHistoryScreen = ({ navigation }: any) => {
         <TextInput
           style={styles.searchInput}
           placeholder="Search transactions"
-          placeholderTextColor={Colors.inputText}
+          placeholderTextColor={Colors.searchBarPlaceholder}
           value={search}
           onChangeText={setSearch}
         />
         <TouchableOpacity onPress={() => setShowFilters(f => !f)}>
-          <Image source={require('../../assets/filter.png')} style={{ width: 24, height: 24, marginRight: 18, tintColor: '#888' }} />
+          <Image source={require('../../assets/filter.png')} style={{ width: 24, height: 24, marginRight: 18, tintColor:Colors.searchBarPlaceholder}} />
         </TouchableOpacity>
       </View>
       {showFilters && (
@@ -211,8 +217,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   headerTitle: {
-    fontSize: 32,
-    color: Colors.headerText,
+    fontSize: FontSize.xlarge,
+    color: Colors.primaryText,
     fontWeight: 'bold',
   },
   statementBtn: {
@@ -226,31 +232,32 @@ const styles = StyleSheet.create({
   statementBtnText: {
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: FontSize.large,
   },
   filterRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 8,
     marginLeft: 16,
+    marginTop: 18,
   },
   filterBtn: {
     paddingHorizontal: 16,
     paddingVertical: 6,
     borderRadius: 16,
-    backgroundColor: '#181818',
+    backgroundColor: Colors.filterButtonBackgroundColor,
     marginRight: 10,
     borderWidth: 1,
-    borderColor: '#222',
+    borderColor: Colors.borderColor,
   },
   filterBtnActive: {
-    backgroundColor: Colors.button,
-    borderColor: Colors.button,
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
   },
   filterBtnText: {
     color: '#888',
     fontWeight: 'bold',
-    fontSize: 15,
+    fontSize: FontSize.medium,
   },
   filterBtnTextActive: {
     color: Colors.header,
@@ -258,7 +265,7 @@ const styles = StyleSheet.create({
   searchRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#222',
+    backgroundColor: Colors.searchBarBackground,
     borderRadius: 32,
     marginHorizontal: 16,
     marginBottom: 0,
@@ -267,7 +274,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     color: '#fff',
-    fontSize: 18,
+    fontSize: FontSize.large,
     marginLeft: 18,
   },
   itemRow: {
@@ -289,28 +296,28 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   itemSubtitle: {
-    color: '#aaa',
-    fontSize: 14,
+    color: Colors.subtitle,
+    fontSize: FontSize.medium,
     marginBottom: 2,
   },
   itemTitle: {
-    color: '#fff',
-    fontSize: 18,
+    color: Colors.primaryText,
+    fontSize: FontSize.large,
     fontWeight: 'bold',
     marginBottom: 2,
   },
   itemDate: {
-    color: Colors.inputText,
-    fontSize: 13,
+    color: Colors.subtitle,
+    fontSize: FontSize.medium,
   },
   itemAmount: {
-    color: '#fff',
-    fontSize: 20,
+    color: Colors.primary,
+    fontSize: FontSize.large,
     fontWeight: 'bold',
   },
   itemDebited: {
     color: Colors.inputText,
-    fontSize: 13,
+    fontSize: FontSize.medium,
     marginRight: 4,
   },
   bankIcon: {

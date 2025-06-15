@@ -1,22 +1,31 @@
-// src/constants/colors.ts
-// Centralized color palette for the app
 
 const Colors = {
-  primary: '#FFD600', // Main blue
+  primary:'#34eb8f',//#FFD600', // Main blue
+  secondary: '#292726', // Secondary background color
+
+  primaryText: '#ffff', // Main text color
+  secondaryText: '#B9D9DC', // Secondary text color
+  subtitle: '#888', 
+  buttonText: '#121111',
+  inactiveDot:'#888',
+
   background: '#292726',
+  backgroundLight: '#181818', // Lighter background for contrast
+  backgroundDark: '#000', // Darker background for modals or overlays
+  backgroundTransparent: 'rgba(0, 0, 0, 0.8)', // Semi-transparent background for modals
   text: '#B9D9DC',
   header: '#000',
   headerText: '#B9D9DC',
-  subtitle: '#888',
+  filterButtonBackgroundColor: '#181818',
   inputBackground: '#232323',
   inputText: '#888',
   button: '#efb415',
-  buttonText: '#121111',
+
   borderColor: '#333',
-  loaderColor: '#efb415',
+
   loaderbackground: '#000',
   tabbarBackground: '#292726',
-  tabbarActiveTintColor: '#efb415', // Active tab icon color
+
   tabbarInactiveTintColor: '#888', // Inactive tab icon color
   cardBackground: '#292726',
   cardText: '#B9D9DC',
@@ -24,8 +33,8 @@ const Colors = {
   cardShadow: '#000',
   cardTitle: '#B9D9DC',
   cardSubtitle: '#888',
-  cardButton: '#efb415',
-  cardButtonText: '#121111',
+  
+  // cardButtonText: '#121111',
   searchBarBackground: '#232323',
   searchBarText: '#B9D9DC',
   searchBarPlaceholder: '#888',
@@ -33,14 +42,15 @@ const Colors = {
   searchBarActive: '#efb415',
   searchBarInactive: '#888',
   searchBarseperator: '#333',
-  contactItemBackground: '#292726',
-  contactItemText: '#B9D9DC',
-  contactItemPhone: '#888',
-  contactItemSeparator: '#333',
-  contactItemEmpty: '#888',
-  modalOverlay: '#292726',
-  modalOverlayExpense: '#292726',
-  modalOverlayIncome: '#292726',
+
+  // contactItemBackground: '#292726',
+  // contactItemText: '#B9D9DC',
+  // contactItemPhone: '#888',
+  // contactItemSeparator: '#333',
+  // contactItemEmpty: '#888',
+  // modalOverlay: '#292726',
+  // modalOverlayExpense: '#292726',
+  // modalOverlayIncome: '#292726',
   collectionBackground: '#181818',
 };
 

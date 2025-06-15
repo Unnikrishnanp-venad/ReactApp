@@ -17,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '../constants/colors';
 import { StorageKeys } from '../constants/storageKeys';
 import { ScreenNames } from '../constants/screenNames';
+import FontSize from '../constants/fontsize';
 
 const { width } = Dimensions.get('window');
 
@@ -120,20 +121,20 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   image: { width: '100%', height: 300, resizeMode: 'contain' },
-  title: { fontSize: 24, color: Colors.headerText, fontWeight: 'bold', marginTop: 20 },
-  desc: { fontSize: 16, color: Colors.headerText, textAlign: 'center', marginTop: 10 },
+  title: { fontSize: FontSize.xlarge, color: Colors.primaryText, fontWeight: 'bold', marginTop: 20 },
+  desc: { fontSize: FontSize.large, color: Colors.subtitle, textAlign: 'center', marginTop: 10 },
   footer: { alignItems: 'center', paddingBottom: 40 },
   dots: { flexDirection: 'row', marginBottom: 20 },
   dot: {
     height: 10,
     width: 10,
     borderRadius: 5,
-    backgroundColor: '#bbb',
+    backgroundColor: Colors.inactiveDot,
     marginHorizontal: 5,
   },
-  activeDot: { backgroundColor: '#333' },
+  activeDot: { backgroundColor: Colors.primary },
   button: {
-    backgroundColor: Colors.button,
+    backgroundColor: Colors.primary,
     paddingVertical: 12,
     borderRadius: 25,
     width: width * 0.9, // Make button width responsive to screen size
