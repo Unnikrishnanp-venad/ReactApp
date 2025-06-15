@@ -8,18 +8,13 @@ import { StorageKeys } from '../constants/key';
 import FontSize from '../constants/fontsize';
 import { ScreenNames } from '../constants/screenNames';
 
-const ExpenseHistoryScreen = ({ navigation }: any) => {
+const ExpenseDetailScreen = ({ navigation, route }: any) => {
+  const { category } = route.params;
   const [history, setHistory] = useState<ExpenseItem[]>([]);
   const [search, setSearch] = useState('');
   const [filtered, setFiltered] = useState<ExpenseItem[]>([]);
-  const [filterType, setFilterType] = useState('all');
-  const [showFilters, setShowFilters] = useState(false);
-  const [dynamicFilters, setDynamicFilters] = useState<{ label: string; value: string }[]>([
-    { label: 'All', value: 'all' },
-  ]);
-  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [sortDesc, setSortDesc] = useState(true);
   const [selectedMonths, setSelectedMonths] = useState<string[]>([]);
-  const [selectedUser, setSelectedUser] = useState<string | undefined>(undefined);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   useLayoutEffect(() => {
@@ -32,28 +27,47 @@ const ExpenseHistoryScreen = ({ navigation }: any) => {
         const userEmail = await AsyncStorage.getItem(StorageKeys.GOOGLE_USER_EMAIL);
         const stored = await AsyncStorage.getItem(StorageKeys.STORAGE_KEY);
         let data = stored ? JSON.parse(stored) : [];
-        // Only use expenses for the logged-in user
+        // Only use expenses for the logged-in user and selected category
         if (userEmail) {
-          data = data.filter((item: any) => item.user === userEmail);
+          data = data.filter((item: any) => item.user === userEmail && item.type === category);
         }
         data = data.map((item: any) => ({ ...item, date: new Date(item.date) }));
-        const types = Array.from(new Set((data as ExpenseItem[]).map(item => String(item.type)))).filter(Boolean);
-        const filters = [
-          { label: 'All', value: 'all' },
-          ...types.map(type => ({ label: type, value: type })),
-        ];
-        setDynamicFilters(filters);
         setHistory(data);
         setFiltered(data);
       })();
-    }, [])
+    }, [category])
   );
+
+  // Set the screen title to the selected category
+  const screenTitle = category;
+
+  const handleOpenFilters = () => {
+    navigation.navigate(ScreenNames.EXPENSE_FILTER, {
+      selectedMonths,
+      selectedCategories,
+      showCategory: false, // Hide category filter when coming from ExpenseDetailScreen
+      onApplyFilters: (filters: { selectedMonths: string[]; selectedCategories: string[] }) => {
+        setSelectedMonths(filters.selectedMonths);
+        setSelectedCategories(filters.selectedCategories);
+      },
+    });
+  };
 
   useEffect(() => {
     let data = history;
-    if (filterType !== 'all') {
-      data = data.filter(item => item.type === filterType);
+    if (search) {
+      data = data.filter(
+        (item: any) =>
+          item.title.toLowerCase().includes(search.toLowerCase()) ||
+          (item.subtitle && item.subtitle.toLowerCase().includes(search.toLowerCase())) ||
+          (item.amount && String(item.amount).includes(search))
+      );
     }
+    setFiltered(data);
+  }, [search, history]);
+
+  useEffect(() => {
+    let data = history;
     if (selectedMonths && selectedMonths.length > 0) {
       data = data.filter(item => {
         const date = new Date(item.date);
@@ -77,17 +91,7 @@ const ExpenseHistoryScreen = ({ navigation }: any) => {
       );
     }
     setFiltered(data);
-  }, [search, history, filterType, selectedMonths, selectedCategories]);
-
-  const clearHistory = async () => {
-    try {
-      await AsyncStorage.removeItem(StorageKeys.STORAGE_KEY);
-      setHistory([]);
-      setFiltered([]);
-    } catch (error) {
-      // handle error
-    }
-  };
+  }, [search, history, selectedMonths, selectedCategories]);
 
   function getUserColor(user: string) {
     const colors = [
@@ -156,11 +160,11 @@ const ExpenseHistoryScreen = ({ navigation }: any) => {
           resizeMode="cover"
         />
       ) : (
-          <View style={[styles.iconBox, { backgroundColor: getUserColor(item.user || '') }]}>
-            <Text style={{ fontSize: FontSize.huge, color: Colors.primaryText, fontWeight: 'bold' }}>
-              {item.user && typeof item.user === 'string' && item.user.length > 0 ? item.user[0].toUpperCase() : '?'}
-            </Text>
-          </View>
+        <View style={[styles.iconBox, { backgroundColor: getUserColor(item.user || '') }]}> 
+          <Text style={{ fontSize: 22, color: Colors.buttonText, fontWeight: 'bold' }}>
+            {item.user && typeof item.user === 'string' && item.user.length > 0 ? item.user[0].toUpperCase() : '?'}
+          </Text>
+        </View>
       )}
       <View style={{ flex: 1 }}>
         <Text style={[styles.itemSubtitle, { maxWidth: 120 }]}>{item.subtitle}</Text>
@@ -173,23 +177,19 @@ const ExpenseHistoryScreen = ({ navigation }: any) => {
     </View>
   );
 
-  const handleOpenFilters = () => {
-    navigation.navigate(ScreenNames.EXPENSE_FILTER, {
-      selectedMonths,
-      selectedCategories,
-      onApplyFilters: (filters: { selectedMonths: string[]; selectedCategories: string[] }) => {
-        setSelectedMonths(filters.selectedMonths);
-        setSelectedCategories(filters.selectedCategories);
-      },
-    });
-  };
+  // Sort filtered data by amount
+  const sortedFiltered = [...filtered].sort((a, b) => sortDesc ? b.amount - a.amount : a.amount - b.amount);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.headerRow}>
-        <Text style={styles.headerTitle}>Spending Timeline</Text>
-        <TouchableOpacity style={styles.statementBtn} onPress={clearHistory}>
-          <Text style={styles.statementBtnText}>Clear</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
+      {/* Back button header, matching AddScreen */}
+      <View style={[styles.headerRow, { paddingTop: 20 }]}> 
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Image source={require('../../assets/back.png')} style={{ width: 28, height: 28, tintColor: Colors.primary }} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>{screenTitle}</Text>
+        <TouchableOpacity onPress={() => setSortDesc(s => !s)} style={{ padding: 8 }}>
+          <Image source={require('../../assets/sort.png')} style={{ width: 24, height: 24, tintColor: Colors.primary }} />
         </TouchableOpacity>
       </View>
       <View style={styles.searchRow}>
@@ -204,30 +204,17 @@ const ExpenseHistoryScreen = ({ navigation }: any) => {
           <Image source={require('../../assets/filter.png')} style={{ width: 24, height: 24, marginRight: 18, tintColor:Colors.primary}} />
         </TouchableOpacity>
       </View>
-      {showFilters && (
-        <View style={styles.filterRow}>
-          {dynamicFilters.map(f => (
-            <TouchableOpacity
-              key={f.value}
-              style={[styles.filterBtn, filterType === f.value && styles.filterBtnActive]}
-              onPress={() => setFilterType(f.value)}
-            >
-              <Text style={[styles.filterBtnText, filterType === f.value && styles.filterBtnTextActive]}>{f.label}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      )}
       {filtered.length === 0 ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ color: Colors.subtitle, fontSize: FontSize.large}}>Start tracking your spending to see it here.</Text>
+          <Text style={{ color: Colors.inputText, fontSize: 20, marginTop: 40 }}>No Records Found</Text>
         </View>
       ) : (
           <SectionList
-            sections={groupByDate(filtered)}
+            sections={groupByDate(sortedFiltered)}
             keyExtractor={item => item.id}
             renderItem={renderItem}
             renderSectionHeader={({ section: { title } }) => (
-              <Text style={{ color: Colors.subtitle, fontWeight: 'bold', fontSize: FontSize.xlarge, marginLeft: 18, marginTop: 18, marginBottom: 10, backgroundColor: Colors.background }}>
+              <Text style={{ color: Colors.inputText, fontWeight: 'bold', fontSize: 18, marginLeft: 18, marginTop: 18, marginBottom: 10, backgroundColor: Colors.background }}>
                 {getSectionTitle(title)}
               </Text>
             )}
@@ -273,34 +260,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: FontSize.large,
   },
-  filterRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-    marginLeft: 16,
-    marginTop: 18,
-  },
-  filterBtn: {
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    borderRadius: 16,
-    backgroundColor: Colors.filterButtonBackgroundColor,
-    marginRight: 10,
-    borderWidth: 1,
-    borderColor: Colors.borderColor,
-  },
-  filterBtnActive: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
-  },
-  filterBtnText: {
-    color: '#888',
-    fontWeight: 'bold',
-    fontSize: FontSize.medium,
-  },
-  filterBtnTextActive: {
-    color: Colors.header,
-  },
   searchRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -314,7 +273,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    color: Colors.searchBarBackground,
+    color: Colors.primaryText,
     fontSize: FontSize.large,
     marginLeft: 18,
   },
@@ -360,12 +319,13 @@ const styles = StyleSheet.create({
     fontSize: FontSize.medium,
     marginRight: 4,
   },
-  bankIcon: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
-    backgroundColor: '#fff',
+  backButton: {
+    marginRight: 16,
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: 'transparent',
+    alignSelf: 'center',
   },
 });
 
-export default ExpenseHistoryScreen;
+export default ExpenseDetailScreen;

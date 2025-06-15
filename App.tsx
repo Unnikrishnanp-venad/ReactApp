@@ -9,6 +9,8 @@ import OnboardingScreen from './src/screens/OnboardingScreen';
 import SignInScreen from './src/screens/SignInScreen';
 import AddexpenseScreen from './src/screens/AddexpenseScreen';
 import RegistrationScreen from './src/screens/RegistrationScreen';
+import ExpenseDetailScreen from './src/screens/ExpenseDetailScreen';
+import ExpenseFilterScreen from './src/screens/ExpenseFilterScreen';
 import ReactNativeBiometrics from 'react-native-biometrics';
 import Colors from './src/constants/colors';
 import { StorageKeys } from './src/constants/key';
@@ -92,6 +94,8 @@ const App = () => {
           />
           <Stack.Screen name={ScreenNames.SIGN_IN} component={SignInScreen} options={{ title: 'Sign In' }} />
           <Stack.Screen name={ScreenNames.ADDEXPENSE} component={AddexpenseScreen} options={{ title: 'Add Expense' }} />
+          <Stack.Screen name={ScreenNames.EXPENSE_DETAIL} component={ExpenseDetailScreen} options={{ title: 'Expense Detail' }} />
+          <Stack.Screen name={ScreenNames.EXPENSE_FILTER} component={ExpenseFilterScreen} options={{ title: 'Filters' }} />
         </Stack.Navigator>
       </View>
       <Toast />

@@ -88,22 +88,25 @@ const HomeScreen = ({ navigation }: any) => {
             renderItem={({ item }) => {
               const meta = CATEGORY_META[item] || {
                 label: item,
-                icon: require('../../assets/plus.png'), // fallback icon
+                icon: require('../../assets/plus.png'),
                 color: Colors.primary,
                 tintColor: Colors.primary,
                 bg: Colors.backgroundLight,
               };
-              // Example data for price and change, replace with your real data
               const price = (categoryTotals[item] || 0).toFixed(2);
 
               return (
-                <View style={[styles.planCard, { width: CARD_WIDTH, height: CARD_HEIGHT }]}>
+                <TouchableOpacity
+                  style={[styles.planCard, { width: CARD_WIDTH, height: CARD_HEIGHT }]}
+                  onPress={() => navigation.navigate(ScreenNames.EXPENSE_DETAIL, { category: item })}
+                  activeOpacity={0.85}
+                >
                   <View style={styles.planCardInner}>
                     <Image source={meta.icon} style={[styles.planLogo, { tintColor: Colors.primary }]} />
                     <Text style={styles.planTitle}>{meta.label}</Text>
                     <Text style={styles.planPrice}>₹{price}</Text>
                   </View>
-                </View>
+                </TouchableOpacity>
               );
             }}
             contentContainerStyle={{ paddingBottom: 32, paddingTop: 8 }}

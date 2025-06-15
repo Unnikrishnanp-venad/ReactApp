@@ -11,5 +11,8 @@ export class ScreenNames {
   static readonly SEARCH = "Search";
   static readonly ADD = "AddScreen";
   static readonly ADDEXPENSE = "Addexpense";
+  static readonly EXPENSE_DETAIL = "ExpenseDetail";
+  static readonly EXPENSE_FILTER = "ExpenseFilterScreen";
+
   // Add more screen names as needed
 }
