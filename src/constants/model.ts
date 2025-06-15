@@ -6,4 +6,5 @@ export interface ExpenseItem {
   date: string;
   type: string;
   user: string;
+  userPhoto?: string;
 }

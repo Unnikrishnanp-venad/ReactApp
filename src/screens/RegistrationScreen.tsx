@@ -12,8 +12,7 @@ import {
 } from '@react-native-google-signin/google-signin';
 import { IOS_CLIENT_ID, StorageKeys, WEB_CLIENT_ID } from '../constants/key';
 import { googleSignIn } from '../constants/googleSigIn';
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword } from '@react-native-firebase/auth';
-const { width } = Dimensions.get('window');
+import { getAuth, createUserWithEmailAndPassword } from '@react-native-firebase/auth';
 import Toast, { ToastPosition, ToastType } from 'react-native-toast-message';
 import FontSize from '../constants/fontsize';
 
@@ -80,7 +79,7 @@ const RegistrationScreen = ({ navigation }: any) => {
 
                 }
                 if (error.code === 'auth/invalid-email') {
-                      showErrorAlert(
+                    showErrorAlert(
                         'Invalid Email',
                         'That email address is invalid! Please enter a valid email address.'
                     );
@@ -130,14 +129,14 @@ const RegistrationScreen = ({ navigation }: any) => {
             ]
         );
     };
-    const showErrorToast = async (type:ToastType,position:ToastPosition,title: string, message: string) => {
+    const showErrorToast = async (type: ToastType, position: ToastPosition, title: string, message: string) => {
         Toast.show({
-                    type: type,
-                    text1: title,
-                    text2: message,
-                    position: position,
-                  visibilityTime: 3000,
-            });
+            type: type,
+            text1: title,
+            text2: message,
+            position: position,
+            visibilityTime: 3000,
+        });
     };
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background, paddingTop: insets?.top, paddingBottom: insets?.bottom }}>
@@ -153,11 +152,11 @@ const RegistrationScreen = ({ navigation }: any) => {
                 >
                     <View style={styles.contentBox}>
                         <View style={styles.header}>
-                            <Image source={require('../../assets/A4.png')} style={styles.logo} />
+                            <Image source={require('../../assets/logo.png')} style={styles.logo} />
                             <Text style={styles.brand}>FLIX</Text>
                         </View>
-                        <Text style={styles.title}>Register your account</Text>
-                        <Text style={styles.subtitle}>Sign up to start your 30 days free trial</Text>
+                        <Text style={styles.title}>Create Your Account</Text>
+                        <Text style={styles.subtitle}>Take control of your finances. Sign up to start tracking your expenses, managing budgets, and building better habits.</Text>
                         <GoogleSigninButton
                             style={styles.googleButton}
                             size={GoogleSigninButton.Size.Wide}
@@ -230,12 +229,14 @@ const RegistrationScreen = ({ navigation }: any) => {
                                 style={styles.createButton}
                                 onPress={handleRegister}
                             >
-                                <Text style={styles.createButtonText}>Register</Text>
+                                <Text style={styles.createButtonText}>Sign Up</Text>
                             </TouchableOpacity>
                         </View>
-                        <Text style={styles.loginText}>
-                            Already have an account? <Text style={styles.loginLink} onPress={() => navigation.dispatch(StackActions.push(ScreenNames.SIGN_IN))}>Login Here</Text>
-                        </Text>
+                        <TouchableOpacity onPress={() => navigation.dispatch(StackActions.push(ScreenNames.SIGN_IN))}>
+                            <Text style={styles.loginText}>
+                                Already have an account? <Text style={styles.loginLink} onPress={() => navigation.dispatch(StackActions.push(ScreenNames.SIGN_IN))}> Log in</Text>
+                            </Text>
+                        </TouchableOpacity>
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
@@ -267,9 +268,10 @@ const styles = StyleSheet.create({
         fontSize: FontSize.xxxhuge,
         fontWeight: 'bold',
         color: Colors.primary,
+        letterSpacing: 3,
     },
     title: {
-        fontSize: FontSize.xxxhuge,
+        fontSize: FontSize.xxhuge,
         fontWeight: 'bold',
         color: Colors.primaryText,
         textAlign: 'left',
@@ -280,9 +282,10 @@ const styles = StyleSheet.create({
     },
     subtitle: {
         fontSize: FontSize.large,
-        color: Colors.inputText,
+        color: Colors.subtitle,
         marginBottom: 15,
         alignSelf: 'flex-start',
+        fontWeight: 'ultralight',
     },
     form: {
         width: '100%',
@@ -303,21 +306,22 @@ const styles = StyleSheet.create({
     },
     createButton: {
         width: '100%',
-        height: 48,
+        height: 50,
         backgroundColor: Colors.primary,
-        borderRadius: 8,
+        borderRadius: 25,
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 18,
+
     },
     createButtonText: {
         color: Colors.buttonText,
         fontSize: FontSize.large,
-        fontWeight: '600',
+        fontWeight: 'thin'
     },
     loginText: {
-        color: Colors.inputText,
-        fontSize: FontSize.medium,
+        color: Colors.subtitle,
+        fontSize: FontSize.large,
         marginTop: 10,
         marginBottom: 40,
     },
@@ -352,8 +356,8 @@ const styles = StyleSheet.create({
     },
     orText: {
         marginHorizontal: 12,
-        color: Colors.primaryText,
-        fontSize: FontSize.large,
+        color: Colors.subtitle,
+        fontSize: FontSize.medium,
     },
 });
 

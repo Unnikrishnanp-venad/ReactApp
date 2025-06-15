@@ -2,13 +2,13 @@ import React, { useRef, useState, useEffect } from 'react';
 import {
   View,
   Text,
-  Alert,
   FlatList,
   Image,
   Dimensions,
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import { StackActions } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -24,20 +24,20 @@ const { width } = Dimensions.get('window');
 const slides = [
   {
     id: '1',
-    title: 'Welcome',
-    description: 'Discover amazing features.',
+    title: 'Track Every Penny',
+    description: 'Stay in control of your finances by logging every income and expense effortlessly. Your budget starts here.',
     image: require('../../assets/A1.png'),
   },
   {
     id: '2',
-    title: 'Stay Connected',
-    description: 'Stay in touch with your friends.',
+    title: 'Visualize Your Spending',
+    description: 'See where your money goes with easy-to-understand charts and insights. Make informed decisions in seconds.',
     image: require('../../assets/A2.png'),
   },
   {
     id: '3',
-    title: 'Get Started',
-    description: 'Let’s get you set up!',
+    title: 'Smarter Savings Ahead',
+    description: 'Set goals, reduce waste, and grow your savings. Your future self will thank you.',
     image: require('../../assets/A3.png'),
   },
 ];
@@ -121,8 +121,8 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   image: { width: '100%', height: 300, resizeMode: 'contain' },
-  title: { fontSize: FontSize.xlarge, color: Colors.primaryText, fontWeight: 'bold', marginTop: 20 },
-  desc: { fontSize: FontSize.large, color: Colors.subtitle, textAlign: 'center', marginTop: 10 },
+  title: { fontSize: FontSize.huge, color: Colors.primaryText, fontWeight: 'bold', marginTop: 20 },
+  desc: { fontSize: FontSize.large, color: Colors.subtitle, textAlign: 'center', marginTop: 10 ,fontWeight: 'ultralight'},
   footer: { alignItems: 'center', paddingBottom: 40 },
   dots: { flexDirection: 'row', marginBottom: 20 },
   dot: {
@@ -135,12 +135,13 @@ const styles = StyleSheet.create({
   activeDot: { backgroundColor: Colors.primary },
   button: {
     backgroundColor: Colors.primary,
-    paddingVertical: 12,
+    paddingVertical: 14,
     borderRadius: 25,
+    height: 50,
     width: width * 0.9, // Make button width responsive to screen size
     alignItems: 'center',
     marginHorizontal: 20, // Optional: adds space on both sides
   },
-  buttonText: { color: Colors.buttonText, fontSize: 16 },
+  buttonText: { color: Colors.primaryText, fontSize: FontSize.xlarge, fontWeight: 'thin' },
 });
 

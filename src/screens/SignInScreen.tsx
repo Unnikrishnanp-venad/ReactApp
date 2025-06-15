@@ -128,12 +128,12 @@ const SignInScreen = ({ navigation }: any) => {
                 >
                     <View style={styles.contentBox}>
                         <View style={styles.header}>
-                            <Image source={require('../../assets/A4.png')} style={styles.logo} />
+                            <Image source={require('../../assets/logo.png')} style={styles.logo} />
                             <Text style={styles.brand}>FLIX</Text>
                         </View>
-                        <Text style={styles.bigSubtitle}>Keep your online{Platform.OS === 'web' ? '\n' : ' '}business organized</Text>
+                        <Text style={styles.bigSubtitle}>Welcome Back</Text>
 
-                        <Text style={styles.subtitle}>Enter your details below</Text>
+                        <Text style={styles.subtitle}>Log in to stay on top of your expenses and manage your finances smarter.</Text>
                         <TextInput
                             ref={emailInputRef}
                             style={styles.input}
@@ -169,7 +169,8 @@ const SignInScreen = ({ navigation }: any) => {
                             <Text style={styles.signInButtonText}>Sign in</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => navigation.dispatch(StackActions.popTo(ScreenNames.AUTH))}>
-                            <Text style={styles.forgotText}>Create account?</Text>
+                            <Text style={styles.forgotText}>Don’t have an account?  <Text style={styles.loginLink}> Sign up</Text>
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
@@ -195,22 +196,22 @@ const styles = StyleSheet.create({
         marginTop: 0, // Add more top margin to push header below back button
     },
     logo: {
-        width: 36,
-        height: 36,
+        width: 40,
+        height: 40,
         marginRight: 8,
         resizeMode: 'contain',
     },
     brand: {
-        fontSize: FontSize.huge,
+        fontSize: FontSize.xxxhuge,
         color: Colors.primary,
         fontWeight: 'bold',
-        letterSpacing: 1,
+        letterSpacing: 3,
     },
     bigSubtitle: {
         fontSize: FontSize.massive,
         color: Colors.primaryText, // text color as #888
         fontWeight: 'bold',
-        marginBottom: 30,
+        marginBottom: 10,
         alignSelf: 'flex-start',
         lineHeight: 52, // Fix: lineHeight should be >= fontSize
     },
@@ -260,9 +261,9 @@ const styles = StyleSheet.create({
     },
     signInButton: {
         width: '100%',
-        height: 48,
+        height: 50,
         backgroundColor: Colors.primary, // darker button
-        borderRadius: 12,
+        borderRadius: 25,
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 16,
@@ -270,11 +271,11 @@ const styles = StyleSheet.create({
     signInButtonText: {
         color: Colors.buttonText, // text color as #888
         fontSize: FontSize.xlarge,
-        fontWeight: '600',
+         fontWeight: 'thin'
     },
     forgotText: {
-        color: Colors.inputText, // text color as #888
-        fontSize: FontSize.medium,
+        color: Colors.subtitle, // text color as #888
+        fontSize: FontSize.large,
         marginBottom: 24,
     },
     orRow: {
@@ -298,6 +299,10 @@ const styles = StyleSheet.create({
         flex: 1,
         height: 48,
         marginRight: 8,
+    },
+     loginLink: {
+        color: Colors.primary,
+        fontWeight: 'bold',
     },
 
 });

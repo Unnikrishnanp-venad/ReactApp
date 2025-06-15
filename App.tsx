@@ -4,7 +4,6 @@ import { StatusBar, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import AuthScreen from './src/screens/AuthScreen';
 import HomeTabs from './src/screens/HomeTabs';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import SignInScreen from './src/screens/SignInScreen';
@@ -71,9 +70,9 @@ const App = () => {
   if (!initialRoute || checkingBiometric) return null; // or a splash/loading screen
 
   return (
-    <View style={{ flex: 1, backgroundColor: Colors.background }}>
-      <StatusBar hidden={true} />
-      <NavigationContainer theme={MyTheme}>
+    <NavigationContainer theme={MyTheme}>
+      <StatusBar hidden={false} barStyle="light-content" backgroundColor={Colors.background} />
+      <View style={{ flex: 1, backgroundColor: Colors.background }}>
         <Stack.Navigator
           screenOptions={{
             headerShown: false, // or true if you want the header
@@ -94,9 +93,9 @@ const App = () => {
           <Stack.Screen name={ScreenNames.SIGN_IN} component={SignInScreen} options={{ title: 'Sign In' }} />
           <Stack.Screen name={ScreenNames.ADDEXPENSE} component={AddexpenseScreen} options={{ title: 'Add Expense' }} />
         </Stack.Navigator>
-      </NavigationContainer>
+      </View>
       <Toast />
-    </View>
+    </NavigationContainer>
   );
 };
 

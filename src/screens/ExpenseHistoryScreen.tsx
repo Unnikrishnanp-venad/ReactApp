@@ -129,11 +129,19 @@ const ExpenseHistoryScreen = ({ navigation }: any) => {
 
   const renderItem = ({ item, index }: { item: ExpenseItem, index: number }) => (
     <View style={styles.itemRow}>
-      <View style={[styles.iconBox, { backgroundColor: getUserColor(item.user || '') }]}> 
-        <Text style={{ fontSize: 22, color: Colors.buttonText, fontWeight: 'bold' }}>
-          {item.user && typeof item.user === 'string' && item.user.length > 0 ? item.user[0].toUpperCase() : '?'}
-        </Text>
-      </View>
+      {item.userPhoto ? (
+        <Image
+          source={{ uri: item.userPhoto }}
+          style={[styles.iconBox, { borderRadius: 24, backgroundColor: 'transparent' }]}
+          resizeMode="cover"
+        />
+      ) : (
+          <View style={[styles.iconBox, { backgroundColor: getUserColor(item.user || '') }]}>
+            <Text style={{ fontSize: 22, color: Colors.buttonText, fontWeight: 'bold' }}>
+              {item.user && typeof item.user === 'string' && item.user.length > 0 ? item.user[0].toUpperCase() : '?'}
+            </Text>
+          </View>
+      )}
       <View style={{ flex: 1 }}>
         <Text style={[styles.itemSubtitle, { maxWidth: 120 }]}>{item.subtitle}</Text>
         <Text style={[styles.itemTitle, { maxWidth: 120 }]}>{item.title}</Text>

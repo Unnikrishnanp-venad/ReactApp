@@ -1,6 +1,6 @@
 
 const Colors = {
-  primary:'#34eb8f',//#FFD600', // Main blue
+  primary:'#00c3af',//#FFD600', // Main blue
   secondary: '#292726', // Secondary background color
 
   primaryText: '#ffff', // Main text color
