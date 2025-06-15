@@ -50,15 +50,17 @@ const AddexpenseScreen = () => {
     }
     const name = await AsyncStorage.getItem(StorageKeys.GOOGLE_USER_NAME);
     const email = await AsyncStorage.getItem(StorageKeys.GOOGLE_USER_EMAIL);
+    const userPhoto = await AsyncStorage.getItem(StorageKeys.GOOGLE_USER_PHOTO);
     let label = name || email || 'Unknown User';
     const expense: ExpenseItem = {
       id: Date.now().toString(),
       title: selectedCategory,
-      subtitle: comment || label,
+      subtitle: comment || 'No comment',
       amount: parseFloat(amount),
       date: new Date().toISOString(),
       type: selectedCategory,
-      user: email || label, // Always use email for user field
+      user: email || label,
+      userPhoto: userPhoto || ''// Always use email for user field
     };
     const stored = await AsyncStorage.getItem(StorageKeys.STORAGE_KEY);
     let updated: ExpenseItem[] = [];

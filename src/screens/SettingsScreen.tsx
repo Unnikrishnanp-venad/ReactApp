@@ -108,7 +108,7 @@ const SettingsScreen = ({ navigation }: any) => {
           <Text style={styles.email}>{user.email || 'test@test.com'}</Text>
         </View>
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutText}>Logout</Text>
+          <Text style={styles.logoutText}>Sign Out</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -138,14 +138,14 @@ const styles = StyleSheet.create({
   },
   name: {
     color: Colors.primaryText,
-    fontSize: FontSize.xxhuge,
+    fontSize: FontSize.huge,
     fontWeight: 'bold',
     marginBottom: 6,
     textAlign: 'center',
   },
   email: {
     color: Colors.subtitle,
-    fontSize: FontSize.large,
+    fontSize: FontSize.xlarge,
     marginBottom: 8,
     textAlign: 'center',
   },
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   changePhotoText: {
     color: Colors.buttonText,
     fontSize: FontSize.medium,
-    fontWeight: '600',
+    fontWeight: 'light',
   },
   logoutButton: {
     width: '100%',
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     left: 24,
     right: 24,
   },
-  logoutText: { color: Colors.buttonText, fontSize: 18, fontWeight: '600' },
+  logoutText: { color: Colors.buttonText, fontSize: FontSize.xxlarge, fontWeight: 'light' },
 });
 
 export default SettingsScreen;

@@ -137,7 +137,7 @@ const ExpenseHistoryScreen = ({ navigation }: any) => {
         />
       ) : (
           <View style={[styles.iconBox, { backgroundColor: getUserColor(item.user || '') }]}>
-            <Text style={{ fontSize: 22, color: Colors.buttonText, fontWeight: 'bold' }}>
+            <Text style={{ fontSize: FontSize.huge, color: Colors.primaryText, fontWeight: 'bold' }}>
               {item.user && typeof item.user === 'string' && item.user.length > 0 ? item.user[0].toUpperCase() : '?'}
             </Text>
           </View>
@@ -156,9 +156,9 @@ const ExpenseHistoryScreen = ({ navigation }: any) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerRow}>
-        <Text style={styles.headerTitle}>History</Text>
+        <Text style={styles.headerTitle}>Spending Timeline</Text>
         <TouchableOpacity style={styles.statementBtn} onPress={clearHistory}>
-          <Text style={styles.statementBtnText}>My Statements</Text>
+          <Text style={styles.statementBtnText}>Clear</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.searchRow}>
@@ -170,7 +170,7 @@ const ExpenseHistoryScreen = ({ navigation }: any) => {
           onChangeText={setSearch}
         />
         <TouchableOpacity onPress={() => setShowFilters(f => !f)}>
-          <Image source={require('../../assets/filter.png')} style={{ width: 24, height: 24, marginRight: 18, tintColor:Colors.searchBarPlaceholder}} />
+          <Image source={require('../../assets/filter.png')} style={{ width: 24, height: 24, marginRight: 18, tintColor:Colors.primary}} />
         </TouchableOpacity>
       </View>
       {showFilters && (
@@ -188,7 +188,7 @@ const ExpenseHistoryScreen = ({ navigation }: any) => {
       )}
       {filtered.length === 0 ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ color: Colors.inputText, fontSize: 20, marginTop: 40 }}>No Records Found</Text>
+          <Text style={{ color: Colors.subtitle, fontSize: FontSize.large}}>Start tracking your spending to see it here.</Text>
         </View>
       ) : (
           <SectionList
@@ -196,7 +196,7 @@ const ExpenseHistoryScreen = ({ navigation }: any) => {
             keyExtractor={item => item.id}
             renderItem={renderItem}
             renderSectionHeader={({ section: { title } }) => (
-              <Text style={{ color: Colors.inputText, fontWeight: 'bold', fontSize: 18, marginLeft: 18, marginTop: 18, marginBottom: 10, backgroundColor: Colors.background }}>
+              <Text style={{ color: Colors.subtitle, fontWeight: 'bold', fontSize: FontSize.xlarge, marginLeft: 18, marginTop: 18, marginBottom: 10, backgroundColor: Colors.background }}>
                 {getSectionTitle(title)}
               </Text>
             )}
@@ -226,16 +226,16 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: FontSize.xlarge,
-    color: Colors.primaryText,
+    color: Colors.primary,
     fontWeight: 'bold',
   },
   statementBtn: {
     borderWidth: 1,
-    borderColor: '#333',
+    borderColor: Colors.borderColor,
     borderRadius: 24,
     paddingHorizontal: 18,
     paddingVertical: 8,
-    backgroundColor: '#181818',
+    backgroundColor: Colors.collectionBackground,
   },
   statementBtnText: {
     color: '#fff',
@@ -275,13 +275,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.searchBarBackground,
     borderRadius: 32,
+    borderColor: Colors.borderColor,
+    borderWidth: 1,
     marginHorizontal: 16,
     marginBottom: 0,
     height: 56,
   },
   searchInput: {
     flex: 1,
-    color: '#fff',
+    color: Colors.searchBarBackground,
     fontSize: FontSize.large,
     marginLeft: 18,
   },
@@ -295,10 +297,9 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   iconBox: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    backgroundColor: '#333',
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
@@ -310,7 +311,7 @@ const styles = StyleSheet.create({
   },
   itemTitle: {
     color: Colors.primaryText,
-    fontSize: FontSize.large,
+    fontSize: FontSize.xxxlarge,
     fontWeight: 'bold',
     marginBottom: 2,
   },
@@ -320,7 +321,7 @@ const styles = StyleSheet.create({
   },
   itemAmount: {
     color: Colors.primary,
-    fontSize: FontSize.large,
+    fontSize: FontSize.huge,
     fontWeight: 'bold',
   },
   itemDebited: {
