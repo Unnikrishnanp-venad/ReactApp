@@ -173,10 +173,29 @@ const ExpenseHistoryScreen = ({ navigation }: any) => {
     </View>
   );
 
-  const handleOpenFilters = () => {
+  const handleOpenFilters = async () => {
+    // Fetch latest expenses from storage for the current user
+    const userEmail = await AsyncStorage.getItem(StorageKeys.GOOGLE_USER_EMAIL);
+    const stored = await AsyncStorage.getItem(StorageKeys.STORAGE_KEY);
+    let data = stored ? JSON.parse(stored) : [];
+    if (userEmail) {
+      data = data.filter((item: any) => item.user === userEmail);
+    }
+    data = data.map((item: any) => ({ ...item, date: new Date(item.date) }));
+
+    // Extract unique months and categories from the filtered data
+    const months = Array.from(new Set(data.map((item: any) => {
+      const date = new Date(item.date);
+      return date.toLocaleString('en-US', { month: 'short', year: 'numeric' });
+    }))).filter((m): m is string => typeof m === 'string');
+    const categories = Array.from(new Set(data.map((item: any) => item.type))).filter((c): c is string => typeof c === 'string');
+
+    setSelectedMonths(months);
+    setSelectedCategories(categories);
+
     navigation.navigate(ScreenNames.EXPENSE_FILTER, {
-      selectedMonths,
-      selectedCategories,
+      selectedMonths: months,
+      selectedCategories: categories,
       onApplyFilters: (filters: { selectedMonths: string[]; selectedCategories: string[] }) => {
         setSelectedMonths(filters.selectedMonths);
         setSelectedCategories(filters.selectedCategories);
@@ -200,8 +219,12 @@ const ExpenseHistoryScreen = ({ navigation }: any) => {
           value={search}
           onChangeText={setSearch}
         />
-        <TouchableOpacity onPress={handleOpenFilters}>
-          <Image source={require('../../assets/filter.png')} style={{ width: 24, height: 24, marginRight: 18, tintColor:Colors.primary}} />
+        <TouchableOpacity
+          onPress={handleOpenFilters}
+          disabled={history.length === 0}
+          style={{ opacity: history.length === 0 ? 0.4 : 1 }}
+        >
+          <Image source={require('../../assets/filter.png')} style={{ width: 24, height: 24, marginRight: 18, tintColor: Colors.primary }} />
         </TouchableOpacity>
       </View>
       {showFilters && (
@@ -245,7 +268,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
     paddingHorizontal: 0,
-    paddingTop: 80,
+    paddingTop: 40,
   },
   headerRow: {
     flexDirection: 'row',

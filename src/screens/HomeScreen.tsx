@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background, // solid black
     paddingHorizontal: 0,
-    paddingTop: 0,
+    paddingTop: 20,
   },
   topRow: {
     flexDirection: 'row',

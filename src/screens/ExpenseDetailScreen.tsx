@@ -22,12 +22,15 @@ const ExpenseDetailScreen = ({ navigation, route }: any) => {
   }, [navigation]);
 
   useFocusEffect(
+
     React.useCallback(() => {
+      // Fetch expenses from storage when the screen is focused
       (async () => {
         const userEmail = await AsyncStorage.getItem(StorageKeys.GOOGLE_USER_EMAIL);
         const stored = await AsyncStorage.getItem(StorageKeys.STORAGE_KEY);
         let data = stored ? JSON.parse(stored) : [];
         // Only use expenses for the logged-in user and selected category
+        console.log('Fetching expenses for user:', userEmail, 'and category:', category);
         if (userEmail) {
           data = data.filter((item: any) => item.user === userEmail && item.type === category);
         }
@@ -41,12 +44,42 @@ const ExpenseDetailScreen = ({ navigation, route }: any) => {
   // Set the screen title to the selected category
   const screenTitle = category;
 
-  const handleOpenFilters = () => {
+  const handleOpenFilters = async () => {
+    // Fetch latest expenses from storage for the current user and category
+    const userEmail = await AsyncStorage.getItem(StorageKeys.GOOGLE_USER_EMAIL);
+    const stored = await AsyncStorage.getItem(StorageKeys.STORAGE_KEY);
+    let data = stored ? JSON.parse(stored) : [];
+    if (userEmail) {
+      data = data.filter((item: any) => item.user === userEmail && item.type === category);
+    }
+    data = data.map((item: any) => ({ ...item, date: new Date(item.date) }));
+
+    // Extract unique months and categories from the filtered data
+    const months = Array.from(new Set(data.map((item: any) => {
+      const date = new Date(item.date);
+      return date.toLocaleString('en-US', { month: 'short', year: 'numeric' });
+    }))).filter((m): m is string => typeof m === 'string');
+    const categories = Array.from(new Set(data.map((item: any) => item.type))).filter((c): c is string => typeof c === 'string');
+    console.log('Available months:', months);
+    console.log('Available categories:', categories);
+    // Use these as the selected filters
+    setSelectedMonths(months);
+    setSelectedCategories(categories);
+
+  // Navigate to ExpenseFilterScreen with selected months and categories
     navigation.navigate(ScreenNames.EXPENSE_FILTER, {
-      selectedMonths,
-      selectedCategories,
+      selectedMonths: months,
+      selectedCategories: categories,
       showCategory: false, // Hide category filter when coming from ExpenseDetailScreen
       onApplyFilters: (filters: { selectedMonths: string[]; selectedCategories: string[] }) => {
+        // If both are empty, show no data and update state
+        if (filters.selectedMonths.length === 0 && filters.selectedCategories.length === 0) {
+          console.log('No filters applied, showing all data');
+          setSelectedMonths([]);
+          setSelectedCategories([]);
+          setFiltered([]);
+          return;
+        }
         setSelectedMonths(filters.selectedMonths);
         setSelectedCategories(filters.selectedCategories);
       },
@@ -181,7 +214,7 @@ const ExpenseDetailScreen = ({ navigation, route }: any) => {
   const sortedFiltered = [...filtered].sort((a, b) => sortDesc ? b.amount - a.amount : a.amount - b.amount);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background, paddingTop: 20 }}>
       {/* Back button header, matching AddScreen */}
       <View style={[styles.headerRow, { paddingTop: 20 }]}> 
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
@@ -200,8 +233,12 @@ const ExpenseDetailScreen = ({ navigation, route }: any) => {
           value={search}
           onChangeText={setSearch}
         />
-        <TouchableOpacity onPress={handleOpenFilters}>
-          <Image source={require('../../assets/filter.png')} style={{ width: 24, height: 24, marginRight: 18, tintColor:Colors.primary}} />
+        <TouchableOpacity
+          onPress={handleOpenFilters}
+          disabled={history.length === 0}
+          style={{ opacity: history.length === 0 ? 0.4 : 1 }}
+        >
+          <Image source={require('../../assets/filter.png')} style={{ width: 24, height: 24, marginRight: 18, tintColor: Colors.primary }} />
         </TouchableOpacity>
       </View>
       {filtered.length === 0 ? (
@@ -210,6 +247,7 @@ const ExpenseDetailScreen = ({ navigation, route }: any) => {
         </View>
       ) : (
           <SectionList
+            key={`${selectedMonths.join(',')}-${selectedCategories.join(',')}`}
             sections={groupByDate(sortedFiltered)}
             keyExtractor={item => item.id}
             renderItem={renderItem}

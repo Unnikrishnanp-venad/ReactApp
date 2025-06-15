@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StorageKeys } from '../constants/key';
 import { ExpenseItem } from '../constants/model';
 import { useNavigation, StackActions } from '@react-navigation/native';
+import FontSize from '../constants/fontsize';
 
 interface ExpenseFilterScreenProps {
   route: any;
@@ -28,7 +29,14 @@ const ExpenseFilterScreen: React.FC<ExpenseFilterScreenProps> = ({ route }) => {
   const [monthsList, setMonthsList] = useState<string[]>([]);
 
   useEffect(() => {
-    async function fetchFilters() {
+    console.log('ExpenseFilterScreen mounted with params:', {
+      selectedMonths: routeSelectedMonths,
+      selectedCategories: routeSelectedCategories,
+      showCategory,
+    });
+    console.log('Initial selected months:', selectedMonths);
+    console.log('Initial selected categories:', selectedCategories);
+    async function fetchFiltersAndSetSelected() {
       const stored = await AsyncStorage.getItem(StorageKeys.STORAGE_KEY);
       let data: ExpenseItem[] = stored ? JSON.parse(stored) : [];
       const monthsSet = new Set<string>();
@@ -53,15 +61,49 @@ const ExpenseFilterScreen: React.FC<ExpenseFilterScreenProps> = ({ route }) => {
       });
       setMonthsList(monthsArr);
       setCategoriesList(Array.from(categoriesSet));
-    }
-    fetchFilters();
-  }, []);
+      console.log('Available months:', monthsArr);
+      console.log('Available categories:', Array.from(categoriesSet));
+      console.log('Selected months:', selectedMonths);
+      console.log('Selected categories:', selectedCategories);
+      // Set selected months/categories based on params and data
+      console.log('Route selected months:', routeSelectedMonths);
+      console.log('Route selected categories:', routeSelectedCategories);
+      console.log('Show category:', showCategory);
 
-  useEffect(() => {
-    setSelectedMonths(routeSelectedMonths || []);
-    setSelectedCategories(routeSelectedCategories || []);
-    setSelectedSection('months');
-  }, [routeSelectedMonths, routeSelectedCategories]);
+      if (!showCategory) {
+        console.log('showCategory is false, filtering months only');
+        if (routeSelectedCategories && routeSelectedCategories.length === 1) {
+          console.log('Filtering months for single selected category:', routeSelectedCategories[0]);
+
+        } else {
+          console.log('No specific category filter, using route params or selecting all by default');
+
+
+        }
+        // From ExpenseDetailScreen: select only months for that category
+        const filteredMonths = data.filter(item => item.type === routeSelectedCategories[0])
+          .map(item => {
+            const date = new Date(item.date);
+            let monthStr = date.toLocaleString('en-US', { month: 'short', year: 'numeric' });
+            if (monthStr.startsWith('Sep')) monthStr = 'Sept' + monthStr.slice(3);
+            return monthStr;
+          });
+        console.log('Filtered months:', filteredMonths);
+        setSelectedMonths(Array.from(new Set(filteredMonths)));
+        console.log('Selected months:', selectedMonths);
+        setSelectedCategories(routeSelectedCategories);
+      } else {
+        console.log('showCategory is false, filtering months only');
+        console.log('No specific category filter, using route params or selecting all by default');
+        // If showCategory is true, select all months/categories by default
+        // From ExpenseHistoryScreen: use params or select all by default
+        setSelectedMonths(routeSelectedMonths || []);
+        setSelectedCategories(routeSelectedCategories || []);
+      }
+      setSelectedSection('months');
+    }
+    fetchFiltersAndSetSelected();
+  }, [routeSelectedMonths, routeSelectedCategories, showCategory]);
 
   const handleSelectMonth = (month: string) => {
     setSelectedMonths((prev: string[]) => prev.includes(month) ? prev.filter((m: string) => m !== month) : [...prev, month]);
@@ -94,6 +136,10 @@ const ExpenseFilterScreen: React.FC<ExpenseFilterScreenProps> = ({ route }) => {
   }
 
   const handleUpdate = () => {
+    console.log('Applying filters:', {
+      selectedMonths,
+      selectedCategories,
+    });
     if (onApplyFilters) {
       onApplyFilters({
         selectedMonths,
@@ -161,9 +207,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
     justifyContent: 'center',
         alignItems: 'center',
-    marginTop: 0,
+    marginTop: 40,
     paddingTop: 0,
-    paddingBottom: 0,
+    paddingBottom: 30,
   },
   headerRow: {
     flexDirection: 'row',
@@ -193,9 +239,9 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
   clear: {
-    color: '#a259ff',
+    color: Colors.primary,
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: FontSize.xxlarge,
       marginLeft: 8,
     marginTop:10,
   },
@@ -243,7 +289,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
   },
   badgeText: {
-    color: '#fff',
+    color: Colors.buttonText,
     fontWeight: 'bold',
     fontSize: 13,
   },
@@ -280,7 +326,7 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   updateBtn: {
-    backgroundColor: '#444',
+    backgroundColor: Colors.background,
     borderRadius: 0,
     paddingVertical: 18,
     alignItems: 'center',
@@ -291,9 +337,10 @@ const styles = StyleSheet.create({
     left: 0,
   },
   updateBtnText: {
-    color: Colors.primaryText,
+    color: Colors.primary,
     fontWeight: 'bold',
     fontSize: 16,
+    paddingBottom: 20,
   },
 });
 
