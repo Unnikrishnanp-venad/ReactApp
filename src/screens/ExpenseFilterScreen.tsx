@@ -21,19 +21,16 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const ExpenseFilterScreen: React.FC<ExpenseFilterScreenProps> = ({ route }) => {
   const navigation = useNavigation();
-  const { selectedMonths: routeSelectedMonths, selectedCategories: routeSelectedCategories, onApplyFilters, showCategory = true } = route.params || {};
+  const { selectedMonths: routeSelectedMonths, selectedCategories: routeSelectedCategories, onApplyFilters, page } = route.params || {};
   const [selectedSection, setSelectedSection] = useState('months');
   const [selectedMonths, setSelectedMonths] = useState<string[]>(routeSelectedMonths || []);
   const [selectedCategories, setSelectedCategories] = useState<string[]>(routeSelectedCategories || []);
   const [categoriesList, setCategoriesList] = useState<string[]>([]);
   const [monthsList, setMonthsList] = useState<string[]>([]);
+  const [showCategory, setShowCategory] = useState<boolean>(page !== 'expensedetailscreen');
+  const [pageName, setPageName] = useState(page || '');
 
   useEffect(() => {
-    console.log('ExpenseFilterScreen mounted with params:', {
-      selectedMonths: routeSelectedMonths,
-      selectedCategories: routeSelectedCategories,
-      showCategory,
-    });
     console.log('Initial selected months:', selectedMonths);
     console.log('Initial selected categories:', selectedCategories);
     async function fetchFiltersAndSetSelected() {
@@ -68,9 +65,9 @@ const ExpenseFilterScreen: React.FC<ExpenseFilterScreenProps> = ({ route }) => {
       // Set selected months/categories based on params and data
       console.log('Route selected months:', routeSelectedMonths);
       console.log('Route selected categories:', routeSelectedCategories);
-      console.log('Show category:', showCategory);
 
-      if (!showCategory) {
+
+      if (!setShowCategory) {
         console.log('showCategory is false, filtering months only');
         if (routeSelectedCategories && routeSelectedCategories.length === 1) {
           console.log('Filtering months for single selected category:', routeSelectedCategories[0]);
@@ -101,9 +98,34 @@ const ExpenseFilterScreen: React.FC<ExpenseFilterScreenProps> = ({ route }) => {
         setSelectedCategories(routeSelectedCategories || []);
       }
       setSelectedSection('months');
+      // Set showCategory based on pageName
+      setShowCategory(pageName !== 'expensedetailscreen');
     }
     fetchFiltersAndSetSelected();
-  }, [routeSelectedMonths, routeSelectedCategories, showCategory]);
+    if (page) setPageName(page);
+  }, [routeSelectedMonths, routeSelectedCategories, page, pageName]);
+
+  useEffect(() => {
+    const loadSavedFilters = async () => {
+      try {
+        const saved = await AsyncStorage.getItem(StorageKeys.EXPENSE_FILTER_SELECTIONS);
+        if (saved) {
+          const { selectedMonths, selectedCategories, showCategory: savedShowCategory, page } = JSON.parse(saved);
+          if (Array.isArray(selectedMonths)) setSelectedMonths(selectedMonths);
+          if (Array.isArray(selectedCategories)) setSelectedCategories(selectedCategories);
+          if (typeof page === 'string') {
+            setPageName(page);
+            setShowCategory(page !== 'expensedetailscreen');
+          } else if (typeof savedShowCategory === 'boolean') {
+            setShowCategory(savedShowCategory);
+          }
+        }
+      } catch (e) {
+        // handle error if needed
+      }
+    };
+    loadSavedFilters();
+  }, []);
 
   const handleSelectMonth = (month: string) => {
     setSelectedMonths((prev: string[]) => prev.includes(month) ? prev.filter((m: string) => m !== month) : [...prev, month]);
@@ -135,11 +157,16 @@ const ExpenseFilterScreen: React.FC<ExpenseFilterScreenProps> = ({ route }) => {
     onSelect = handleSelectCategory;
   }
 
-  const handleUpdate = () => {
-    console.log('Applying filters:', {
-      selectedMonths,
-      selectedCategories,
-    });
+  const handleUpdate = async () => {
+    // Save selectedMonths, selectedCategories, and page to storage
+    try {
+      await AsyncStorage.setItem(
+        StorageKeys.EXPENSE_FILTER_SELECTIONS,
+        JSON.stringify({ selectedMonths, selectedCategories, showCategory, page: pageName })
+      );
+    } catch (e) {
+      console.error('Failed to save filter selections:', e);
+    }
     if (onApplyFilters) {
       onApplyFilters({
         selectedMonths,

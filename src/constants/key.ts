@@ -11,6 +11,7 @@ export class StorageKeys {
   static readonly GOOGLE_USER_NAME = 'googleUserName';
   static readonly GOOGLE_USER_EMAIL = 'googleUserEmail';
   static readonly GOOGLE_USER_PHOTO = 'googleUserPhoto';
+  static readonly EXPENSE_FILTER_SELECTIONS = 'EXPENSE_FILTER_SELECTIONS';
   // Add more keys as needed
 }
 // Expense category enum

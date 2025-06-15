@@ -196,9 +196,23 @@ const ExpenseHistoryScreen = ({ navigation }: any) => {
     navigation.navigate(ScreenNames.EXPENSE_FILTER, {
       selectedMonths: months,
       selectedCategories: categories,
-      onApplyFilters: (filters: { selectedMonths: string[]; selectedCategories: string[] }) => {
+      page: 'expensehistoryscreen',
+      onApplyFilters: async (filters: { selectedMonths: string[]; selectedCategories: string[] }) => {
         setSelectedMonths(filters.selectedMonths);
         setSelectedCategories(filters.selectedCategories);
+        // Save the selected filters in storage for persistence
+        try {
+          await AsyncStorage.setItem(
+            StorageKeys.EXPENSE_FILTER_SELECTIONS,
+            JSON.stringify({
+              selectedMonths: filters.selectedMonths,
+              selectedCategories: filters.selectedCategories,
+              page: 'expensehistoryscreen',
+            })
+          );
+        } catch (e) {
+          console.error('Failed to save filter selections:', e);
+        }
       },
     });
   };

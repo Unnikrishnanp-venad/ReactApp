@@ -70,7 +70,7 @@ const ExpenseDetailScreen = ({ navigation, route }: any) => {
     navigation.navigate(ScreenNames.EXPENSE_FILTER, {
       selectedMonths: months,
       selectedCategories: categories,
-      showCategory: false, // Hide category filter when coming from ExpenseDetailScreen
+      page: 'expensedetailscreen',
       onApplyFilters: (filters: { selectedMonths: string[]; selectedCategories: string[] }) => {
         // If both are empty, show no data and update state
         if (filters.selectedMonths.length === 0 && filters.selectedCategories.length === 0) {
