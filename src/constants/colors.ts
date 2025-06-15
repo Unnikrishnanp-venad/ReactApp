@@ -52,6 +52,13 @@ const Colors = {
   // modalOverlayExpense: '#292726',
   // modalOverlayIncome: '#292726',
   collectionBackground: '#181818',
+  keypadBackground: '#232323',
+  keypadText: '#B9D9DC',
+  keypadButtonBackground: '#232323',
+  keypadButtonText: '#B9D9DC',
+  error: '#ff0000', // Error color for alerts or error messages
+  err: '#ff0000', // Error color for alerts or error messages
+  success: '#00c3af', // Success color for success messages or indicators
 };
 
 export default Colors;

@@ -64,11 +64,11 @@ const HomeTabs = () => {
         component={HomeScreen}
         options={{ title: ScreenNames.HOME }} // <-- Set header title here
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="SearchTab"
         component={SearchScreen}
         options={{ title: ScreenNames.SEARCH }} // <-- Set header title here
-      />
+      /> */}
       <Tab.Screen
         name="ExpenseHistoryTab"
         component={ExpenseHistoryScreen}

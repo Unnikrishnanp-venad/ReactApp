@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background, marginTop: 80 }, // solid black
   searchBar: {
     height: 40,
-    borderColor: Colors.searchBarBackground,      // valid dark border
+    borderColor: Colors.borderColor,      // valid dark border
     borderWidth: 1,
     borderRadius: 8,
     margin: 16,
@@ -110,6 +110,6 @@ const styles = StyleSheet.create({
   },
   item: { padding: 16, borderBottomWidth: 1, borderBottomColor:  Colors.searchBarseperator, backgroundColor: Colors.background },
   name: { fontSize: FontSize.large, color: Colors.primaryText },
-  phone: { fontSize: FontSize.medium, color: Colors.inactiveDot, marginTop: 4 },
+  phone: { fontSize: FontSize.medium, color: Colors.subtitle, marginTop: 4,fontWeight: 'light' },
   empty: { textAlign: 'center', marginTop: 40, color:  Colors.subtitle },
 });

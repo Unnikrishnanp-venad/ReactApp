@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, ScrollView, TextInput, Dimensions } from 'react-native';
 import { StackActions, useNavigation } from '@react-navigation/native';
 import Colors from '../constants/colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -8,6 +8,12 @@ import Toast from 'react-native-toast-message';
 import { ExpenseItem } from '../constants/model';
 import { ExpenseCategory, StorageKeys } from '../constants/key';
 import FontSize from '../constants/fontsize';
+
+const MAX_AMOUNT = 99999; // Set your desired maximum value
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const KEYPAD_BUTTON_MARGIN = 6; // same as marginHorizontal in style
+const KEYPAD_BUTTONS_PER_ROW = 3;
+const KEYPAD_BUTTON_WIDTH = (SCREEN_WIDTH * 0.9 - (KEYPAD_BUTTONS_PER_ROW + 1) * KEYPAD_BUTTON_MARGIN * 2) / KEYPAD_BUTTONS_PER_ROW;
 
 const AddexpenseScreen = () => {
   const navigation = useNavigation();
@@ -21,7 +27,13 @@ const AddexpenseScreen = () => {
     } else if (val === '✓') {
       handleSave();
     } else {
-      setAmount(a => (a === '0' ? val : a + val));
+      setAmount(a => {
+        const next = a === '0' ? val : a + val;
+        if (parseFloat(next) > MAX_AMOUNT) {
+          return a; // Ignore input if over max
+        }
+        return next;
+      });
     }
   };
 
@@ -79,13 +91,13 @@ const AddexpenseScreen = () => {
       </View>
       {/* Horizontal collection chips */}
       <View style={{ marginTop: 0, marginBottom: 0 }}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 12, height: 50, minWidth: 150 }}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 12, height: 50, minWidth: 120 }}>
           {Object.values(ExpenseCategory).map((cat) => {
             const isSelected = selectedCategory === cat;
             return (
               <TouchableOpacity
                 key={cat}
-                style={[styles.chip, isSelected && { borderColor: Colors.borderColor, backgroundColor: Colors.primary }]}
+                style={[styles.chip, isSelected && { borderColor: Colors.primary, backgroundColor: Colors.primary }]}
                 onPress={() => setSelectedCategory(cat as ExpenseCategory)}
               >
                 <Text style={[styles.chipText, !isSelected && { color: Colors.subtitle }]}>{cat}</Text>
@@ -95,7 +107,7 @@ const AddexpenseScreen = () => {
         </ScrollView>
       </View>
       <View style={[styles.formContent, { flex: 1, width: '100%' }]}> 
-        <Text style={styles.modalLabel}>Amount</Text>
+        <Text style={styles.modalLabel}>How much did you spend?</Text>
          <View style={styles.amountRow}>
           <Text style={styles.amountValue} numberOfLines={1} ellipsizeMode="tail">{amount || '0'}</Text>
         </View> 
@@ -106,11 +118,13 @@ const AddexpenseScreen = () => {
             color: Colors.primaryText,
             fontSize: FontSize.large,
             borderRadius: 10,
+            borderColor: Colors.borderColor,
+            borderWidth: 1,
             padding: 10,
             marginBottom: 12,
           }}
-          placeholder="Add a comment"
-          placeholderTextColor={Colors.inactiveDot}
+          placeholder="Add a note"
+          placeholderTextColor={Colors.searchBarPlaceholder}
           value={comment}
           onChangeText={setComment}
           multiline
@@ -135,7 +149,7 @@ const AddexpenseScreen = () => {
                 >
                   <Image
                     source={require('../../assets/delete.png')}
-                    style={{ width: 28, height: 28, tintColor: Colors.primaryText }}
+                    style={{ width: 28, height: 28, tintColor: Colors.error }}
                   />
                 </TouchableOpacity>
               );
@@ -150,7 +164,7 @@ const AddexpenseScreen = () => {
                 >
                   <Image
                     source={require('../../assets/check.png')}
-                    style={{ width: 28, height: 28, tintColor: '#fff' }}
+                    style={{ width: 28, height: 28, tintColor: Colors.primary }}
                   />
                 </TouchableOpacity>
               );
@@ -188,7 +202,7 @@ const styles = StyleSheet.create({
   modalLabel: {
     color: Colors.subtitle,
     fontSize: FontSize.large,
-    marginBottom: 0,
+    marginBottom: 8,
     alignSelf: 'flex-start',
   },
   amountRow: {
@@ -197,7 +211,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   amountValue: {
-    fontSize: FontSize.xlarge,
+    fontSize: FontSize.massive,
     fontWeight: 'bold',
     color: Colors.primaryText,
   },
@@ -223,10 +237,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: Colors.borderColor,
-    borderRadius: 16,
+    borderRadius: 25,
     paddingHorizontal: 14,
     paddingVertical: 6,
     marginRight: 12,
+    height: 50,
     backgroundColor: Colors.collectionBackground,
     minWidth: 100,
   },
@@ -263,11 +278,11 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   keypadButton: {
-    flex: 1,
-    aspectRatio: 1,
-    backgroundColor: Colors.collectionBackground,
-    borderRadius: 18,
-    marginHorizontal: 6,
+    width: KEYPAD_BUTTON_WIDTH,
+    height: KEYPAD_BUTTON_WIDTH,
+    backgroundColor: Colors.keypadBackground,
+    borderRadius: (KEYPAD_BUTTON_WIDTH / 2 ) * 0.5,
+    marginHorizontal: KEYPAD_BUTTON_MARGIN,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -278,7 +293,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.borderColor,
   },
   keypadText: {
-    fontSize: FontSize.xlarge,
+    fontSize: FontSize.massive,
     color: Colors.primaryText,
     fontWeight: 'bold',
   },

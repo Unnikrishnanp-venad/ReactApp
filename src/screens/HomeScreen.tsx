@@ -4,21 +4,23 @@ import Colors from '../constants/colors';
 import { ScreenNames } from '../constants/screenNames';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StorageKeys } from '../constants/key';
-import { ExpenseItem } from '../constants/model';
+import { CATEGORY_META, ExpenseItem } from '../constants/model';
 import { StackActions } from '@react-navigation/native';
 import FontSize from '../constants/fontsize';
 
-const CATEGORY_META: { [key: string]: { label: string; icon: any; color: string; bg: string } } = {};
+
 
 const CARD_MARGIN = 4;
 const CARD_COLUMNS = 2;
 const SCREEN_WIDTH = Dimensions.get('window').width;
-const CARD_WIDTH = (SCREEN_WIDTH * 0.9 - (CARD_MARGIN * (CARD_COLUMNS * 2 + 1))) / CARD_COLUMNS;
-const CARD_HEIGHT = CARD_WIDTH;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
+const CARD_WIDTH = SCREEN_WIDTH * 0.45; // set your desired width
+const CARD_HEIGHT = SCREEN_WIDTH * 0.45; // set your desired height
 
 const HomeScreen = ({ navigation }: any) => {
   const [categoryTotals, setCategoryTotals] = React.useState<{ [key: string]: number }>({});
   const [categories, setCategories] = React.useState<string[]>([]);
+  const [sortDesc, setSortDesc] = React.useState(true);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -44,70 +46,62 @@ const HomeScreen = ({ navigation }: any) => {
     return unsubscribe;
   }, [navigation]);
 
+  const sortedCategories = [...categories].sort((a, b) => {
+    const aTotal = categoryTotals[a] || 0;
+    const bTotal = categoryTotals[b] || 0;
+    return sortDesc ? bTotal - aTotal : aTotal - bTotal;
+  });
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Top row: profile */}
       <View style={styles.topRow}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Image source={require('../../assets/A4.png')} style={styles.flixLogo} />
+          <Image source={require('../../assets/logo.png')} style={styles.flixLogo} />
           <Text style={styles.flixTitle}>FLIX</Text>
         </View>
+        <TouchableOpacity onPress={() => setSortDesc(s => !s)} style={{ padding: 8 }}>
+          <Image source={require('../../assets/sort.png')} style={{ width: 24, height: 24, tintColor: Colors.primary }} />
+        </TouchableOpacity>
       </View>
       {/* Floating Plus Button */}
       <TouchableOpacity
         style={styles.fab}
         activeOpacity={0.8}
-        onPress={
-          () =>
-             navigation.dispatch(StackActions.push(ScreenNames.ADDEXPENSE))
-          // navigation.navigate(ScreenNames.ADD)
-        }
+        onPress={() => navigation.dispatch(StackActions.push(ScreenNames.ADDEXPENSE))}
       >
-        <Text style={styles.fabPlus}>+</Text>
+        <Image source={require('../../assets/plus.png')} style={{ width: 24, height: 24, tintColor: Colors.buttonText }} />
       </TouchableOpacity>
       {/* Title */}
-      <Text style={styles.title}>Always be{'\n'}in touch</Text>
+      <Text style={styles.title}>Track. Save. Grow {'\n'}Together.</Text>
       {/* Category tiles */}
       {categories.length === 0 ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ color: Colors.inputText, fontSize: 20, marginTop: 40 }}>No Record Found</Text>
+          <Text style={{ color: Colors.subtitle, fontSize: FontSize.large, marginTop: 0, textAlign: 'center' }}>No expenses yet. {'\n'}Tap + to add your first one!</Text>
         </View>
       ) : (
           <FlatList
-            data={categories}
+            data={sortedCategories}
             keyExtractor={item => item}
-            numColumns={2}
-            columnWrapperStyle={{ justifyContent: 'space-between', marginHorizontal: CARD_MARGIN }}
+            numColumns={CARD_COLUMNS}
+            // columnWrapperStyle={{ justifyContent: 'space-between', marginHorizontal: CARD_MARGIN }}
             renderItem={({ item }) => {
               const meta = CATEGORY_META[item] || {
                 label: item,
-                icon: null,
+                icon: require('../../assets/plus.png'), // fallback icon
                 color: Colors.primary,
-                bg: Colors.primary,
+                tintColor: Colors.primary,
+                bg: Colors.backgroundLight,
               };
+              // Example data for price and change, replace with your real data
+              const price = (categoryTotals[item] || 0).toFixed(2);
+
               return (
-                <View style={[
-                  styles.planCard,
-                  {
-                    backgroundColor: Colors.collectionBackground,
-                    width: CARD_WIDTH,
-                    height: CARD_HEIGHT,
-                    marginBottom: CARD_MARGIN * 2,
-                    marginHorizontal: 0,
-                    padding: 20,
-                    justifyContent: 'center',
-                  },
-                ]}>
-                  <View style={styles.planRow}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      {meta.icon && <Image source={meta.icon} style={styles.planIcon} />}
-                      <Text style={[styles.planCarrier, { color: meta.color, fontSize: 22 }]}>{meta.label}</Text>
-                    </View>
-                  </View>
-                  <View style={styles.planDetailsRow}>
-                    <Text style={[styles.planPrice, { color: meta.color, fontSize: 28 }]} numberOfLines={1} ellipsizeMode="tail">
-                      {(categoryTotals[item] || 0).toFixed(2)}
-                    </Text>
+                <View style={[styles.planCard, { width: CARD_WIDTH, height: CARD_HEIGHT }]}>
+                  <View style={styles.planCardInner}>
+                    <Image source={meta.icon} style={[styles.planLogo, { tintColor: Colors.primary }]} />
+                    <Text style={styles.planTitle}>{meta.label}</Text>
+                    <Text style={styles.planPrice}>₹{price}</Text>
                   </View>
                 </View>
               );
@@ -135,30 +129,45 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: 32,
-    marginBottom: 16,
+    marginBottom: 4,
     paddingHorizontal: 20,
   },
   title: {
-    fontSize: FontSize.massive,
+    fontSize: FontSize.xxhuge,
     color: Colors.primaryText,
     fontWeight: 'bold',
     marginBottom: 18,
     marginLeft: 20,
-    marginTop: 8,
+    marginTop: 0,
     lineHeight: 48,
   },
   planCard: {
-    borderRadius: 28,
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
+    borderRadius: 22,
+    backgroundColor: Colors.background,
     borderWidth: 1,
     borderColor: Colors.borderColor,
-    // width and height are set inline in renderItem for equal sizing
-    margin: 8, // Add margin around each cell
-    marginLeft: 10,
-    marginRight: 10,
+    margin: 8,
+    padding: 0,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 2 },
+    minHeight: 180,
+    justifyContent: 'flex-start',
+  },
+  planCardInner: {
+    flex: 1,
+    padding: 18,
+    justifyContent: 'space-between',
+  },
+  planLogo: {
+    width: CARD_WIDTH * 0.3,
+    height: CARD_WIDTH * 0.3,
+    tintColor: Colors.primary,
+    borderRadius: 12,
+    marginBottom: 10,
+    alignSelf: 'flex-start',
+    backgroundColor: 'transparent',
   },
   planRow: {
     flexDirection: 'row',
@@ -201,19 +210,20 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   planPrice: {
-    fontSize: FontSize.large,
     color: Colors.primary,
+    fontSize: 22,
     fontWeight: 'bold',
-    alignSelf: 'flex-end',
+    marginBottom: 2,
   },
   flixLogo: {
-    width: 36,
-    height: 36,
+    width: 40,
+    height: 40,
     resizeMode: 'contain',
+    marginTop: 4,
     marginRight: 8,
   },
   flixTitle: {
-    fontSize: FontSize.huge,
+    fontSize: FontSize.xxhuge,
     color: Colors.primary,
     fontWeight: 'bold',
     letterSpacing: 1.5,
@@ -240,5 +250,21 @@ const styles = StyleSheet.create({
     fontSize: FontSize.xlarge,
     fontWeight: 'bold',
     marginTop: -2,
+  },
+  planTitle: {
+    fontSize: FontSize.xxxlarge,
+    color: Colors.primaryText,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  planChange: {
+    fontSize: FontSize.medium,
+    fontWeight: '500',
+  },
+  planChangeUp: {
+    color: Colors.success,
+  },
+  planChangeDown: {
+    color: Colors.error,
   },
 });
